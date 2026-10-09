@@ -1,0 +1,259 @@
+{
+  "supported": true,
+  "reason": "",
+  "title": "tic_tac_toe independent acceptance",
+  "development_plan": [
+    "Held-out checks authored before generation"
+  ],
+  "state_contract": {
+    "phase": "Real live phase; exact paths only used where required by spec"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Nine empty cells and X starts",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Occupied cell cannot consume a turn",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Winning row stops further moves",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Full non-winning board is a draw",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Restart clears a played board",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Nine empty cells and X starts",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "count",
+          "selector": "[id^='cell-']",
+          "op": "eq",
+          "value": 9
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cell-0",
+          "op": "eq",
+          "value": ""
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Turn: X"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Occupied cell cannot consume a turn",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#cell-0"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cell-0",
+          "op": "eq",
+          "value": "X"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Turn: O"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cell-1",
+          "op": "eq",
+          "value": "O"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Winning row stops further moves",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#cell-0"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-3"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-1"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-4"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Winner: X"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cell-5",
+          "op": "eq",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Full non-winning board is a draw",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#cell-0"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-1"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-2"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-4"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-3"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-5"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-7"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-6"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-8"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Draw"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Restart clears a played board",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#cell-0"
+        },
+        {
+          "action": "click",
+          "selector": "#cell-1"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cell-0",
+          "op": "eq",
+          "value": ""
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cell-1",
+          "op": "eq",
+          "value": ""
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Turn: X"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

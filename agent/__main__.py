@@ -99,6 +99,25 @@ def main(argv=None):
             print(f"Offline recheck (0 API calls): {options.output.resolve()}")
             return code
         config = Config.from_env()
+        if argv and argv[0] == "benchmark":
+            from .benchmark import benchmark
+            parser = argparse.ArgumentParser(prog="python -m agent benchmark",
+                description="Paid multi-game evaluation; all retries count towards the shared cap.")
+            parser.add_argument("suite", type=Path)
+            parser.add_argument("--output", type=Path, default=Path("runs") /
+                                ("benchmark_" + datetime.now().strftime("%Y%m%d_%H%M%S")))
+            parser.add_argument("--max-total-calls", type=int, default=20)
+            parser.add_argument("--max-calls-per-case", type=int, default=5)
+            parser.add_argument("--max-rounds", type=int, default=3)
+            parser.add_argument("--max-seconds", type=int, default=420)
+            parser.add_argument("--repeats", type=int, default=1)
+            options = parser.parse_args(argv[1:])
+            report = benchmark(config, options.suite, options.output, options.max_total_calls,
+                               options.max_calls_per_case, options.max_rounds, options.max_seconds,
+                               options.repeats)
+            print(json.dumps(report["metrics"], ensure_ascii=False, indent=2))
+            print(f"Benchmark: {options.output.resolve()}")
+            return 0 if all(r.get("independent_passed") for r in report["cases"]) else 2
         if argv and argv[0] == "doctor":
             return doctor(config, argv[1:])
         parser = argparse.ArgumentParser(description="MVP: spec -> game -> browser tests -> bounded repair. "
@@ -110,6 +129,7 @@ def main(argv=None):
         parser.add_argument("--max-seconds", type=int, default=600)
         parser.add_argument("--test-timeout", type=int, default=60)
         parser.add_argument("--headful", action="store_true", help="Show automated browser windows")
+        parser.add_argument("--strict-plan", action="store_true", help="Stop if functional planning fails; do not generate a partial game")
         options = parser.parse_args(argv)
         if not options.spec.is_file():
             raise ValueError("Specification file does not exist")
@@ -120,7 +140,7 @@ def main(argv=None):
                                                   + "_" + uuid.uuid4().hex[:6])
         from .runner import run
         return run(config, options.spec, output, options.max_rounds, options.max_calls,
-                   options.max_seconds, options.test_timeout, options.headful)
+                   options.max_seconds, options.test_timeout, options.headful, strict_plan=options.strict_plan)
     except KeyboardInterrupt:
         print("Stopped by user; interrupted runs are not valid autonomous demonstrations.", file=sys.stderr)
         return 130

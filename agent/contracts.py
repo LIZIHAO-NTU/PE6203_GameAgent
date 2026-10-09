@@ -1,6 +1,7 @@
 """Validate the frozen test plan and generated paths before any file is written."""
 import json
 import math
+from copy import deepcopy
 from pathlib import Path, PurePosixPath
 import re
 
@@ -40,7 +41,8 @@ def milliseconds(value):
 def validate_condition(step, captures):
     require(step.get("op") in OPS, "Invalid comparison operator")
     source = step.get("source")
-    require(source in {"state", "text", "visible", "surface"}, "Invalid observation source")
+    require(source in {"state", "text", "visible", "surface", "count", "attribute", "enabled"},
+            "Invalid observation source")
     if source == "state":
         state_path(step.get("path"))
     else:
@@ -48,6 +50,9 @@ def validate_condition(step, captures):
     if source == "surface":
         require(step.get("property") in {"width", "height", "css_width", "css_height"},
                 "Invalid surface property")
+    if source == "attribute":
+        require(isinstance(step.get("attribute"), str) and
+                re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,59}", step["attribute"]), "Invalid attribute")
     require(("value" in step) != ("value_from" in step), "Condition needs exactly one expected value")
     if "value_from" in step:
         ref = step["value_from"]
@@ -63,6 +68,20 @@ def goal_budget(step):
     poll = step.get("poll_ms", 50)
     require(type(poll) is int and 20 <= poll <= 250, "Goal poll must be 20..250 ms")
     return timeout
+
+
+def pointer_position(value):
+    require(isinstance(value, dict) and set(value) == {"x", "y"}, "Position needs x/y")
+    require(all(type(v) in {int, float} and math.isfinite(v) and 0 <= v <= 4096
+                for v in value.values()), "Position must be finite, nonnegative and <=4096")
+
+
+def validate_pointer(step):
+    bounded_text(step.get("selector"), "pointer selector", 500)
+    if "position" in step:
+        pointer_position(step["position"])
+    require(step.get("coordinate_space", "css") in {"css", "canvas"}, "Invalid coordinate space")
+    require(step.get("button", "left") in {"left", "right", "middle"}, "Invalid mouse button")
 
 
 def plan_warnings(plan):
@@ -83,12 +102,41 @@ def plan_warnings(plan):
 
 def validate_plan(plan: dict) -> dict:
     require(isinstance(plan, dict) and type(plan.get("supported")) is bool, "Missing supported boolean")
+    plan = deepcopy(plan)  # Canonicalization must not rewrite the original model response.
     if not plan["supported"]:
         bounded_text(plan.get("reason"), "unsupported reason")
         return plan
     bounded_text(plan.get("title"), "title", 200)
+    if "gameplay" in plan:
+        gameplay = plan["gameplay"]
+        require(isinstance(gameplay, dict), "Invalid gameplay analysis")
+        require(gameplay.get("interaction_model") in {"real_time", "turn_based", "hybrid"},
+                "Invalid interaction model")
+        require(gameplay.get("input_mode") in {"keyboard", "pointer", "mixed"}, "Invalid input mode")
+        bounded_text(gameplay.get("core_loop"), "core gameplay loop")
+        invariants = gameplay.get("invariants")
+        require(isinstance(invariants, list) and 0 < len(invariants) <= 8, "Need 1..8 rule invariants")
+        for invariant in invariants:
+            bounded_text(invariant, "rule invariant")
     contract = plan.get("state_contract")
     require(isinstance(contract, dict) and 0 < len(contract) <= 40, "Missing state_contract")
+    flattened = {}
+    def flatten(node, prefix="", depth=0):
+        require(depth <= 8, "State contract nesting too deep")
+        for key, value in node.items():
+            state_path(key)
+            path = f"{prefix}.{key}" if prefix else key
+            state_path(path)
+            if isinstance(value, dict):
+                require(bool(value), "Empty state contract object")
+                flatten(value, path, depth + 1)
+            else:
+                require(path not in flattened, "Duplicate flattened state path")
+                bounded_text(value, "state description", 500)
+                flattened[path] = value
+    flatten(contract)
+    require(len(flattened) <= 40, "Too many state contract fields")
+    plan["state_contract"] = contract = flattened
     for path, description in contract.items():
         state_path(path)
         bounded_text(description, "state description", 500)
@@ -105,6 +153,7 @@ def validate_plan(plan: dict) -> dict:
         require(rid not in ids, "Duplicate requirement id")
         ids.add(rid)
         bounded_text(item.get("text"), "requirement")
+        require(item.get("priority", "core") in {"core", "secondary", "visual"}, "Invalid priority")
         require(item.get("verification") in {"automated", "manual"}, "Invalid verification mode")
         (automated if item["verification"] == "automated" else manual).add(rid)
     tests = plan.get("tests")
@@ -126,11 +175,23 @@ def validate_plan(plan: dict) -> dict:
         for step in steps:
             require(isinstance(step, dict), "Invalid step")
             action = step.get("action")
-            if action == "click":
-                bounded_text(step.get("selector"), "selector", 500)
+            if action in {"click", "hover", "drag"}:
+                validate_pointer(step)
+                if action == "drag":
+                    require("position" in step, "Drag needs start position")
+                    pointer_position(step.get("to"))
+                    require(type(step.get("steps", 8)) is int and 1 <= step.get("steps", 8) <= 20,
+                            "Drag needs 1..20 interpolation steps")
             elif action == "key":
                 bounded_text(step.get("key"), "key", 80)
                 total_wait += milliseconds(step.get("hold_ms", 0))
+            elif action == "keys":
+                keys = step.get("keys")
+                require(isinstance(keys, list) and 1 <= len(keys) <= 4, "Need 1..4 simultaneous keys")
+                for key in keys:
+                    bounded_text(key, "key", 80)
+                require(len(set(keys)) == len(keys), "Duplicate simultaneous key")
+                total_wait += milliseconds(step.get("hold_ms", 100))
             elif action == "wait":
                 total_wait += milliseconds(step.get("ms"))
             elif action == "capture":
@@ -168,8 +229,9 @@ def validate_plan(plan: dict) -> dict:
     require(isinstance(manual_checks, list) and len(manual_checks) <= 6, "Invalid manual_checks")
     manual_covered = set()
     for check in manual_checks:
-        require(isinstance(check, dict) and check.get("requirement_id") in manual, "Invalid manual check")
-        manual_covered.add(check["requirement_id"])
+        require(isinstance(check, dict) and check.get("requirement_id") in ids, "Invalid manual check")
+        if check["requirement_id"] in manual:
+            manual_covered.add(check["requirement_id"])
         bounded_text(check.get("instruction"), "manual instruction")
     require(manual_covered == manual, "Every manual requirement needs a manual check")
     return plan

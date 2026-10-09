@@ -102,6 +102,12 @@ def observe_condition(page, condition, captures, state=None):
         actual = page.locator(condition["selector"]).inner_text()[:4000]
     elif source == "visible":
         actual = page.locator(condition["selector"]).is_visible()
+    elif source == "count":
+        actual = page.locator(condition["selector"]).count()
+    elif source == "enabled":
+        actual = page.locator(condition["selector"]).is_enabled()
+    elif source == "attribute":
+        actual = page.locator(condition["selector"]).get_attribute(condition["attribute"])
     else:
         # Fixed trusted code; measures the DOM surface independently of the state hook.
         measures = page.locator(condition["selector"]).evaluate("""e => {
@@ -114,6 +120,49 @@ def observe_condition(page, condition, captures, state=None):
     expected = lookup(captures[ref["capture"]], ref["path"]) if ref else condition["value"]
     return {"actual": actual, "op": condition["op"], "expected": expected,
             "passed": bool(compare(actual, condition["op"], expected))}
+
+
+def pointer_target(page, step, position=None):
+    """Resolve coordinates from the actual rendered element, never mutate game state."""
+    locator = page.locator(step["selector"])
+    locator.scroll_into_view_if_needed()
+    box = locator.bounding_box()
+    if not box:
+        raise ValueError("Pointer target is not visible")
+    position = position or step.get("position")
+    if position is None:
+        return locator, {"x": box["width"] / 2, "y": box["height"] / 2}, box
+    local = dict(position)
+    if step.get("coordinate_space", "css") == "canvas":
+        dimensions = locator.evaluate("e => ({width:e.width, height:e.height, tag:e.tagName})")
+        if dimensions["tag"] != "CANVAS" or not dimensions["width"] or not dimensions["height"]:
+            raise ValueError("Canvas coordinates require a nonempty canvas")
+        local = {axis: position[axis] * box[size] / dimensions[size]
+                 for axis, size in (("x", "width"), ("y", "height"))}
+    if not (0 <= local["x"] < box["width"] and 0 <= local["y"] < box["height"]):
+        raise ValueError("Pointer position is outside the rendered target")
+    return locator, local, box
+
+
+def run_pointer(page, step):
+    locator, local, box = pointer_target(page, step)
+    if step["action"] == "click":
+        if not locator.is_enabled():
+            # A real user cannot activate a disabled control. Observe the no-op; do not
+            # force-click, enable it with JS, or turn correct terminal locking into a bug.
+            return {"selector": step["selector"], "ignored_disabled": True}
+        locator.click(position=local, button=step.get("button", "left"))
+    elif step["action"] == "hover":
+        locator.hover(position=local)
+    else:
+        _, end, _ = pointer_target(page, step, step["to"])
+        page.mouse.move(box["x"] + local["x"], box["y"] + local["y"])
+        page.mouse.down(button=step.get("button", "left"))
+        try:
+            page.mouse.move(box["x"] + end["x"], box["y"] + end["y"], steps=step.get("steps", 8))
+        finally:
+            page.mouse.up(button=step.get("button", "left"))
+    return {"selector": step["selector"], "position_css": local}
 
 
 def run_goal(page, step, captures):
@@ -159,12 +208,15 @@ def run_goal(page, step, captures):
 
 
 def run_test(page, test):
-    captures, observations = {}, []
+    captures, observations, actions = {}, [], []
     for index, step in enumerate(test["steps"], start=1):
+        event = {"step": index, "action": step["action"], "arguments": step, "ok": False}
+        actions.append(event)
+        started = time.monotonic()
         try:
             action = step["action"]
-            if action == "click":
-                page.locator(step["selector"]).click()
+            if action in {"click", "hover", "drag"}:
+                event["result"] = run_pointer(page, step)
             elif action == "key":
                 hold = step.get("hold_ms", 0)
                 if hold:
@@ -175,10 +227,21 @@ def run_test(page, test):
                         page.keyboard.up(step["key"])
                 else:
                     page.keyboard.press(step["key"])
+            elif action == "keys":
+                held = []
+                try:
+                    for key in step["keys"]:
+                        page.keyboard.down(key)
+                        held.append(key)
+                    page.wait_for_timeout(step.get("hold_ms", 100))
+                finally:
+                    for key in reversed(held):
+                        page.keyboard.up(key)
             elif action == "wait":
                 page.wait_for_timeout(step["ms"])
             elif action == "capture":
                 captures[step["name"]] = state_snapshot(page)
+                event["result"] = captures[step["name"]]
             elif action in {"wait_until", "key_until", "move_to"}:
                 observation = {"step": index, **run_goal(page, step, captures)}
                 observations.append(observation)
@@ -186,20 +249,27 @@ def run_test(page, test):
                     return {"id": test["id"], "passed": False, "failed_step": index,
                             "failure_kind": "goal_timeout", "needs_test_review": True,
                             "error": "Goal not reached within budget; could be game logic, unreachable target or test strategy. Not proof of a game bug.",
-                            "observations": observations}
+                            "observations": observations, "actions": actions}
             elif action == "assert":
                 observation = {"step": index, **observe_condition(page, step, captures)}
                 observations.append(observation)
                 if not observation["passed"]:
                     return {"id": test["id"], "passed": False, "failed_step": index,
                             "failure_kind": "assertion_mismatch", "needs_test_review": True,
-                            "error": "Assertion did not match requirement", "observations": observations}
+                            "error": "Assertion did not match requirement", "observations": observations,
+                            "actions": actions}
+            else:
+                raise ValueError("Unsupported action: " + str(action))
+            event["ok"] = True
         except Exception as error:
+            event["error"] = str(error)[:2000]
             return {"id": test["id"], "passed": False, "failed_step": index,
                     "failure_kind": "state_contract_error" if isinstance(error, (KeyError, IndexError, TypeError, ValueError)) else "interaction_error",
                     "needs_test_review": True,
-                    "error": str(error)[:2000], "observations": observations}
-    return {"id": test["id"], "passed": True, "observations": observations}
+                    "error": str(error)[:2000], "observations": observations, "actions": actions}
+        finally:
+            event["elapsed_ms"] = round((time.monotonic() - started) * 1000)
+    return {"id": test["id"], "passed": True, "observations": observations, "actions": actions}
 
 
 def verify_browser(browser, game, plan, evidence):

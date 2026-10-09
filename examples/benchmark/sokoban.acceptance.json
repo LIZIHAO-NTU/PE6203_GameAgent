@@ -1,0 +1,253 @@
+{
+  "supported": true,
+  "reason": "",
+  "title": "sokoban independent acceptance",
+  "development_plan": [
+    "Held-out checks authored before generation"
+  ],
+  "state_contract": {
+    "phase": "Real live phase; exact paths only used where required by spec"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial grid positions",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Player cannot walk into wall",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Crate cannot be pushed through lower wall",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Legal push wins and terminal state is stable",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Restart after victory",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial grid positions",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#player-pos",
+          "op": "eq",
+          "value": "1,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#crate-pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Player cannot walk into wall",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#player-pos",
+          "op": "eq",
+          "value": "1,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Crate cannot be pushed through lower wall",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#player-pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#crate-pos",
+          "op": "eq",
+          "value": "2,3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Legal push wins and terminal state is stable",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#crate-pos",
+          "op": "eq",
+          "value": "3,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#player-pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#player-pos",
+          "op": "eq",
+          "value": "2,2"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Restart after victory",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#player-pos",
+          "op": "eq",
+          "value": "1,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#crate-pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

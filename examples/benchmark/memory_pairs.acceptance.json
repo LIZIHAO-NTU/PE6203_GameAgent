@@ -1,0 +1,299 @@
+{
+  "supported": true,
+  "reason": "",
+  "title": "memory_pairs independent acceptance",
+  "development_plan": [
+    "Held-out checks authored before generation"
+  ],
+  "state_contract": {
+    "phase": "Real live phase; exact paths only used where required by spec"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "All cards start hidden",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Mismatch locks input and later hides",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "A matching pair scores once",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "All pairs produce a win",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Restart cancels a pending mismatch timer",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "All cards start hidden",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "count",
+          "selector": "[data-state='hidden']",
+          "op": "eq",
+          "value": 6
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#matches",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#card-0",
+          "op": "eq",
+          "value": "?"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Mismatch locks input and later hides",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#card-0"
+        },
+        {
+          "action": "click",
+          "selector": "#card-1"
+        },
+        {
+          "action": "click",
+          "selector": "#card-2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#card-0",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#card-1",
+          "op": "eq",
+          "value": "B"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#card-2",
+          "op": "eq",
+          "value": "?"
+        },
+        {
+          "action": "wait_until",
+          "until": {
+            "source": "attribute",
+            "selector": "#card-0",
+            "attribute": "data-state",
+            "op": "eq",
+            "value": "hidden"
+          },
+          "timeout_ms": 1500
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#card-1",
+          "op": "eq",
+          "value": "?"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#matches",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "A matching pair scores once",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#card-0"
+        },
+        {
+          "action": "click",
+          "selector": "#card-2"
+        },
+        {
+          "action": "assert",
+          "source": "count",
+          "selector": "[data-state='matched']",
+          "op": "eq",
+          "value": 2
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#matches",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "click",
+          "selector": "#card-0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#matches",
+          "op": "eq",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "All pairs produce a win",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#card-0"
+        },
+        {
+          "action": "click",
+          "selector": "#card-2"
+        },
+        {
+          "action": "click",
+          "selector": "#card-1"
+        },
+        {
+          "action": "click",
+          "selector": "#card-4"
+        },
+        {
+          "action": "click",
+          "selector": "#card-3"
+        },
+        {
+          "action": "click",
+          "selector": "#card-5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#matches",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "count",
+          "selector": "[data-state='matched']",
+          "op": "eq",
+          "value": 6
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Restart cancels a pending mismatch timer",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#card-0"
+        },
+        {
+          "action": "click",
+          "selector": "#card-1"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "count",
+          "selector": "[data-state='hidden']",
+          "op": "eq",
+          "value": 6
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#matches",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "wait",
+          "ms": 650
+        },
+        {
+          "action": "assert",
+          "source": "count",
+          "selector": "[data-state='hidden']",
+          "op": "eq",
+          "value": 6
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}
