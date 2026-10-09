@@ -1,0 +1,243 @@
+"""Validate the frozen test plan and generated paths before any file is written."""
+import json
+import math
+from pathlib import Path, PurePosixPath
+import re
+
+ALLOWED_SUFFIXES = {".html", ".css", ".js", ".json", ".svg", ".txt", ".md"}
+RESERVED = {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(10)),
+            *(f"LPT{i}" for i in range(10))}
+OPS = {"eq", "ne", "gt", "ge", "lt", "le", "contains"}
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def bounded_text(value, label, limit=2000):
+    require(isinstance(value, str) and 0 < len(value) <= limit, f"Invalid {label}")
+    return value
+
+
+def identifier(value):
+    require(isinstance(value, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,39}", value),
+            "IDs/capture names must be short ASCII identifiers")
+    return value
+
+
+def state_path(value):
+    require(isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*", value)
+            and len(value) <= 200 and not any(p.startswith("__") for p in value.split(".")),
+            "Invalid state path")
+
+
+def milliseconds(value):
+    require(type(value) is int and 0 <= value <= 2000, "Wait/hold must be 0..2000 ms")
+    return value
+
+
+def validate_condition(step, captures):
+    require(step.get("op") in OPS, "Invalid comparison operator")
+    source = step.get("source")
+    require(source in {"state", "text", "visible", "surface"}, "Invalid observation source")
+    if source == "state":
+        state_path(step.get("path"))
+    else:
+        bounded_text(step.get("selector"), "selector", 500)
+    if source == "surface":
+        require(step.get("property") in {"width", "height", "css_width", "css_height"},
+                "Invalid surface property")
+    require(("value" in step) != ("value_from" in step), "Condition needs exactly one expected value")
+    if "value_from" in step:
+        ref = step["value_from"]
+        require(isinstance(ref, dict) and ref.get("capture") in captures, "Unknown earlier capture")
+        state_path(ref.get("path"))
+    else:
+        require(len(json.dumps(step["value"], allow_nan=False)) <= 4000, "Expected value too large")
+
+
+def goal_budget(step):
+    timeout = step.get("timeout_ms", 5000)
+    require(type(timeout) is int and 100 <= timeout <= 8000, "Goal timeout must be 100..8000 ms")
+    poll = step.get("poll_ms", 50)
+    require(type(poll) is int and 20 <= poll <= 250, "Goal poll must be 20..250 ms")
+    return timeout
+
+
+def plan_warnings(plan):
+    """Advisory only: never silently change a frozen test or mark it passed."""
+    warnings = []
+    for test in plan.get("tests", []):
+        steps = test["steps"]
+        fixed_movement = any(s["action"] == "key" and s.get("hold_ms", 0) for s in steps)
+        goal_action = any(s["action"] in {"move_to", "key_until", "wait_until"} for s in steps)
+        rule_assert = any(s["action"] == "assert" and s.get("source") == "state" and
+                          re.search(r"score|won|win|collect|victory", s.get("path", ""), re.I)
+                          for s in steps)
+        if fixed_movement and rule_assert and not goal_action:
+            warnings.append({"test_id": test["id"], "kind": "fixed_timing_rule_check",
+                             "message": "Fixed key duration precedes a score/win check; review whether the target is actually reached."})
+    return warnings
+
+
+def validate_plan(plan: dict) -> dict:
+    require(isinstance(plan, dict) and type(plan.get("supported")) is bool, "Missing supported boolean")
+    if not plan["supported"]:
+        bounded_text(plan.get("reason"), "unsupported reason")
+        return plan
+    bounded_text(plan.get("title"), "title", 200)
+    contract = plan.get("state_contract")
+    require(isinstance(contract, dict) and 0 < len(contract) <= 40, "Missing state_contract")
+    for path, description in contract.items():
+        state_path(path)
+        bounded_text(description, "state description", 500)
+    development = plan.get("development_plan")
+    require(isinstance(development, list) and 0 < len(development) <= 12, "Invalid development_plan")
+    for task in development:
+        bounded_text(task, "development task")
+    requirements = plan.get("requirements")
+    require(isinstance(requirements, list) and 0 < len(requirements) <= 12, "Need 1..12 requirements")
+    ids, automated, manual = set(), set(), set()
+    for item in requirements:
+        require(isinstance(item, dict), "Invalid requirement record")
+        rid = identifier(item.get("id"))
+        require(rid not in ids, "Duplicate requirement id")
+        ids.add(rid)
+        bounded_text(item.get("text"), "requirement")
+        require(item.get("verification") in {"automated", "manual"}, "Invalid verification mode")
+        (automated if item["verification"] == "automated" else manual).add(rid)
+    tests = plan.get("tests")
+    require(isinstance(tests, list) and 0 < len(tests) <= 10, "Need 1..10 automated tests")
+    seen, covered, total_wait = set(), set(), 0
+    for test in tests:
+        require(isinstance(test, dict), "Invalid test record")
+        tid = identifier(test.get("id"))
+        require(tid not in seen, "Duplicate test id")
+        seen.add(tid)
+        bounded_text(test.get("description"), "test description")
+        related = test.get("requirement_ids")
+        require(isinstance(related, list) and related and all(isinstance(x, str) and x in automated for x in related),
+                "Tests must reference automated requirements only")
+        covered.update(related)
+        steps = test.get("steps")
+        require(isinstance(steps, list) and 0 < len(steps) <= 18, "Need 1..18 steps/test")
+        captures, assertions = set(), 0
+        for step in steps:
+            require(isinstance(step, dict), "Invalid step")
+            action = step.get("action")
+            if action == "click":
+                bounded_text(step.get("selector"), "selector", 500)
+            elif action == "key":
+                bounded_text(step.get("key"), "key", 80)
+                total_wait += milliseconds(step.get("hold_ms", 0))
+            elif action == "wait":
+                total_wait += milliseconds(step.get("ms"))
+            elif action == "capture":
+                captures.add(identifier(step.get("name")))
+            elif action in {"wait_until", "key_until", "move_to"}:
+                total_wait += goal_budget(step)
+                condition = step.get("until")
+                require(isinstance(condition, dict), "Goal action needs an until condition")
+                validate_condition(condition, captures)
+                if action == "key_until":
+                    bounded_text(step.get("key"), "key", 80)
+                if action == "move_to":
+                    for label in ("actor", "target"):
+                        paths = step.get(label)
+                        require(isinstance(paths, dict) and set(paths) == {"x", "y"}, "Need x/y state paths")
+                        for path in paths.values():
+                            state_path(path)
+                    keys = step.get("keys")
+                    require(isinstance(keys, dict) and set(keys) == {"left", "right", "up", "down"},
+                            "move_to needs four direction keys")
+                    for key in keys.values():
+                        bounded_text(key, "direction key", 80)
+                    tolerance = step.get("tolerance", 4)
+                    require(type(tolerance) in {int, float} and math.isfinite(tolerance) and 0 < tolerance <= 30,
+                            "Tolerance must be finite and >0..30")
+            elif action == "assert":
+                assertions += 1
+                validate_condition(step, captures)
+            else:
+                raise ValueError(f"Unsupported test action: {action}")
+        require(assertions > 0, "Every test needs an assertion")
+    require(total_wait <= 45000, "Plan waits/holds/goal budgets exceed 45 seconds")
+    require(covered == automated, "Every automated requirement must have a test")
+    manual_checks = plan.get("manual_checks", [])
+    require(isinstance(manual_checks, list) and len(manual_checks) <= 6, "Invalid manual_checks")
+    manual_covered = set()
+    for check in manual_checks:
+        require(isinstance(check, dict) and check.get("requirement_id") in manual, "Invalid manual check")
+        manual_covered.add(check["requirement_id"])
+        bounded_text(check.get("instruction"), "manual instruction")
+    require(manual_covered == manual, "Every manual requirement needs a manual check")
+    return plan
+
+
+def safe_relative_path(value: str) -> PurePosixPath:
+    require(isinstance(value, str) and len(value) <= 180, "Invalid path")
+    require("\\" not in value and ":" not in value and not value.startswith("/"), "Only relative slash paths allowed")
+    path = PurePosixPath(value)
+    require(path.parts and str(path) == value, "Non-canonical path")
+    for part in path.parts:
+        require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", part) and not part.endswith("."), "Unsafe path segment")
+        require(part.split(".")[0].upper() not in RESERVED and part not in {".", ".."}, "Reserved path")
+    require(path.suffix.lower() in ALLOWED_SUFFIXES, "Executable/backend/binary files not allowed in this MVP")
+    return path
+
+
+def write_bundle(bundle: dict, root: Path) -> None:
+    files = bundle.get("files")
+    require(isinstance(files, list) and 0 < len(files) <= 20, "Need 1..20 files")
+    validated, seen, total = [], set(), 0
+    for item in files:
+        require(isinstance(item, dict), "Invalid file record")
+        path = safe_relative_path(item.get("path"))
+        content = item.get("content")
+        require(isinstance(content, str), "File contents must be text")
+        total += len(content.encode("utf-8"))
+        require(total <= 400_000, "Bundle exceeds 400 KB")
+        key = str(path).lower()
+        require(key not in seen, "Duplicate/case-colliding file")
+        seen.add(key)
+        validated.append((path, content))
+    require("index.html" in {str(p) for p, _ in validated}, "Missing lowercase index.html")
+    for path, _ in validated:
+        require(not any(str(parent).lower() in seen for parent in path.parents if str(parent) != "."),
+                "A file path collides with a directory")
+    require(not root.exists(), "Candidate directory already exists; refusing to overwrite")
+    root.mkdir(parents=True)
+    for path, content in validated:
+        target = root.joinpath(*path.parts)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+
+
+def lookup(state, path):
+    value = state
+    for part in path.split("."):
+        value = value[int(part)] if isinstance(value, list) and part.isdigit() else value[part]
+    return value
+
+
+def compare(actual, op, expected):
+    if op in {"gt", "ge", "lt", "le"}:
+        require(type(actual) in {int, float} and type(expected) in {int, float}, "Ordering requires numbers")
+        require(math.isfinite(actual) and math.isfinite(expected), "Nonfinite observation")
+    if op == "eq":
+        return type(actual) is type(expected) and actual == expected or (
+            type(actual) in {int, float} and type(expected) in {int, float} and actual == expected)
+    if op == "ne":
+        return not compare(actual, "eq", expected)
+    if op == "gt":
+        return actual > expected
+    if op == "ge":
+        return actual >= expected
+    if op == "lt":
+        return actual < expected
+    if op == "le":
+        return actual <= expected
+    if op == "contains":
+        return expected in actual
+    raise ValueError("Unknown comparison")

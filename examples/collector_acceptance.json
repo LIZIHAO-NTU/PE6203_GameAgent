@@ -1,0 +1,96 @@
+{
+  "supported": true,
+  "reason": "Independent regression plan for the existing collector example; not an unknown-game template.",
+  "title": "收集星星：观察式独立回归验收",
+  "development_plan": ["仅复测现有游戏，不生成或修改任何游戏代码"],
+  "state_contract": {
+    "score": "实际分数", "player.x": "玩家实际横坐标", "player.y": "玩家实际纵坐标",
+    "star.x": "当前星星实际横坐标", "star.y": "当前星星实际纵坐标",
+    "paused": "实际暂停状态", "won": "实际获胜状态", "phase": "实际阶段"
+  },
+  "requirements": [
+    {"id": "R1", "text": "画布 640×420，初始玩家在左侧中部，星星在右侧中部", "verification": "automated"},
+    {"id": "R2", "text": "方向键可以连续移动玩家", "verification": "automated"},
+    {"id": "R3", "text": "接触星星增加 10 分并移动星星", "verification": "automated"},
+    {"id": "R4", "text": "30 分获胜，显示提示并停止正常移动", "verification": "automated"},
+    {"id": "R5", "text": "P 暂停冻结玩家状态，再按 P 恢复", "verification": "automated"},
+    {"id": "R6", "text": "重新开始重置分数、玩家、星星、胜负与暂停状态", "verification": "automated"},
+    {"id": "R7", "text": "颜色、平滑性、文字易读性、完整方块边缘约束及状态钩子真实性", "verification": "manual"}
+  ],
+  "tests": [
+    {"id": "T1", "requirement_ids": ["R1"], "description": "独立测量画布及检查初始空间布局", "steps": [
+      {"action": "assert", "source": "surface", "selector": "canvas", "property": "width", "op": "eq", "value": 640},
+      {"action": "assert", "source": "surface", "selector": "canvas", "property": "height", "op": "eq", "value": 420},
+      {"action": "assert", "source": "state", "path": "player.x", "op": "lt", "value": 160},
+      {"action": "assert", "source": "state", "path": "player.y", "op": "gt", "value": 140},
+      {"action": "assert", "source": "state", "path": "player.y", "op": "lt", "value": 280},
+      {"action": "assert", "source": "state", "path": "star.x", "op": "gt", "value": 480},
+      {"action": "assert", "source": "state", "path": "star.y", "op": "gt", "value": 140},
+      {"action": "assert", "source": "state", "path": "star.y", "op": "lt", "value": 280}
+    ]},
+    {"id": "T2", "requirement_ids": ["R2"], "description": "按实际位置确认横向和纵向移动", "steps": [
+      {"action": "capture", "name": "initial"},
+      {"action": "key_until", "key": "ArrowRight", "until": {"source": "state", "path": "player.x", "op": "ge", "value": 90}, "timeout_ms": 1000},
+      {"action": "assert", "source": "state", "path": "player.x", "op": "gt", "value_from": {"capture": "initial", "path": "player.x"}},
+      {"action": "key_until", "key": "ArrowDown", "until": {"source": "state", "path": "player.y", "op": "ge", "value": 250}, "timeout_ms": 1000},
+      {"action": "assert", "source": "state", "path": "player.y", "op": "gt", "value_from": {"capture": "initial", "path": "player.y"}}
+    ]},
+    {"id": "T3", "requirement_ids": ["R3"], "description": "真实按键移动到星星，验证得分与位置变化", "steps": [
+      {"action": "capture", "name": "initial"},
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 10}, "timeout_ms": 5000},
+      {"action": "assert", "source": "state", "path": "score", "op": "eq", "value": 10},
+      {"action": "assert", "source": "text", "selector": "#score", "op": "contains", "value": "10"},
+      {"action": "assert", "source": "state", "path": "star", "op": "ne", "value_from": {"capture": "initial", "path": "star"}}
+    ]},
+    {"id": "T4", "requirement_ids": ["R3", "R4"], "description": "连续收集三次，检查胜利提示与移动停止", "steps": [
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 10}, "timeout_ms": 5000},
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 20}, "timeout_ms": 5000},
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 30}, "timeout_ms": 5000},
+      {"action": "assert", "source": "state", "path": "score", "op": "eq", "value": 30},
+      {"action": "assert", "source": "state", "path": "won", "op": "eq", "value": true},
+      {"action": "assert", "source": "visible", "selector": "#victory", "op": "eq", "value": true},
+      {"action": "capture", "name": "won"},
+      {"action": "key", "key": "ArrowRight", "hold_ms": 300},
+      {"action": "assert", "source": "state", "path": "player", "op": "eq", "value_from": {"capture": "won", "path": "player"}}
+    ]},
+    {"id": "T5", "requirement_ids": ["R5"], "description": "暂停、尝试移动、恢复后移动", "steps": [
+      {"action": "key", "key": "p"},
+      {"action": "capture", "name": "paused"},
+      {"action": "assert", "source": "state", "path": "paused", "op": "eq", "value": true},
+      {"action": "key", "key": "ArrowRight", "hold_ms": 300},
+      {"action": "assert", "source": "state", "path": "player", "op": "eq", "value_from": {"capture": "paused", "path": "player"}},
+      {"action": "assert", "source": "state", "path": "score", "op": "eq", "value_from": {"capture": "paused", "path": "score"}},
+      {"action": "key", "key": "p"},
+      {"action": "assert", "source": "state", "path": "paused", "op": "eq", "value": false},
+      {"action": "key_until", "key": "ArrowRight", "until": {"source": "state", "path": "player.x", "op": "ge", "value": 90}, "timeout_ms": 1000},
+      {"action": "assert", "source": "state", "path": "player.x", "op": "gt", "value_from": {"capture": "paused", "path": "player.x"}}
+    ]},
+    {"id": "T6", "requirement_ids": ["R6"], "description": "已有分数并暂停后重开", "steps": [
+      {"action": "capture", "name": "initial"},
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 10}, "timeout_ms": 5000},
+      {"action": "key", "key": "p"},
+      {"action": "assert", "source": "state", "path": "paused", "op": "eq", "value": true},
+      {"action": "click", "selector": "#restart"},
+      {"action": "assert", "source": "state", "path": "score", "op": "eq", "value": 0},
+      {"action": "assert", "source": "state", "path": "player", "op": "eq", "value_from": {"capture": "initial", "path": "player"}},
+      {"action": "assert", "source": "state", "path": "star", "op": "eq", "value_from": {"capture": "initial", "path": "star"}},
+      {"action": "assert", "source": "state", "path": "paused", "op": "eq", "value": false},
+      {"action": "assert", "source": "state", "path": "won", "op": "eq", "value": false}
+    ]},
+    {"id": "T7", "requirement_ids": ["R6"], "description": "真正获胜后重开，确认退出胜利状态", "steps": [
+      {"action": "capture", "name": "initial"},
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 10}, "timeout_ms": 5000},
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 20}, "timeout_ms": 5000},
+      {"action": "move_to", "actor": {"x": "player.x", "y": "player.y"}, "target": {"x": "star.x", "y": "star.y"}, "keys": {"left": "ArrowLeft", "right": "ArrowRight", "up": "ArrowUp", "down": "ArrowDown"}, "until": {"source": "state", "path": "score", "op": "eq", "value": 30}, "timeout_ms": 5000},
+      {"action": "assert", "source": "state", "path": "won", "op": "eq", "value": true},
+      {"action": "click", "selector": "#restart"},
+      {"action": "assert", "source": "state", "path": "score", "op": "eq", "value": 0},
+      {"action": "assert", "source": "state", "path": "won", "op": "eq", "value": false},
+      {"action": "assert", "source": "state", "path": "phase", "op": "eq", "value": "playing"},
+      {"action": "assert", "source": "state", "path": "player", "op": "eq", "value_from": {"capture": "initial", "path": "player"}}
+    ]}
+  ],
+  "manual_checks": [
+    {"requirement_id": "R7", "instruction": "按原始需求检查蓝色方块/黄色星星、文字与按钮、移动平滑性；持续向四边移动，确认整个方块不越界，并核对画面与只读状态一致。独立复测不能改写历史自主运行成绩。"}
+  ]
+}

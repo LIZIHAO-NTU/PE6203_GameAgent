@@ -1,0 +1,2 @@
+# Runtime uses Python standard library plus Playwright. No model SDK is required.
+playwright>=1.49,<2

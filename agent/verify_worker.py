@@ -1,0 +1,267 @@
+"""Browser verifier. Only the trusted DSL is executed; no model-supplied Python."""
+import argparse
+import json
+import math
+import os
+from pathlib import Path
+import sys
+import time
+from urllib.parse import urlsplit
+
+from .contracts import compare, lookup, validate_plan
+from .server import running_server
+
+
+def launch(browser_type, headful=False):
+    options = {"headless": not headful, "chromium_sandbox": True}
+    channel = os.getenv("PLAYWRIGHT_CHANNEL", "").strip()
+    if channel:
+        options["channel"] = channel
+    return browser_type.launch(**options)
+
+
+def fresh_page(browser, origin, errors, label):
+    context = browser.new_context(viewport={"width": 1000, "height": 760},
+                                  accept_downloads=False, service_workers="block")
+
+    def route_request(route):
+        url = route.request.url
+        parts = urlsplit(url)
+        actual_origin = f"{parts.scheme}://{parts.netloc}"
+        if actual_origin == origin:
+            route.continue_()
+        else:
+            if len(errors) < 40:
+                errors.append({"phase": label, "error": "Blocked nonlocal request: " + url[:300]})
+            route.abort()
+
+    context.route("**/*", route_request)
+    page = context.new_page()
+    page.set_default_timeout(1200)
+    page.set_default_navigation_timeout(6000)
+
+    def record(message):
+        if len(errors) < 40:
+            errors.append({"phase": label, "error": str(message)[:1000]})
+
+    page.on("pageerror", record)
+    page.on("console", lambda message: record(message.text) if message.type == "error" else None)
+    page.on("response", lambda response: record(f"HTTP {response.status}: {response.url}")
+            if response.status >= 400 else None)
+
+    def dialog_handler(dialog):
+        record("Unexpected dialog: " + dialog.message[:300])
+        dialog.dismiss()
+
+    page.on("dialog", dialog_handler)
+    page.goto(origin + "/", wait_until="load")
+    page.wait_for_timeout(150)
+    return context, page
+
+
+def state_snapshot(page):
+    state = page.evaluate("""() => {
+        if (!window.__gameTest || typeof window.__gameTest.getState !== 'function')
+            throw new Error('Missing read-only window.__gameTest.getState()');
+        return JSON.parse(JSON.stringify(window.__gameTest.getState()));
+    }""")
+    if not isinstance(state, dict) or len(json.dumps(state, allow_nan=False)) > 64000:
+        raise ValueError("State hook must return a small plain JSON object")
+    return state
+
+
+def smoke_check(page):
+    # Independent of the game's test hook: check visible render surface and canvas pixels.
+    return page.evaluate("""() => {
+      const surfaces = [...document.querySelectorAll('canvas, [data-game-surface]')];
+      const visible = surfaces.filter(e => {const r=e.getBoundingClientRect();
+        const s=getComputedStyle(e); return r.width>=80 && r.height>=80 &&
+          s.display!=='none' && s.visibility!=='hidden' && Number(s.opacity)>0;});
+      if (!visible.length) return {passed:false, reason:'No visible game surface >=80x80'};
+      const canvas = visible.find(e => e.tagName==='CANVAS');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return {passed:false, reason:'MVP verifier expects a 2D canvas'};
+        const p=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+        let diverse=false;
+        for(let i=4;i<p.length;i+=4) {
+          if(p[i]!==p[0] || p[i+1]!==p[1] || p[i+2]!==p[2] || p[i+3]!==p[3]) {diverse=true;break;}
+        }
+        if(!diverse) return {passed:false, reason:'Canvas is blank/uniform'};
+      }
+      return {passed:true, reason:'Visible rendered surface; not proof of correct gameplay',
+              title:document.title};
+    }""")
+
+
+def observe_condition(page, condition, captures, state=None):
+    source = condition["source"]
+    if source == "state":
+        actual = lookup(state if state is not None else state_snapshot(page), condition["path"])
+    elif source == "text":
+        actual = page.locator(condition["selector"]).inner_text()[:4000]
+    elif source == "visible":
+        actual = page.locator(condition["selector"]).is_visible()
+    else:
+        # Fixed trusted code; measures the DOM surface independently of the state hook.
+        measures = page.locator(condition["selector"]).evaluate("""e => {
+            const r=e.getBoundingClientRect();
+            return {width:e.width ?? r.width, height:e.height ?? r.height,
+                    css_width:r.width, css_height:r.height};
+        }""")
+        actual = measures[condition["property"]]
+    ref = condition.get("value_from")
+    expected = lookup(captures[ref["capture"]], ref["path"]) if ref else condition["value"]
+    return {"actual": actual, "op": condition["op"], "expected": expected,
+            "passed": bool(compare(actual, condition["op"], expected))}
+
+
+def run_goal(page, step, captures):
+    """Bounded feedback control using normal keyboard events, never state setters."""
+    started = time.monotonic()
+    deadline = started + step.get("timeout_ms", 5000) / 1000
+    polls, last_state, first_position, last_position = 0, None, None, None
+    while True:
+        action = step["action"]
+        if action == "move_to" or step["until"]["source"] == "state":
+            last_state = state_snapshot(page)
+        observation = observe_condition(page, step["until"], captures, last_state)
+        polls += 1
+        if observation["passed"] or time.monotonic() >= deadline:
+            return {**observation, "action": action, "polls": polls,
+                    "elapsed_ms": round((time.monotonic() - started) * 1000),
+                    "last_state": last_state, "first_position": first_position,
+                    "last_position": last_position}
+        key = step.get("key") if action == "key_until" else None
+        if action == "move_to":
+            actor = {axis: lookup(last_state, path) for axis, path in step["actor"].items()}
+            target = {axis: lookup(last_state, path) for axis, path in step["target"].items()}
+            if not all(type(v) in {int, float} and math.isfinite(v)
+                       for v in [*actor.values(), *target.values()]):
+                raise ValueError("Navigation coordinates must be finite numbers")
+            first_position = first_position or actor
+            last_position = actor
+            dx, dy = target["x"] - actor["x"], target["y"] - actor["y"]
+            tolerance = step.get("tolerance", 4)
+            if max(abs(dx), abs(dy)) > tolerance:
+                direction = ("right" if dx > 0 else "left") if abs(dx) >= abs(dy) else (
+                    "down" if dy > 0 else "up")
+                key = step["keys"][direction]
+        duration = min(step.get("poll_ms", 50), max(1, (deadline - time.monotonic()) * 1000))
+        if key:
+            page.keyboard.down(key)
+            try:
+                page.wait_for_timeout(duration)
+            finally:
+                page.keyboard.up(key)
+        else:
+            page.wait_for_timeout(duration)
+
+
+def run_test(page, test):
+    captures, observations = {}, []
+    for index, step in enumerate(test["steps"], start=1):
+        try:
+            action = step["action"]
+            if action == "click":
+                page.locator(step["selector"]).click()
+            elif action == "key":
+                hold = step.get("hold_ms", 0)
+                if hold:
+                    page.keyboard.down(step["key"])
+                    try:
+                        page.wait_for_timeout(hold)
+                    finally:
+                        page.keyboard.up(step["key"])
+                else:
+                    page.keyboard.press(step["key"])
+            elif action == "wait":
+                page.wait_for_timeout(step["ms"])
+            elif action == "capture":
+                captures[step["name"]] = state_snapshot(page)
+            elif action in {"wait_until", "key_until", "move_to"}:
+                observation = {"step": index, **run_goal(page, step, captures)}
+                observations.append(observation)
+                if not observation["passed"]:
+                    return {"id": test["id"], "passed": False, "failed_step": index,
+                            "failure_kind": "goal_timeout", "needs_test_review": True,
+                            "error": "Goal not reached within budget; could be game logic, unreachable target or test strategy. Not proof of a game bug.",
+                            "observations": observations}
+            elif action == "assert":
+                observation = {"step": index, **observe_condition(page, step, captures)}
+                observations.append(observation)
+                if not observation["passed"]:
+                    return {"id": test["id"], "passed": False, "failed_step": index,
+                            "failure_kind": "assertion_mismatch", "needs_test_review": True,
+                            "error": "Assertion did not match requirement", "observations": observations}
+        except Exception as error:
+            return {"id": test["id"], "passed": False, "failed_step": index,
+                    "failure_kind": "state_contract_error" if isinstance(error, (KeyError, IndexError, TypeError, ValueError)) else "interaction_error",
+                    "needs_test_review": True,
+                    "error": str(error)[:2000], "observations": observations}
+    return {"id": test["id"], "passed": True, "observations": observations}
+
+
+def verify_browser(browser, game, plan, evidence):
+    evidence.mkdir(parents=True, exist_ok=True)
+    errors, tests = [], []
+    with running_server(game) as origin:
+        context, page = fresh_page(browser, origin, errors, "smoke")
+        try:
+            smoke = smoke_check(page)
+            page.screenshot(path=str(evidence / "smoke.png"))
+        finally:
+            context.close()
+        for test in plan["tests"]:
+            context = None
+            error_count = len(errors)
+            try:
+                context, page = fresh_page(browser, origin, errors, test["id"])
+                result = run_test(page, test)
+                page.screenshot(path=str(evidence / f'{test["id"]}.png'))
+                result["screenshot"] = f'{test["id"]}.png'
+            except Exception as error:
+                result = {"id": test["id"], "passed": False, "failure_kind": "browser_error",
+                          "error": str(error)[:2000], "observations": []}
+            finally:
+                if context:
+                    context.close()
+            if len(errors) > error_count:
+                result["passed"] = False
+                result["failure_kind"] = "runtime_error"
+                result["runtime_errors"] = errors[error_count:]
+            tests.append(result)
+    ok = smoke["passed"] and bool(tests) and all(t["passed"] for t in tests) and not errors
+    return {"ok": bool(ok), "smoke": smoke, "tests": tests, "runtime_errors": errors,
+            "infrastructure_error": None}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--preflight", action="store_true")
+    parser.add_argument("--game", type=Path)
+    parser.add_argument("--plan", type=Path)
+    parser.add_argument("--evidence", type=Path)
+    parser.add_argument("--headful", action="store_true")
+    args = parser.parse_args()
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as playwright:
+            browser = launch(playwright.chromium, args.headful)
+            try:
+                if args.preflight:
+                    result = {"ok": True, "browser_version": browser.version}
+                else:
+                    plan = validate_plan(json.loads(args.plan.read_text(encoding="utf-8")))
+                    result = verify_browser(browser, args.game, plan, args.evidence)
+            finally:
+                browser.close()
+    except Exception as error:
+        result = {"ok": False, "infrastructure_error": str(error)[:2500],
+                  "smoke": {"passed": False}, "tests": [], "runtime_errors": []}
+    print(json.dumps(result, ensure_ascii=False, allow_nan=False))
+    return 0 if result["ok"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
