@@ -228,8 +228,13 @@ class BenchmarkTests(TempTest):
             (output / "summary.json").write_text(json.dumps({"usage": {"api_attempts": options["max_calls"]},
                 "status": "checks_failed", "smoke_passed": True, "automated_checks_passed": False}), encoding="utf-8")
             return 2
+        def verify_all(game, plan, *args, **kwargs):
+            result = verifier_result(True)
+            result["tests"] = [{"id": test["id"], "passed": True}
+                               for test in json.loads(plan.read_text(encoding="utf-8"))["tests"]]
+            return result
         report = benchmark(config(), SUITE, self.root / "benchmark", max_total_calls=7,
-                           runner=runner, verifier=lambda *a, **k: verifier_result(True))
+                           runner=runner, verifier=verify_all)
         self.assertEqual([call["max_calls"] for call in calls], [5, 2])
         self.assertEqual(report["metrics"]["api_attempts"], 7)
         self.assertEqual(report["metrics"]["scheduled"], 4)

@@ -6,7 +6,7 @@ import time
 
 from . import __version__
 from .contracts import plan_warnings, validate_plan
-from .runner import requirement_results
+from .runner import apply_gate, requirement_results
 from .verification import failure_summary, verify
 
 
@@ -28,6 +28,7 @@ def recheck(game, plan_path, output, timeout=60, headful=False, verifier=verify)
     (output / "plan.json").write_bytes(plan_bytes)
     started = time.monotonic()
     result = verifier(game, output / "plan.json", output / "evidence", timeout=timeout, headful=headful)
+    result = apply_gate(plan, result, "valid")
     report = {"kind": "offline_recheck", "agent_version": __version__, "api_calls": 0,
               "original_run_success_unchanged": True,
               "game_path": str(game), "source_plan": str(plan_path),

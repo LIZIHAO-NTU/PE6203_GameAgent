@@ -7,7 +7,7 @@ import time
 
 from . import __version__
 from .contracts import identifier, validate_plan
-from .runner import run
+from .runner import apply_gate, run
 from .verification import verify
 
 
@@ -134,6 +134,8 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
             if (destination / "game" / "index.html").is_file():
                 evidence = output / "acceptance" / row["run_id"]
                 result = verifier(destination / "game", case["acceptance_plan"], evidence, timeout=60)
+                acceptance = validate_plan(json.loads(case["acceptance_plan"].read_text(encoding="utf-8")))
+                result = apply_gate(acceptance, result, "valid")
                 evidence.mkdir(parents=True, exist_ok=True)
                 (evidence / "verification.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
                 row.update(independent_passed=bool(result.get("ok")),

@@ -122,6 +122,20 @@ def observe_condition(page, condition, captures, state=None):
             "passed": bool(compare(actual, condition["op"], expected))}
 
 
+def observe_consistency(page, step):
+    expected = lookup(state_snapshot(page), step["state_path"])
+    observation = observe_condition(page, {**step, "op": "eq", "value": expected}, {})
+    actual = observation["actual"]
+    if step.get("coerce", "none") == "number":
+        if isinstance(actual, bool) or not isinstance(actual, (str, int, float)):
+            raise ValueError("DOM value is not a numeric scalar")
+        actual = float(actual)
+        if not math.isfinite(actual):
+            raise ValueError("DOM number is not finite")
+    return {**observation, "actual": actual,
+            "passed": bool(compare(actual, "eq", expected)), "state_path": step["state_path"]}
+
+
 def pointer_target(page, step, position=None):
     """Resolve coordinates from the actual rendered element, never mutate game state."""
     locator = page.locator(step["selector"])
@@ -250,12 +264,14 @@ def run_test(page, test):
                             "failure_kind": "goal_timeout", "needs_test_review": True,
                             "error": "Goal not reached within budget; could be game logic, unreachable target or test strategy. Not proof of a game bug.",
                             "observations": observations, "actions": actions}
-            elif action == "assert":
-                observation = {"step": index, **observe_condition(page, step, captures)}
+            elif action in {"assert", "assert_consistent"}:
+                observed = (observe_consistency(page, step) if action == "assert_consistent"
+                            else observe_condition(page, step, captures))
+                observation = {"step": index, **observed}
                 observations.append(observation)
                 if not observation["passed"]:
                     return {"id": test["id"], "passed": False, "failed_step": index,
-                            "failure_kind": "assertion_mismatch", "needs_test_review": True,
+                            "failure_kind": "state_dom_mismatch" if action == "assert_consistent" else "assertion_mismatch", "needs_test_review": True,
                             "error": "Assertion did not match requirement", "observations": observations,
                             "actions": actions}
             else:

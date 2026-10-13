@@ -80,7 +80,7 @@ class ChatClient:
             number = self.calls
             body = {"model": self.config.model, "messages": [
                 {"role": "system", "content": system}, {"role": "user", "content": prompt}],
-                "max_tokens": min(6000, self.config.max_tokens) if stage == "plan" else self.config.max_tokens,
+                "max_tokens": min(6000, self.config.max_tokens) if stage.startswith("plan") else self.config.max_tokens,
                 "stream": False}
             if self.config.json_mode:
                 body["response_format"] = {"type": "json_object"}

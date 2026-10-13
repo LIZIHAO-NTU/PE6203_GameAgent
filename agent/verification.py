@@ -18,6 +18,7 @@ def failure_summary(result):
                 review_ids.append(test["id"])
     return {"counts": counts, "review_test_ids": review_ids,
             "infrastructure_error": result.get("infrastructure_error"),
+            "quality_gate": result.get("quality_gate"),
             "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."}
 
 

@@ -1,4 +1,42 @@
 """Explicit launch-only degradation; never silently weaken functional acceptance."""
+from collections import Counter
+import json
+
+from .contracts import validate_plan
+from .quality import review_plan
+
+
+def validate_recovery(previous, candidate):
+    """A late plan may repair structure, not delete existing commitments to pass."""
+    plan = validate_plan(candidate)
+    if not plan["supported"] or not review_plan(plan)["functional_test_ids"]:
+        raise ValueError("Recovery must provide functional interaction checks")
+    old_requirements = previous.get("requirements", []) if isinstance(previous, dict) else []
+    current = {r["id"]: r for r in plan["requirements"]}
+    for requirement in old_requirements if isinstance(old_requirements, list) else []:
+        if not isinstance(requirement, dict) or not isinstance(requirement.get("id"), str):
+            continue
+        rid = requirement["id"]
+        if rid not in current:
+            raise ValueError("Recovery removed an earlier requirement: " + rid)
+        for key in ("text", "verification", "priority"):
+            expected = requirement.get(key, "core" if key == "priority" else None)
+            if expected is not None and current[rid].get(key, "core" if key == "priority" else None) != expected:
+                raise ValueError("Recovery changed an earlier requirement: " + rid)
+    def assertions(value):
+        found = []
+        tests = value.get("tests", []) if isinstance(value, dict) else []
+        for test in tests if isinstance(tests, list) else []:
+            if not isinstance(test, dict) or not isinstance(test.get("steps"), list):
+                continue
+            for step in test["steps"]:
+                if not isinstance(step, dict) or step.get("action") not in {"assert", "assert_consistent"}:
+                    continue
+                found.append(json.dumps(step, sort_keys=True, ensure_ascii=False))
+        return Counter(found)
+    if assertions(previous) - assertions(plan):
+        raise ValueError("Recovery removed or changed an earlier assertion; leave acceptance unverified instead")
+    return plan
 
 
 def startup_only_plan():

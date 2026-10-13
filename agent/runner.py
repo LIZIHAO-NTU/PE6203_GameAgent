@@ -1,5 +1,6 @@
 """Controller-owned planning -> generation -> verification -> bounded repair loop."""
 import hashlib
+from collections import Counter
 import json
 from pathlib import Path
 import shutil
@@ -11,7 +12,8 @@ from .prompts import CODER_SYSTEM, PLANNER_SYSTEM
 from .provider import BudgetError, ChatClient
 from .trace import Trace
 from .state import AgentState, bundle_digest
-from .planning import startup_only_plan
+from .planning import startup_only_plan, validate_recovery
+from .quality import completion_gate, review_plan
 from .verification import failure_summary, preflight, verify
 
 
@@ -24,14 +26,28 @@ def verification_score(result):
 
 def requirement_results(plan, result):
     results = {t["id"]: t for t in result.get("tests", [])}
+    counts = Counter(t["id"] for t in result.get("tests", []))
     records = []
     for requirement in plan.get("requirements", []):
         related = [t["id"] for t in plan["tests"] if requirement["id"] in t["requirement_ids"]]
-        checked = bool(related) and all(results.get(t, {}).get("passed", False) for t in related)
+        checked = bool(related) and all(counts[t] == 1 and results.get(t, {}).get("passed") is True for t in related)
         records.append({**requirement, "test_ids": related,
                         "status": "automated_pass" if checked else
                         ("manual_pending" if requirement["verification"] == "manual" else "not_passed")})
     return records
+
+
+def record_plan(trace, plan, name="plan.json"):
+    trace.save(name, plan)
+    path = trace.root / name
+    payload = path.read_bytes()
+    return path, payload, hashlib.sha256(payload).hexdigest()
+
+
+def apply_gate(plan, result, planning_status):
+    gate = completion_gate(plan, result, planning_status)
+    # Keep raw verifier evidence; a controller verdict is an additional layer.
+    return {**result, "verifier_ok": result.get("ok"), "ok": gate["passed"], "quality_gate": gate}
 
 
 def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
@@ -67,6 +83,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                "base_url": config.base_url, "status": "started", "automated_checks_passed": False,
                "full_game_acceptance": None, "manual_interventions_during_run": 0,
                "planning_status": "pending", "infrastructure_checks_passed": False,
+               "planning_recovery_attempted": False, "planning_recovered": False,
                "first_playable_seconds": None, "had_verification_failure": False,
                "recovered_after_verification_failure": False, "attempts": [],
                "limitations": ["Vanilla offline 2D browser games only; not the full course scope.",
@@ -77,6 +94,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
     plan, best, previous, feedback = None, None, None, None
     state = AgentState()
     best_bundle = None
+    pending_candidate = None
     repeated_code = 0
     exit_code = 4
     try:
@@ -105,15 +123,14 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                         decision="Generate original-spec game; startup-only checks are NOT functional acceptance")
         if summary["planning_status"] == "pending":
             summary["planning_status"] = "valid" if plan["supported"] else "unsupported"
-        trace.save("plan.json", plan)
         summary["gameplay"] = plan.get("gameplay")
-        plan_path = trace.root / "plan.json"
-        plan_bytes = plan_path.read_bytes()
-        plan_hash = hashlib.sha256(plan_bytes).hexdigest()
+        plan_path, plan_bytes, plan_hash = record_plan(trace, plan)
         summary["plan_sha256"] = plan_hash
+        summary["active_plan"] = plan_path.name
+        summary["initial_plan_sha256"] = plan_hash
         summary["plan_warnings"] = plan_warnings(plan)
-        trace.save("plan_review.json", {"warnings": summary["plan_warnings"],
-                   "note": "Heuristic warnings only; not a complete semantic audit."})
+        summary["plan_quality"] = review_plan(plan)
+        trace.save("plan_review.json", {**summary["plan_quality"], "timing_warnings": summary["plan_warnings"]})
         if not plan["supported"]:
             summary.update(status="unsupported_spec", error=plan["reason"])
             exit_code = 3
@@ -132,6 +149,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 candidate = attempt_dir / "game"
                 try:
                     write_bundle(bundle, candidate)
+                    pending_candidate = candidate
                 except (ValueError, OSError, TypeError) as error:
                     feedback = {"bundle_validation_error": str(error)}
                     summary["attempts"].append({"round": round_number, "bundle_valid": False, **feedback})
@@ -160,17 +178,63 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     print("      Running browser smoke + interaction tests...", flush=True)
                     result = verifier(candidate, plan_path, attempt_dir / "evidence",
                                       timeout=min(test_timeout, remaining), headful=headful)
+                trace.save(f"attempts/{round_number:02d}/raw_verification.json", result)
+                if result.get("smoke", {}).get("passed") and summary["first_playable_seconds"] is None:
+                    summary["first_playable_seconds"] = round(time.monotonic() - started, 3)
+                if (summary["planning_status"] == "failed_startup_only" and
+                        not summary["planning_recovery_attempted"] and
+                        result.get("smoke", {}).get("passed") and
+                        not result.get("runtime_errors") and not result.get("infrastructure_error")):
+                    # A single bounded recovery. The benchmark's held-out checks are never inputs.
+                    if client.calls < max_calls and deadline - time.monotonic() >= 15:
+                        summary["planning_recovery_attempted"] = True
+                        trace.event("plan_recovery_start", remaining_calls=max_calls - client.calls)
+                        try:
+                            recovered_raw = client.ask_json("plan_recovery", PLANNER_SYSTEM, json.dumps({
+                                "original_spec": spec, "previous_plan": raw_plan,
+                                "validation_feedback": plan_error, "recovery_mode": True,
+                                "instruction": "Repair the functional plan against the original spec. Do not weaken earlier requirements or assertions. No game implementation or held-out checks are supplied."}, ensure_ascii=False))
+                            trace.save("recovery_response.json", recovered_raw)
+                            recovered = validate_recovery(raw_plan, recovered_raw)
+                        except Exception as error:
+                            # Preserve the already generated game if recovery/API/budget fails.
+                            summary["planning_recovery_error"] = trace.redact(str(error))
+                            trace.event("plan_recovery_failed", error=summary["planning_recovery_error"])
+                        else:
+                            if plan_path.read_bytes() != plan_bytes:
+                                raise RuntimeError("Frozen startup plan changed unexpectedly")
+                            plan = recovered
+                            plan_path, plan_bytes, plan_hash = record_plan(trace, plan, "functional_plan.json")
+                            summary.update(planning_status="recovered", planning_recovered=True,
+                                           plan_sha256=plan_hash, active_plan=plan_path.name, gameplay=plan.get("gameplay"),
+                                           plan_warnings=plan_warnings(plan), plan_quality=review_plan(plan))
+                            trace.save("functional_plan_review.json", summary["plan_quality"])
+                            trace.event("plan_recovered", plan_sha256=plan_hash,
+                                        decision="New functional checks frozen before repair; startup results are not reused")
+                            # Never compare a new functional score with an older startup-only score.
+                            best, best_bundle = None, None
+                            state.tested_hashes.clear()
+                            remaining = deadline - time.monotonic()
+                            result = (verifier(candidate, plan_path, attempt_dir / "functional_evidence",
+                                               timeout=min(test_timeout, remaining), headful=headful)
+                                      if remaining > 0 else {
+                                          "ok": False, "smoke": {"passed": False}, "tests": [],
+                                          "runtime_errors": [], "infrastructure_error": "Budget exhausted before functional verification"})
+                            trace.save(f"attempts/{round_number:02d}/raw_functional_verification.json", result)
+                    else:
+                        trace.event("plan_recovery_skipped", reason="Insufficient remaining API/time budget")
+                if plan_path.read_bytes() != plan_bytes:
+                    raise RuntimeError("Frozen plan changed during verification; refusing completion")
+                result = apply_gate(plan, result, summary["planning_status"])
                 trace.save(f"attempts/{round_number:02d}/verification.json", result)
                 elapsed = round(time.monotonic() - started, 3)
-                if result.get("smoke", {}).get("passed") and summary["first_playable_seconds"] is None:
-                    # A first visible version, not a guarantee of full playability.
-                    summary["first_playable_seconds"] = elapsed
                 entry = {"round": round_number, "bundle_valid": True,
                          "failure_summary": failure_summary(result),
                          "automated_checks_passed": bool(result.get("ok")),
                          "smoke_passed": bool(result.get("smoke", {}).get("passed")),
                          "tests_passed": sum(bool(t.get("passed")) for t in result.get("tests", [])),
                          "tests_total": len(plan["tests"]), "elapsed_seconds": elapsed,
+                         "plan_sha256": plan_hash, "quality_gate": result["quality_gate"],
                          "infrastructure_error": result.get("infrastructure_error")}
                 summary["attempts"].append(entry)
                 state.observe(round_number, digest, result, bundle.get("summary", ""))
@@ -179,12 +243,21 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     best = (candidate, result, round_number)
                     best_bundle = bundle
                     state.best_round = round_number
+                trace.save("state.json", {**state.context(), "active_plan": plan_path.name,
+                           "plan_sha256": plan_hash, "candidate": str(candidate.relative_to(output)),
+                           "remaining_calls": max(0, max_calls - client.calls),
+                           "remaining_seconds": max(0, round(deadline - time.monotonic(), 3))})
                 # Repair from the strongest observed base, not a later broken rewrite.
                 previous = best_bundle
+                if summary["planning_status"] == "failed_startup_only":
+                    summary["had_verification_failure"] = result.get("verifier_ok") is not True
+                    state.stop_reason = "startup_only_functional_acceptance_unverified"
+                    break
+                if not result["quality_gate"]["functional_evidence_present"]:
+                    state.stop_reason = "functional_evidence_missing"
+                    break
                 if result.get("ok"):
-                    state.stop_reason = ("startup_only_functional_acceptance_unverified"
-                                         if summary["planning_status"] == "failed_startup_only"
-                                         else "automated_checks_passed")
+                    state.stop_reason = "automated_checks_passed"
                     summary["recovered_after_verification_failure"] = summary["had_verification_failure"]
                     break
                 if result.get("infrastructure_error"):
@@ -194,12 +267,11 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     break
                 summary["had_verification_failure"] = True
                 feedback = best[1]
-                trace.save("state.json", state.context())
             if best:
                 chosen, result, chosen_round = best
                 shutil.copytree(chosen, output / "game")
                 summary.update(selected_round=chosen_round,
-                               automated_checks_passed=bool(result.get("ok")) and summary["planning_status"] == "valid",
+                               automated_checks_passed=bool(result.get("ok")), quality_gate=result["quality_gate"],
                                infrastructure_checks_passed=bool(result.get("smoke", {}).get("passed")) and not result.get("runtime_errors"),
                                smoke_passed=bool(result.get("smoke", {}).get("passed")),
                                runtime_error_count=len(result.get("runtime_errors", [])),
@@ -215,6 +287,9 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 if summary["planning_status"] == "failed_startup_only":
                     summary.update(status="partial_game_plan_failed", automated_checks_passed=False,
                                    automated_requirement_pass_rate=None)
+                    exit_code = 2
+                elif not result["quality_gate"]["functional_evidence_present"]:
+                    summary.update(status="partial_game_evidence_missing", automated_checks_passed=False)
                     exit_code = 2
             else:
                 summary.update(status="generation_failed", error="No valid game bundle produced")
@@ -232,11 +307,21 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                            infrastructure_checks_passed=bool(best[1].get("smoke", {}).get("passed")) and not best[1].get("runtime_errors"),
                            requirements=requirement_results(plan, best[1]),
                            manual_checks=plan.get("manual_checks", []))
+            summary["quality_gate"] = best[1].get("quality_gate")
             summary["failure_summary"] = failure_summary(best[1])
+        elif pending_candidate is not None and not (output / "game").exists():
+            shutil.copytree(pending_candidate, output / "game")
+            summary["preserved_unverified_candidate"] = True
         exit_code = 130 if isinstance(error, KeyboardInterrupt) else 4
     finally:
         summary["stop_reason"] = state.stop_reason or summary.get("status")
-        trace.save("state.json", {**state.context(), "stop_reason": summary["stop_reason"]})
+        trace.save("state.json", {**state.context(), "stop_reason": summary["stop_reason"],
+                   "active_plan": str(plan_path.name) if plan is not None and 'plan_path' in locals() else None,
+                   "plan_sha256": summary.get("plan_sha256"),
+                   "selected_candidate": str(best[0].relative_to(output)) if best else None,
+                   "remaining_calls": max(0, max_calls - client.calls),
+                   "remaining_seconds": max(0, round(deadline - time.monotonic(), 3)),
+                   "note": "Audit checkpoint only; automatic process resume is not implemented."})
         summary["duration_seconds"] = round(time.monotonic() - started, 3)
         summary["usage"] = client.usage_summary()
         summary["first_playable_metric_note"] = "Time to first visible smoke-passing version; not full acceptance."
@@ -266,6 +351,8 @@ def write_report(output, summary):
               f"- Agent 版本：{summary.get('agent_version', 'unknown')}",
               f"- 停止原因：{summary.get('stop_reason')}",
               f"- 规划状态：{summary.get('planning_status')}",
+              f"- 功能规划恢复成功：{summary.get('planning_recovered', False)}",
+              f"- 完成门禁：{json.dumps(summary.get('quality_gate'), ensure_ascii=False)}",
               f"- 玩法分析：{json.dumps(summary.get('gameplay'), ensure_ascii=False)}",
               f"- 自动需求通过比例：{summary.get('automated_requirement_pass_rate')}",
               f"- 失败分类：{json.dumps(summary.get('failure_summary', {}).get('counts', {}), ensure_ascii=False)}",
@@ -276,6 +363,8 @@ def write_report(output, summary):
                   "规划错误：" + str(summary.get("planning_error", ""))]
     for warning in summary.get("plan_warnings", []):
         lines.append(f"- {warning['test_id']}: {warning['message']}")
+    for warning in summary.get("plan_quality", {}).get("warnings", []):
+        lines.append(f"- 计划质量提醒 {warning['test_id']}: {warning['message']}")
     lines += ["", "## 人工试玩待办", "", "- [ ] 根据原始需求完整试玩，检查自动测试遗漏和状态钩子的真实性。"]
     for check in summary.get("manual_checks", []):
         lines.append(f"- [ ] {check['requirement_id']}: {check['instruction']}")

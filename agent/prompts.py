@@ -20,6 +20,10 @@ Also label priority: core (mandatory rules/controls/technical constraints), seco
 Do not label a mandatory gameplay rule visual/secondary to make passing easier.
 Every automated requirement must have a related test with an assertion.
 Tests must refer to the original specification's expected behavior, not implementation guesses.
+Label each test's purpose: initial, legal_action, invalid_action, reset, terminal or consistency.
+Prefer separate short tests for each applicable scenario. Do not add controls or game rules
+just to fill a category. At least one legal input needs an assertion of the expected rule
+outcome; a visibility check or comparing two copies of the same state is not enough.
 Prefer a small set of high-value tests: launch/initial state, a legal action, an illegal
 action or rule invariant, restart if required, and reachable end conditions. Separate
 these tests so one bad scenario cannot hide all the others. Define concrete selectors
@@ -38,6 +42,14 @@ state_contract is a FLAT map from dot paths to short string descriptions, e.g.
 {"phase":"string", "player.x":"number"}, not nested type objects.
 Choose state fields (e.g. phase, score, player.x) and UI selectors; the coder follows them.
 The hook is observation only: no setters, fake success flags or test-only game behavior.
+When a stable state value is visible in the DOM, cross-check both observations after input:
+{"action":"assert_consistent","source":"text","selector":"#moves",
+ "state_path":"moves","coerce":"number"}.
+Other DOM sources: count, attribute (with attribute), enabled, surface (with property).
+coerce is none or number; no value, value_from or op on assert_consistent.
+Use it alongside an explicit rule assertion, not instead of expected-behavior checks.
+For moving real-time objects, avoid cross-checking positions that change between reads;
+prefer stable scores, paused state or a terminal state. Do not invent UI fields just for tests.
 Test step DSL (no arbitrary JS expressions):
 {"action":"click","selector":"#restart"} (only when that control is justified by the spec)
 {"action":"click","selector":"canvas","position":{"x":50,"y":70},"coordinate_space":"canvas"}
@@ -86,6 +98,10 @@ manual_checks entries must reference existing requirement IDs. Every manual-only
 needs a manual check. Supplemental manual checks for automated requirements are allowed.
 If validation_feedback and previous_plan are supplied, repair the schema while preserving
 the original spec and valid requirements; do not discard the previous plan and start guessing.
+If recovery_mode is true, preserve earlier requirement IDs, texts, priorities, verification
+modes and all existing assertion objects exactly. You may add checks and reorganize setup
+into shorter fresh-page tests; do not change expected values to match an implementation.
+Keep each test within 18 steps. Return the same plan JSON schema, not game source files.
 Before output, check each test: every goal has an until condition and each test has an
 explicit assert. Trace legal input events against the stated initial setup; expected turns,
 blocked directions and winners must agree with the rules, including earlier terminal states.
@@ -112,7 +128,11 @@ collector/movement game. Prefer a small complete game over effects, decorative a
 complex abstractions. Use Canvas for continuous drawing when suitable; use DOM buttons
 and a DOM board marked data-game-surface for discrete card/board/puzzle games when suitable.
 For real-time games use one controlled update loop, coherent time units, and clean resets.
+Use one authoritative live state. Rendering, collision, win checks and read-only snapshots
+must agree after every legal action; never maintain unsynchronized copies of entity arrays.
+Return fresh snapshots, but never use a stale snapshot as the live rule state.
 For turn-based games make one input produce one legal transition; reject invalid moves;
+ignore keyboard repeat when the spec requires discrete non-repeated key presses;
 do not let animations/timers advance turns accidentally. Separate rules/state updates
 from rendering so score, end conditions and displayed state agree. Restart must cancel
 old timers/listeners/animations when relevant and reset all required state.

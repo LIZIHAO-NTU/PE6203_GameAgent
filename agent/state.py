@@ -18,6 +18,7 @@ def compact_failure(result):
                            "failed_step": test.get("failed_step"), "error": test.get("error", "")[:1000],
                            "observations": test.get("observations", [])[-2:]})
     return {"smoke": result.get("smoke"), "runtime_errors": result.get("runtime_errors", [])[:5],
+            "quality_gate": result.get("quality_gate"),
             "failed_tests": failed, "infrastructure_error": result.get("infrastructure_error")}
 
 

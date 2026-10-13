@@ -165,6 +165,9 @@ def validate_plan(plan: dict) -> dict:
         require(tid not in seen, "Duplicate test id")
         seen.add(tid)
         bounded_text(test.get("description"), "test description")
+        if "purpose" in test:
+            from .quality import PURPOSES
+            require(isinstance(test["purpose"], str) and test["purpose"] in PURPOSES, "Invalid test purpose")
         related = test.get("requirement_ids")
         require(isinstance(related, list) and related and all(isinstance(x, str) and x in automated for x in related),
                 "Tests must reference automated requirements only")
@@ -217,6 +220,15 @@ def validate_plan(plan: dict) -> dict:
                     tolerance = step.get("tolerance", 4)
                     require(type(tolerance) in {int, float} and math.isfinite(tolerance) and 0 < tolerance <= 30,
                             "Tolerance must be finite and >0..30")
+            elif action == "assert_consistent":
+                assertions += 1
+                state_path(step.get("state_path"))
+                require(step.get("source") in {"text", "count", "attribute", "enabled", "surface"},
+                        "Consistency check needs an independent DOM observation")
+                require(step.get("coerce", "none") in {"none", "number"}, "Invalid consistency conversion")
+                require(not any(k in step for k in ("value", "value_from", "op")),
+                        "Consistency uses live state, not an expected-value override")
+                validate_condition({**step, "op": "eq", "value": None}, captures)
             elif action == "assert":
                 assertions += 1
                 validate_condition(step, captures)
