@@ -5,6 +5,7 @@ from pathlib import Path
 import signal
 import subprocess
 import sys
+import time
 
 
 def failure_summary(result):
@@ -91,3 +92,53 @@ def verify(game: Path, plan: Path, evidence: Path, timeout=60, headful=False):
     if headful:
         args.append("--headful")
     return worker_call(args, timeout)
+
+
+def verify_repeated(game, plan, evidence, timeout=60, headful=False, repeats=1, verifier=verify):
+    """All repetitions must pass, within ONE total verification time budget."""
+    if type(repeats) is not int or not 1 <= repeats <= 3:
+        raise ValueError("Verification repeats must be 1..3")
+    if repeats == 1:
+        return verifier(game, plan, evidence, timeout=timeout, headful=headful)
+    deadline = time.monotonic() + timeout
+    plan_bytes = plan.read_bytes()
+    expected = [t["id"] for t in json.loads(plan_bytes)["tests"]]
+    results = []
+    for index in range(repeats):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        result = verifier(game, plan, evidence / f"repeat_{index + 1:02d}",
+                          timeout=remaining / (repeats - index), headful=headful)
+        if plan.read_bytes() != plan_bytes:
+            raise ValueError("Frozen plan changed during repeated verification")
+        results.append(result)
+        if result.get("infrastructure_error"):
+            break
+    tests = []
+    for tid in expected:
+        observations = []
+        for result in results:
+            matches = [t for t in result.get("tests", []) if t.get("id") == tid]
+            observations.append(matches[0] if len(matches) == 1 else {"id": tid, "passed": False,
+                                "failure_kind": "evidence_incomplete"})
+        passed = len(results) == repeats and all(t.get("passed") is True for t in observations)
+        representative = next((t for t in observations if t.get("passed") is not True), observations[0] if observations else {"id": tid})
+        tests.append({**representative, "passed": passed,
+                      "failure_kind": representative.get("failure_kind") if len(results) == repeats else "repeat_budget_or_infrastructure",
+                      "repetitions_passed": [t.get("passed") is True for t in observations]})
+    complete = len(results) == repeats
+    exact = all(len(r.get("tests", [])) == len(expected) and {t.get("id") for t in r.get("tests", [])} == set(expected) for r in results)
+    errors = [error for r in results for error in r.get("runtime_errors", [])]
+    result = {"ok": complete and exact and all(r.get("ok") is True for r in results) and all(t["passed"] for t in tests),
+              "smoke": {"passed": complete and all(r.get("smoke", {}).get("passed") is True for r in results)},
+              "tests": tests, "runtime_errors": errors,
+              "infrastructure_error": next((r["infrastructure_error"] for r in results if r.get("infrastructure_error")),
+                                            None if complete else "Repeated verification did not complete"),
+              "reliability": {"requested": repeats, "completed": len(results),
+                              "passed": sum(r.get("ok") is True for r in results),
+                              "unstable": any(any(t["repetitions_passed"]) and not all(t["repetitions_passed"]) for t in tests),
+                              "total_budget_seconds": timeout}}
+    evidence.mkdir(parents=True, exist_ok=True)
+    (evidence / "repetitions.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    return result

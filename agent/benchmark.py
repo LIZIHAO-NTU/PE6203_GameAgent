@@ -8,7 +8,7 @@ import time
 from . import __version__
 from .contracts import identifier, validate_plan
 from .runner import apply_gate, run
-from .verification import verify
+from .verification import verify, verify_repeated
 
 
 def load_suite(path):
@@ -89,10 +89,13 @@ def save_report(output, report):
 
 
 def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case=5,
-              max_rounds=3, max_seconds=420, repeats=1, runner=run, verifier=verify):
+              max_rounds=3, max_seconds=420, repeats=1, runner=run, verifier=verify,
+              verify_repeats=1, repair_mode="auto", diagnose_failures=False, syntax_check=False):
     if not (1 <= max_total_calls <= 200 and 2 <= max_calls_per_case <= 30 and
             1 <= max_rounds <= 10 and 30 <= max_seconds <= 3600 and 1 <= repeats <= 10):
         raise ValueError("Invalid benchmark budget/repetition limits")
+    if type(verify_repeats) is not int or not 1 <= verify_repeats <= 3 or repair_mode not in {"auto", "full"}:
+        raise ValueError("Invalid benchmark feature settings")
     cases = load_suite(suite_path)  # Validate ALL cases before any paid model call.
     if output.exists():
         raise ValueError("Benchmark output exists; refusing to overwrite")
@@ -105,6 +108,8 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
               "max_total_calls": max_total_calls, "max_calls_per_case": max_calls_per_case,
               "max_rounds": max_rounds, "max_seconds_per_case": max_seconds,
               "repeats": repeats, "cases": rows}
+    report["features"] = {"verify_repeats": verify_repeats, "repair_mode": repair_mode,
+                          "diagnose_failures": diagnose_failures, "syntax_check": syntax_check}
     used, halted = 0, False
     try:
         for index, row in enumerate(rows):
@@ -120,7 +125,9 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
             started = time.monotonic()
             # Only the MD spec goes to the agent. The held-out plan is NEVER passed to it.
             exit_code = runner(config, case["spec"], destination, max_rounds=max_rounds,
-                               max_calls=min(max_calls_per_case, remaining), max_seconds=max_seconds)
+                               max_calls=min(max_calls_per_case, remaining), max_seconds=max_seconds,
+                               verify_repeats=verify_repeats, repair_mode=repair_mode,
+                               diagnose_failures=diagnose_failures, syntax_check=syntax_check)
             summary = json.loads((destination / "summary.json").read_text(encoding="utf-8"))
             usage = summary["usage"]
             count = usage["api_attempts"]
@@ -133,7 +140,8 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
                        prompts_sha256=summary.get("prompts_sha256"))
             if (destination / "game" / "index.html").is_file():
                 evidence = output / "acceptance" / row["run_id"]
-                result = verifier(destination / "game", case["acceptance_plan"], evidence, timeout=60)
+                result = verify_repeated(destination / "game", case["acceptance_plan"], evidence,
+                                         timeout=60, repeats=verify_repeats, verifier=verifier)
                 acceptance = validate_plan(json.loads(case["acceptance_plan"].read_text(encoding="utf-8")))
                 result = apply_gate(acceptance, result, "valid")
                 evidence.mkdir(parents=True, exist_ok=True)

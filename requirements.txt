@@ -1,2 +1,6 @@
 # Runtime uses Python standard library plus Playwright. No model SDK is required.
-playwright>=1.49,<2
+# Versions exercised together in the Windows/Edge regression suite.
+playwright==1.63.0
+pyee==13.0.1
+greenlet==3.5.6
+typing_extensions==4.16.0

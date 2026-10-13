@@ -8,13 +8,18 @@ import time
 
 from . import __version__
 from .contracts import plan_warnings, validate_plan, write_bundle
-from .prompts import CODER_SYSTEM, PLANNER_SYSTEM
+from .prompts import CODER_SYSTEM, PLANNER_SYSTEM, DIAGNOSTIC_SYSTEM
 from .provider import BudgetError, ChatClient
 from .trace import Trace
-from .state import AgentState, bundle_digest
+from .state import AgentState, bundle_digest, compact_failure
 from .planning import startup_only_plan, validate_recovery
 from .quality import completion_gate, review_plan
-from .verification import failure_summary, preflight, verify
+from .verification import failure_summary, preflight, verify, verify_repeated
+from .editing import resolve_edit
+from .artifacts import check_artifacts
+from .diagnostics import route_failure, validate_diagnosis
+from .evidence import runtime_metadata
+from .lessons import load_lessons, select_hints, record_recovery
 
 
 def verification_score(result):
@@ -50,9 +55,22 @@ def apply_gate(plan, result, planning_status):
     return {**result, "verifier_ok": result.get("ok"), "ok": gate["passed"], "quality_gate": gate}
 
 
+def prefer_candidate(old, new):
+    passed = lambda result: {t["id"] for t in result.get("tests", []) if t.get("passed") is True}
+    stable_old = (old.get("smoke", {}).get("passed") and not old.get("runtime_errors")
+                  and not old.get("infrastructure_error") and old.get("quality_gate", {}).get("evidence_complete", True))
+    regressions = sorted(passed(old) - passed(new)) if stable_old else []
+    return not regressions and verification_score(new) >= verification_score(old), regressions
+
+
 def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
         test_timeout=60, headful=False, client_factory=ChatClient, verifier=verify,
-        preflight_fn=preflight, strict_plan=False):
+        preflight_fn=preflight, strict_plan=False, repair_mode="auto", syntax_check=False,
+        diagnose_failures=False, verify_repeats=1, lessons_path=None):
+    if repair_mode not in {"auto", "full"}:
+        raise ValueError("repair_mode must be auto or full")
+    if type(verify_repeats) is not int or not 1 <= verify_repeats <= 3:
+        raise ValueError("verify_repeats must be 1..3")
     started = time.monotonic()
     deadline = started + max_seconds
     if spec_path.suffix.lower() != ".md":
@@ -77,9 +95,13 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
     client = client_factory(config, trace, max_calls, deadline)
     summary = {"schema_version": 1, "agent_version": __version__, "run_id": output.name, "model": config.model,
                "original_spec_sha256": hashlib.sha256(spec.encode("utf-8")).hexdigest(),
-               "prompts_sha256": hashlib.sha256((PLANNER_SYSTEM + CODER_SYSTEM).encode("utf-8")).hexdigest(),
+               "prompts_sha256": hashlib.sha256((PLANNER_SYSTEM + CODER_SYSTEM + DIAGNOSTIC_SYSTEM).encode("utf-8")).hexdigest(),
                "limits": {"max_rounds": max_rounds, "max_calls": max_calls,
                           "max_seconds": max_seconds, "test_timeout": test_timeout},
+               "features": {"repair_mode": repair_mode, "syntax_check": syntax_check,
+                            "diagnose_failures": diagnose_failures, "verify_repeats": verify_repeats,
+                            "lessons_enabled": False, "lesson_store_sha256": None},
+               "runtime": {**runtime_metadata(), "browser": check.get("browser_version")},
                "base_url": config.base_url, "status": "started", "automated_checks_passed": False,
                "full_game_acceptance": None, "manual_interventions_during_run": 0,
                "planning_status": "pending", "infrastructure_checks_passed": False,
@@ -96,10 +118,21 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
     best_bundle = None
     pending_candidate = None
     repeated_code = 0
+    force_full = False
+    diagnosis_attempted = False
+    lesson_store = {"schema_version": 1, "records": []}
+    lessons_enabled = False
     exit_code = 4
     try:
         trace.event("run_start", model=config.model, max_rounds=max_rounds,
                     max_calls=max_calls, max_seconds=max_seconds, browser=check)
+        if lessons_path is not None:
+            try:
+                lesson_store = load_lessons(lessons_path)
+                lessons_enabled = True
+                summary["features"].update(lessons_enabled=True, lesson_store_sha256=lesson_store.get("_sha256"))
+            except (OSError, ValueError, TypeError) as error:
+                trace.event("lessons_disabled", reason=trace.redact(str(error)))
         print("[2/4] Planning requirements and frozen acceptance tests...", flush=True)
         plan_error = None
         raw_plan = None
@@ -140,18 +173,24 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     raise BudgetError("Run time budget reached")
                 print(f"[3/4] Generation / repair {round_number}/{max_rounds}...", flush=True)
                 prompt = json.dumps({"original_spec": spec, "frozen_plan": plan,
-                    "previous_version": previous, "verification_feedback": feedback,
+                    "previous_version": previous, "verification_feedback": compact_failure(feedback) if feedback and "tests" in feedback else feedback,
                     "repair_memory": state.context(),
                     "planning_status": summary["planning_status"],
+                    "requested_output_mode": "replace_files" if previous and repair_mode == "auto" and not force_full else "full",
+                    "repair_base_sha256": bundle_digest(previous) if previous else None,
+                    "debug_hints": select_hints(lesson_store, feedback) if lessons_enabled else [],
                     "remaining_seconds": max(0, int(deadline - time.monotonic()))}, ensure_ascii=False)
-                bundle = client.ask_json(f"code_{round_number}", CODER_SYSTEM, prompt)
+                response = client.ask_json(f"code_{round_number}", CODER_SYSTEM, prompt)
                 attempt_dir = trace.root / "attempts" / f"{round_number:02d}"
                 candidate = attempt_dir / "game"
                 try:
+                    bundle, edit_info = resolve_edit(response, previous, allow_partial=repair_mode == "auto" and not force_full)
                     write_bundle(bundle, candidate)
+                    force_full = False
                     pending_candidate = candidate
                 except (ValueError, OSError, TypeError) as error:
                     feedback = {"bundle_validation_error": str(error)}
+                    force_full = True
                     summary["attempts"].append({"round": round_number, "bundle_valid": False, **feedback})
                     trace.event("bundle_rejected", round=round_number, **feedback)
                     continue
@@ -170,14 +209,22 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 if plan_path.read_bytes() != plan_bytes:
                     raise RuntimeError("Frozen plan changed unexpectedly; aborting")
                 remaining = deadline - time.monotonic()
+                artifacts = check_artifacts(candidate, syntax=syntax_check, timeout=min(5, max(0.1, remaining)))
+                trace.save(f"attempts/{round_number:02d}/artifacts.json", artifacts)
+                remaining = deadline - time.monotonic()
                 if remaining <= 0:
                     # Preserve valid generated source, but never call it tested.
                     result = {"ok": False, "smoke": {"passed": False}, "tests": [],
                               "infrastructure_error": "Time budget exhausted before verification"}
+                elif not artifacts["ok"]:
+                    result = {"ok": False, "smoke": {"passed": False}, "tests": [],
+                              "runtime_errors": [], "infrastructure_error": None,
+                              "artifact_errors": artifacts["errors"]}
                 else:
                     print("      Running browser smoke + interaction tests...", flush=True)
-                    result = verifier(candidate, plan_path, attempt_dir / "evidence",
-                                      timeout=min(test_timeout, remaining), headful=headful)
+                    result = verify_repeated(candidate, plan_path, attempt_dir / "evidence",
+                                      timeout=min(test_timeout, remaining), headful=headful,
+                                      repeats=verify_repeats, verifier=verifier)
                 trace.save(f"attempts/{round_number:02d}/raw_verification.json", result)
                 if result.get("smoke", {}).get("passed") and summary["first_playable_seconds"] is None:
                     summary["first_playable_seconds"] = round(time.monotonic() - started, 3)
@@ -215,8 +262,9 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                             best, best_bundle = None, None
                             state.tested_hashes.clear()
                             remaining = deadline - time.monotonic()
-                            result = (verifier(candidate, plan_path, attempt_dir / "functional_evidence",
-                                               timeout=min(test_timeout, remaining), headful=headful)
+                            result = (verify_repeated(candidate, plan_path, attempt_dir / "functional_evidence",
+                                               timeout=min(test_timeout, remaining), headful=headful,
+                                               repeats=verify_repeats, verifier=verifier)
                                       if remaining > 0 else {
                                           "ok": False, "smoke": {"passed": False}, "tests": [],
                                           "runtime_errors": [], "infrastructure_error": "Budget exhausted before functional verification"})
@@ -226,6 +274,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 if plan_path.read_bytes() != plan_bytes:
                     raise RuntimeError("Frozen plan changed during verification; refusing completion")
                 result = apply_gate(plan, result, summary["planning_status"])
+                result["repair_route"] = route_failure(result)
                 trace.save(f"attempts/{round_number:02d}/verification.json", result)
                 elapsed = round(time.monotonic() - started, 3)
                 entry = {"round": round_number, "bundle_valid": True,
@@ -235,14 +284,20 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                          "tests_passed": sum(bool(t.get("passed")) for t in result.get("tests", [])),
                          "tests_total": len(plan["tests"]), "elapsed_seconds": elapsed,
                          "plan_sha256": plan_hash, "quality_gate": result["quality_gate"],
+                         "edit": edit_info, "artifacts_passed": artifacts["ok"],
+                         "reliability": result.get("reliability"),
                          "infrastructure_error": result.get("infrastructure_error")}
                 summary["attempts"].append(entry)
-                state.observe(round_number, digest, result, bundle.get("summary", ""))
+                state.observe(round_number, digest, result, bundle.get("summary", ""), plan_hash)
                 trace.event("verification", **entry, decision=str(bundle.get("summary", ""))[:2000])
-                if best is None or verification_score(result) >= verification_score(best[1]):
+                preferable, regressions = prefer_candidate(best[1], result) if best else (True, [])
+                entry["regressed_test_ids"] = regressions
+                if preferable:
                     best = (candidate, result, round_number)
                     best_bundle = bundle
                     state.best_round = round_number
+                if regressions:
+                    trace.event("regression_preserved_base", round=round_number, test_ids=regressions)
                 trace.save("state.json", {**state.context(), "active_plan": plan_path.name,
                            "plan_sha256": plan_hash, "candidate": str(candidate.relative_to(output)),
                            "remaining_calls": max(0, max_calls - client.calls),
@@ -260,12 +315,35 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     state.stop_reason = "automated_checks_passed"
                     summary["recovered_after_verification_failure"] = summary["had_verification_failure"]
                     break
-                if result.get("infrastructure_error"):
+                route = result["repair_route"]
+                summary["last_repair_route"] = route
+                if route["action"] == "stop_infrastructure":
                     # Browser infrastructure failure is not fixed by rewriting game logic.
                     summary["error"] = result["infrastructure_error"]
                     state.stop_reason = "infrastructure_error"
                     break
+                if route["action"] == "stop_unverified":
+                    state.stop_reason = "verification_evidence_incomplete"
+                    break
                 summary["had_verification_failure"] = True
+                if (diagnose_failures and not diagnosis_attempted and route["action"] == "review_failure"
+                        and max_calls - client.calls >= 2 and deadline - time.monotonic() >= 15
+                        and round_number < max_rounds):
+                    diagnosis_attempted = True
+                    raw_diagnosis = client.ask_json("diagnose", DIAGNOSTIC_SYSTEM, json.dumps({
+                        "original_spec": spec, "frozen_plan": plan,
+                        "source": best_bundle, "evidence": best[1]}, ensure_ascii=False))
+                    try:
+                        diagnosis = validate_diagnosis(raw_diagnosis, best[1])
+                    except ValueError as error:
+                        trace.event("diagnosis_rejected", error=str(error))
+                    else:
+                        trace.save("diagnosis.json", diagnosis)
+                        best[1]["diagnosis"] = diagnosis
+                        summary["diagnosis"] = diagnosis
+                        if diagnosis["category"] in {"test_issue", "tool_limit"}:
+                            state.stop_reason = "diagnosis_unverified"
+                            break
                 feedback = best[1]
             if best:
                 chosen, result, chosen_round = best
@@ -291,6 +369,12 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 elif not result["quality_gate"]["functional_evidence_present"]:
                     summary.update(status="partial_game_evidence_missing", automated_checks_passed=False)
                     exit_code = 2
+                if lessons_enabled and result.get("ok"):
+                    try:
+                        summary["lessons_recorded"] = record_recovery(lessons_path, lesson_store, state.repair_memory,
+                            result, bundle_digest(best_bundle), plan_hash, trace.redact(output.name))
+                    except (OSError, ValueError, TypeError) as error:
+                        trace.event("lessons_not_saved", reason=trace.redact(str(error)))
             else:
                 summary.update(status="generation_failed", error="No valid game bundle produced")
                 exit_code = 2
@@ -314,6 +398,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
             summary["preserved_unverified_candidate"] = True
         exit_code = 130 if isinstance(error, KeyboardInterrupt) else 4
     finally:
+        summary["settings_sha256"] = hashlib.sha256(json.dumps(summary["features"], sort_keys=True).encode()).hexdigest()
         summary["stop_reason"] = state.stop_reason or summary.get("status")
         trace.save("state.json", {**state.context(), "stop_reason": summary["stop_reason"],
                    "active_plan": str(plan_path.name) if plan is not None and 'plan_path' in locals() else None,
@@ -370,7 +455,7 @@ def write_report(output, summary):
         lines.append(f"- [ ] {check['requirement_id']}: {check['instruction']}")
     if summary.get("error"):
         lines += ["", "## 未完成或错误", "", summary["error"]]
-    lines += ["", "## 启动游戏", "", "在 MVP 项目目录运行：", "", "```powershell",
+    lines += ["", "## 启动游戏", "", "在 Game Agent 项目目录运行：", "", "```powershell",
               f'python -m agent serve "{output.resolve() / "game"}"', "```", "",
               "原始需求、固定测试计划、API 用量、每轮结果和截图均位于 traces/。", "",
               "计价依赖用户配置；失败/超时请求也可能计费，以服务商账单为准。"]

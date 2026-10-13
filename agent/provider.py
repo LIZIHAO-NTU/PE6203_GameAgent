@@ -73,14 +73,16 @@ class ChatClient:
     def ask_json(self, stage: str, system: str, prompt: str) -> dict:
         # One retry for transient transport / formatting failures. All attempts consume budget.
         last_error = None
-        for attempt in range(2):
+        attempts = 1 if stage == "diagnose" else 2
+        for attempt in range(attempts):
             if self.calls >= self.max_calls or time.monotonic() >= self.deadline:
                 raise BudgetError("API call/time budget reached")
             self.calls += 1
             number = self.calls
             body = {"model": self.config.model, "messages": [
                 {"role": "system", "content": system}, {"role": "user", "content": prompt}],
-                "max_tokens": min(6000, self.config.max_tokens) if stage.startswith("plan") else self.config.max_tokens,
+                "max_tokens": min(2000 if stage == "diagnose" else 6000, self.config.max_tokens)
+                              if stage.startswith("plan") or stage == "diagnose" else self.config.max_tokens,
                 "stream": False}
             if self.config.json_mode:
                 body["response_format"] = {"type": "json_object"}
@@ -138,7 +140,7 @@ class ChatClient:
                     self.unknown_usage_calls += 1
             self.trace.event("api_error", call=number, stage=stage, error=str(last_error),
                              response_received=response_received, retryable=retryable)
-            if not retryable or attempt == 1:
+            if not retryable or attempt == attempts - 1:
                 break
             remaining = self.deadline - time.monotonic()
             if remaining > 1:

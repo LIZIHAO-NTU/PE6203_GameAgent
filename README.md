@@ -1,4 +1,8 @@
-# PE6203 Game Agent — MVP Version 0.4
+# PE6203 Game Agent — 1.0 Beta 1
+
+Current version: `1.0.0-beta.1` — a feature-complete research beta within the documented scope, not a stable production release. This renames the 0.5 development snapshot without changing functionality; historical results keep their original version labels.
+
+当前版本：`1.0.0-beta.1`，定位为既定范围内核心功能已成型的研究测试版，不代表生产级稳定正式版。本次将 0.5 开发快照更名，不改变功能；历史测试保留原版本标记。
 
 A lightweight game-coding agent for the PE6203 group project: read a Markdown specification, generate vanilla HTML/CSS/JavaScript from scratch, run browser checks, and make bounded repairs from execution feedback.
 
@@ -8,11 +12,15 @@ A lightweight game-coding agent for the PE6203 group project: read a Markdown sp
 
 目标是**先实现可启动、规则清楚的核心游戏，再考虑美化**。没有预写游戏代码、游戏模板或内置通关器。四类测试游戏只是评估样本，不是生成器只能选择的四个类型。
 
-This is a feasibility prototype, not a guarantee of success on arbitrary unseen games. Scope: offline 2D browser games; historical tests include single-player games and local two-player tic-tac-toe, not networked multiplayer, 3D, backends or complex engines.
+This is a research beta, not a guarantee of success on arbitrary unseen games. Scope: offline 2D browser games; historical tests include single-player games and local two-player tic-tac-toe, not networked multiplayer, 3D, backends or complex engines.
 
-当前为可行性原型，不保证任意未知游戏稳定完成。范围是离线二维网页游戏；已测包含单人玩法和本机双人井字棋，不含联网多人、3D、后端或复杂引擎。
+当前为研究测试版，不保证任意未知游戏稳定完成。范围是离线二维网页游戏；已测包含单人玩法和本机双人井字棋，不含联网多人、3D、后端或复杂引擎。
 
 ## 1. How it works / 系统如何工作
+
+Version 1.0 Beta 1 integrates incremental repair, failure routing, reproducible evidence and optional reliability checks into the existing single-agent loop. See [INTEGRATION.md](INTEGRATION.md) for defaults, rollback controls and validation boundaries.
+
+1.0 Beta 1 将局部修复、失败分流、可复现证据与可选稳定性检查接入原有单 Agent Loop。默认值、回退方式及验证边界见上述双语说明。
 
 ~~~text
 Spec → Plan → Generate → Browser verification → Bounded repair
@@ -104,6 +112,28 @@ Describe controls, initial state, legal/illegal actions, scoring or win/loss, re
 
 `--output` 可指定新输出目录，已有目录不会覆盖；`--headful` 显示自动测试浏览器；`--strict-plan` 在功能规划失败后停止，不生成部分结果。
 
+### Reliability options / 稳定性选项
+
+| Option / 参数 | Default / 默认 | Behavior / 行为 |
+|---|---|---|
+| `--repair-mode auto` | `auto` | Version-bound changed-file repair; full responses still accepted / 按版本哈希局部改文件，仍接受完整输出。 |
+| `--repair-mode full` | Optional / 可选 | Preserve whole-project repair responses / 保留完整项目修复路径。 |
+| `--verify-repeats 2` | `1` | All repeats must pass within one shared test-timeout / 重复必须全通过，共用单次验证预算。 |
+| `--diagnose` | Off / 关闭 | At most one diagnosis API attempt for ambiguous failure, within the shared cap / 模糊失败时最多一次诊断调用，占原预算。 |
+| `--syntax-check` | Off / 关闭 | Trusted Node checks for external JS; missing/incomplete checks are labelled / 可选 Node 外部 JS 语法检查，未运行或不完整会注明。 |
+| `--lessons runs/lessons.json` | Off / 关闭 | Opt-in generic recovery observations, not game source or test answers / 可选通用修复经验，不保存游戏源码或测试答案。 |
+
+Example for stronger repeatability (generation is still paid; no hidden API allowance):
+较强复测示例（生成仍付费，不增加隐藏调用额度）：
+
+~~~powershell
+./.venv/Scripts/python.exe -m agent examples/benchmark/sokoban.md --max-calls 8 --repair-mode auto --verify-repeats 2 --lessons runs/lessons.json
+~~~
+
+Repetitions use fresh browser contexts and may take longer or expose intermittent failures; real-time scheduling is not guaranteed identical. Keep optional diagnosis off for the cheapest baseline. Compare features under the same model/spec/budget before claiming reliability improvements.
+
+重复使用新的浏览器上下文，可能耗时更长或暴露偶发失败，不保证实时调度完全一致。低成本基线可保持诊断关闭；需在相同模型、需求和预算下比较配置，才能判断是否真的改进。
+
 Each run creates a new `runs/<run_id>/` / 每次结果位于新目录：
 
 ~~~text
@@ -170,6 +200,17 @@ Add new specifications and acceptance plans under `examples/benchmark/` and regi
 
 ## 5. Offline rechecks and metrics / 零 API 复测与统计
 
+Replay an existing run using its recorded active plan, without model calls or changes to its score:
+根据原运行记录的活动计划回放，不调用模型、不改写原成绩：
+
+~~~powershell
+./.venv/Scripts/python.exe -m agent replay "runs/<run_id>" --verify-repeats 2
+~~~
+
+Use `recheck` to select another explicit plan. Repetitions share `--timeout` (default 60 seconds). Evidence includes replay manifests, source hashes, actual actions and before/after screenshots. Screenshots are retained observations, not an automatic visual verdict.
+
+需另选计划时使用 `recheck`。重复检查共用 `--timeout`（默认 60 秒）；证据包含回放清单、源码哈希、实际动作及前后截图。截图是保留的观察证据，不等于自动视觉验收。
+
 Replay an existing game without editing it or overwriting its original score / 复测已有游戏，不修改游戏、不改写原始开发成绩：
 
 ~~~powershell
@@ -192,9 +233,9 @@ This command makes no model calls and reads only immediate child runs. For bench
 
 ## 6. Tests and recorded results / 框架测试与实测记录
 
-Version 0.4 independently implements lightweight evidence gates, test-quality warnings, bounded planning recovery and consistency observations, without embedding another agent runtime or role template. **No new paid end-to-end model test has been performed for 0.4.** Historical model results below are not its success rate.
+Version 1.0 Beta 1 retains the 0.4 evidence gates, planning recovery and consistency observations, and adds the integrated controls above without embedding another agent runtime or role template. **No paid end-to-end model test has been performed for this beta or its 0.5 baseline.** Historical model results below are not its success rate.
 
-0.4 在现有系统上独立实现轻量验收、测试质量提醒、有限规划恢复及一致性观察；没有引入外部 Agent 运行器或角色模板。本版本尚未进行新的付费模型端到端测试，下方 2026-10-10 的模型结果仅属于当时版本，不代表 0.4 成功率。
+1.0 Beta 1 保留 0.4 的证据门禁、规划恢复与一致性观察，并加入上述整合控制，没有引入外部 Agent 运行器或角色模板。本测试版及其 0.5 基线均未做付费模型端到端测试；下方历史模型成绩不代表当前版本成功率。
 
 Framework tests use mock model responses and spend no API credits / 框架测试使用模拟模型，不消费 API 额度：
 
@@ -214,7 +255,17 @@ Leave `PLAYWRIGHT_CHANNEL` blank for Playwright Chromium. Temporary test artifac
 
 使用 Playwright Chromium 时将 `PLAYWRIGHT_CHANNEL` 留空。临时测试产物位于 `.codex-tmp/`；任务结束后清理本次临时文件，不误删其他人的材料。
 
-### Version 0.4 — 2026-10-14 / 当前版本验证
+### Version 0.5 baseline — 2026-10-14 / 当前测试版的基线验证
+
+**143/143 regression tests passed, including 24 real-browser tests.** All 109 previous tests remain passing. Composed-feature and full/auto compatibility tests use simulated models and real browser interactions, not paid-model generation.
+
+**143/143 项回归通过，含 24 项真实浏览器测试。**原有 109 项均保持通过。组合功能及完整／局部修复对照使用模拟模型与真实浏览器，不是付费模型生成成绩。
+
+Validation and composed-feature checks are documented in [INTEGRATION.md](INTEGRATION.md). No paid DeepSeek experiment has been performed for 0.5; historical game results below are not its success rate.
+
+验证记录与组合功能测试详见上述文档。0.5 未做付费 DeepSeek 实验，以下历史游戏成绩不代表当前版本成功率。
+
+### Version 0.4 — 2026-10-14 / 历史版本验证
 
 - **109/109 framework tests passed, including 21 real-browser tests.** This is not a model-generated-game success rate. **109/109 项框架测试通过，含 21 项真实浏览器测试**，不是模型生成游戏的成功率。
 - Read-only historical Sokoban replay caught stale state and a missing win transition: original 1/3 checks, previously repaired version 3/3. Games and original scores were unchanged. 只读复放历史推箱子检出过期状态与通关判定问题：原始版 1/3，此前修复版 3/3；未改游戏与原始成绩。
@@ -245,6 +296,7 @@ GENERALIZATION.md      0.3 design and historical evidence / 0.3 设计与历史�
 UPGRADE.md             0.2 historical notes / 0.2 历史说明
 CHANGELOG.md           Version history / 版本记录
 QUALITY.md             0.4 gates, recovery and limitations / 0.4 门禁、恢复与限制
+INTEGRATION.md         Beta 1 integrated reliability controls / Beta 1 整合与可靠性控制
 ~~~
 
 - Each teammate creates their own environment and `.env`; never copy another person's key. 每个成员创建自己的环境和 `.env`，不复制他人的 key。
@@ -254,6 +306,20 @@ QUALITY.md             0.4 gates, recovery and limitations / 0.4 门禁、恢复
 - No manual code edits during autonomous development; playtesting follows the run. The instructor's final rules take precedence. 自动开发期间不人工修代码，试玩在结束后进行；正式展示以老师最终规则为准。
 
 ## 8. Troubleshooting and limits / 常见问题与限制
+
+### Export a run / 导出运行结果
+
+~~~powershell
+./.venv/Scripts/python.exe -m agent export-run "runs/<run_id>" --output "submissions/<name>" --report "path/to/report.pdf"
+~~~
+
+This zero-API command copies the current agent, pinned requirements and exact `game/` / `traces/` into a new directory. It excludes local `.env`, dependencies and caches. `--report` must point to your existing PDF; omit it only for an incomplete draft package. The delivery manifest distinguishes current-agent and original-run versions. Inspect traces for private content before sharing.
+
+此零 API 命令将当前 Agent、固定版本依赖及原样 `game/`、`traces/` 复制到新目录，不复制本地 `.env`、依赖环境和缓存。`--report` 指向自己已有的 PDF；省略则仅是缺报告的草稿包。清单区分当前 Agent 与原运行版本，分享前检查 traces 中的私人内容。
+
+Exporting does not turn an old or assisted run into a valid autonomous course demonstration. Final live-run commands and course requirements still need confirmation.
+
+导出不会把历史或经过额外协助的运行变成合格的自主现场展示；正式启动方式和课程规则仍需确认。
 
 - **Playwright missing / 找不到依赖**: install and run with the same `.venv` interpreter. 用同一个 `.venv` 解释器安装并运行。
 - **Browser unavailable / 浏览器不可用**: install Chromium, or set `PLAYWRIGHT_CHANNEL=msedge`, then run `doctor`. 安装 Chromium，或设置 Edge 通道后运行 `doctor`。

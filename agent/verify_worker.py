@@ -1,5 +1,6 @@
 """Browser verifier. Only the trusted DSL is executed; no model-supplied Python."""
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -10,6 +11,7 @@ from urllib.parse import urlsplit
 
 from .contracts import compare, lookup, validate_plan
 from .server import running_server
+from .evidence import file_hashes, runtime_metadata
 
 
 def launch(browser_type, headful=False):
@@ -256,6 +258,17 @@ def run_test(page, test):
             elif action == "capture":
                 captures[step["name"]] = state_snapshot(page)
                 event["result"] = captures[step["name"]]
+            elif action == "sample":
+                samples = []
+                count, duration = step.get("samples", 3), step.get("duration_ms", 500)
+                for i in range(count):
+                    if i:
+                        page.wait_for_timeout(duration / (count - 1))
+                    samples.append({"elapsed_ms": round((time.monotonic() - started) * 1000),
+                                    "state": state_snapshot(page)})
+                captures[step["name"] + "_start"] = samples[0]["state"]
+                captures[step["name"] + "_end"] = samples[-1]["state"]
+                event["result"] = {"samples": samples}
             elif action in {"wait_until", "key_until", "move_to"}:
                 observation = {"step": index, **run_goal(page, step, captures)}
                 observations.append(observation)
@@ -303,9 +316,11 @@ def verify_browser(browser, game, plan, evidence):
             error_count = len(errors)
             try:
                 context, page = fresh_page(browser, origin, errors, test["id"])
+                page.screenshot(path=str(evidence / f'{test["id"]}.before.png'))
                 result = run_test(page, test)
                 page.screenshot(path=str(evidence / f'{test["id"]}.png'))
                 result["screenshot"] = f'{test["id"]}.png'
+                result["before_screenshot"] = f'{test["id"]}.before.png'
             except Exception as error:
                 result = {"id": test["id"], "passed": False, "failure_kind": "browser_error",
                           "error": str(error)[:2000], "observations": []}
@@ -318,8 +333,15 @@ def verify_browser(browser, game, plan, evidence):
                 result["runtime_errors"] = errors[error_count:]
             tests.append(result)
     ok = smoke["passed"] and bool(tests) and all(t["passed"] for t in tests) and not errors
-    return {"ok": bool(ok), "smoke": smoke, "tests": tests, "runtime_errors": errors,
-            "infrastructure_error": None}
+    result = {"ok": bool(ok), "smoke": smoke, "tests": tests, "runtime_errors": errors,
+              "infrastructure_error": None}
+    manifest = {"schema_version": 1, "runtime": runtime_metadata(), "browser": browser.version,
+                "viewport": {"width": 1000, "height": 760}, "game_sha256": file_hashes(game),
+                "plan_content_sha256": hashlib.sha256(json.dumps(plan, sort_keys=True).encode()).hexdigest(),
+                "plan": plan, "result": result,
+                "note": "Replay this fixed plan through recheck; real-time scheduling may differ. Screenshots are evidence, not an automated visual verdict."}
+    (evidence / "replay.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {**result, "evidence_manifest": "replay.json"}
 
 
 def main():

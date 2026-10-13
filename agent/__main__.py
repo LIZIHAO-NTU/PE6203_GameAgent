@@ -9,6 +9,7 @@ import sys
 import uuid
 
 from .config import Config, load_dotenv
+from .evidence import runtime_metadata
 
 
 def configure():
@@ -36,6 +37,7 @@ def doctor(config, args):
     result = {"python": sys.version.split()[0], "api_key_configured": bool(config.api_key),
               "model": config.model, "base_url": config.base_url, "playwright_installed": package,
               "network_api_tested": False}
+    result["runtime"] = runtime_metadata()
     if package and not options.skip_browser:
         result["browser"] = preflight()
     print(json.dumps(result, ensure_ascii=False, indent=2))
@@ -85,17 +87,40 @@ def main(argv=None):
             print(json.dumps(report["metrics"], ensure_ascii=False, indent=2))
             print(f"Saved JSON and CSV: {options.output.resolve()}")
             return 0
-        if argv and argv[0] == "recheck":
+        if argv and argv[0] == "export-run":
+            from .delivery import export_run
+            parser = argparse.ArgumentParser(prog="python -m agent export-run")
+            parser.add_argument("run", type=Path)
+            parser.add_argument("--output", type=Path, required=True)
+            parser.add_argument("--report", type=Path)
+            options = parser.parse_args(argv[1:])
+            manifest = export_run(options.run, options.output, options.report)
+            print(json.dumps(manifest, ensure_ascii=False, indent=2))
+            print("Exported immutable artifacts. Review course rules; report.pdf is still needed if not supplied.")
+            return 0
+        if argv and argv[0] in {"recheck", "replay"}:
             from .recheck import recheck
-            parser = argparse.ArgumentParser(prog="python -m agent recheck")
-            parser.add_argument("game", type=Path)
-            parser.add_argument("--plan", type=Path, required=True)
+            replay = argv[0] == "replay"
+            parser = argparse.ArgumentParser(prog="python -m agent " + argv[0])
+            parser.add_argument("game", type=Path, help="Run directory for replay; game directory for recheck")
+            if not replay:
+                parser.add_argument("--plan", type=Path, required=True)
             parser.add_argument("--output", type=Path, default=Path("rechecks") /
                                 (datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:6]))
             parser.add_argument("--timeout", type=int, default=60)
             parser.add_argument("--headful", action="store_true")
+            parser.add_argument("--verify-repeats", type=int, default=1, choices=(1, 2, 3))
             options = parser.parse_args(argv[1:])
-            code = recheck(options.game, options.plan, options.output, options.timeout, options.headful)
+            if replay:
+                summary = json.loads((options.game / "summary.json").read_text(encoding="utf-8"))
+                name = summary.get("active_plan", "plan.json")
+                if name not in {"plan.json", "functional_plan.json"}:
+                    raise ValueError("Invalid active plan filename")
+                plan = options.game / "traces" / name
+                game = options.game / "game"
+            else:
+                game, plan = options.game, options.plan
+            code = recheck(game, plan, options.output, options.timeout, options.headful, repeats=options.verify_repeats)
             print(f"Offline recheck (0 API calls): {options.output.resolve()}")
             return code
         config = Config.from_env()
@@ -111,16 +136,21 @@ def main(argv=None):
             parser.add_argument("--max-rounds", type=int, default=3)
             parser.add_argument("--max-seconds", type=int, default=420)
             parser.add_argument("--repeats", type=int, default=1)
+            parser.add_argument("--verify-repeats", type=int, default=1, choices=(1, 2, 3))
+            parser.add_argument("--repair-mode", choices=("auto", "full"), default="auto")
+            parser.add_argument("--diagnose", action="store_true")
+            parser.add_argument("--syntax-check", action="store_true")
             options = parser.parse_args(argv[1:])
             report = benchmark(config, options.suite, options.output, options.max_total_calls,
                                options.max_calls_per_case, options.max_rounds, options.max_seconds,
-                               options.repeats)
+                               options.repeats, verify_repeats=options.verify_repeats, repair_mode=options.repair_mode,
+                               diagnose_failures=options.diagnose, syntax_check=options.syntax_check)
             print(json.dumps(report["metrics"], ensure_ascii=False, indent=2))
             print(f"Benchmark: {options.output.resolve()}")
             return 0 if all(r.get("independent_passed") for r in report["cases"]) else 2
         if argv and argv[0] == "doctor":
             return doctor(config, argv[1:])
-        parser = argparse.ArgumentParser(description="MVP: spec -> game -> browser tests -> bounded repair. "
+        parser = argparse.ArgumentParser(description="Game Agent: spec -> game -> browser tests -> bounded repair. "
                                          "Other commands: configure, doctor, serve, summarize, recheck.")
         parser.add_argument("spec", type=Path)
         parser.add_argument("--output", type=Path)
@@ -130,6 +160,11 @@ def main(argv=None):
         parser.add_argument("--test-timeout", type=int, default=60)
         parser.add_argument("--headful", action="store_true", help="Show automated browser windows")
         parser.add_argument("--strict-plan", action="store_true", help="Stop if functional planning fails; do not generate a partial game")
+        parser.add_argument("--repair-mode", choices=("auto", "full"), default="auto", help="Auto permits version-bound changed-file responses; full keeps whole-project output")
+        parser.add_argument("--verify-repeats", type=int, default=1, choices=(1, 2, 3), help="Repeated browser checks share one test-timeout budget")
+        parser.add_argument("--diagnose", action="store_true", help="Optional one-call diagnosis for ambiguous failures, within the shared API cap")
+        parser.add_argument("--syntax-check", action="store_true", help="Optional trusted node --check; skipped explicitly if Node is unavailable")
+        parser.add_argument("--lessons", type=Path, help="Opt-in local JSON recovery observations; never code templates")
         options = parser.parse_args(argv)
         if not options.spec.is_file():
             raise ValueError("Specification file does not exist")
@@ -140,7 +175,9 @@ def main(argv=None):
                                                   + "_" + uuid.uuid4().hex[:6])
         from .runner import run
         return run(config, options.spec, output, options.max_rounds, options.max_calls,
-                   options.max_seconds, options.test_timeout, options.headful, strict_plan=options.strict_plan)
+                   options.max_seconds, options.test_timeout, options.headful, strict_plan=options.strict_plan,
+                   repair_mode=options.repair_mode, verify_repeats=options.verify_repeats,
+                   diagnose_failures=options.diagnose, syntax_check=options.syntax_check, lessons_path=options.lessons)
     except KeyboardInterrupt:
         print("Stopped by user; interrupted runs are not valid autonomous demonstrations.", file=sys.stderr)
         return 130

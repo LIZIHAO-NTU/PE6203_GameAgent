@@ -199,6 +199,15 @@ def validate_plan(plan: dict) -> dict:
                 total_wait += milliseconds(step.get("ms"))
             elif action == "capture":
                 captures.add(identifier(step.get("name")))
+            elif action == "sample":
+                name = identifier(step.get("name"))
+                require(len(name) <= 30, "Sample name too long")
+                count = step.get("samples", 3)
+                require(type(count) is int and 2 <= count <= 8, "Need 2..8 temporal samples")
+                duration = milliseconds(step.get("duration_ms", 500))
+                require(duration >= count - 1, "Temporal samples need a positive interval")
+                total_wait += duration
+                captures.update({name + "_start", name + "_end"})
             elif action in {"wait_until", "key_until", "move_to"}:
                 total_wait += goal_budget(step)
                 condition = step.get("until")
@@ -261,7 +270,7 @@ def safe_relative_path(value: str) -> PurePosixPath:
     return path
 
 
-def write_bundle(bundle: dict, root: Path) -> None:
+def validate_bundle(bundle: dict):
     files = bundle.get("files")
     require(isinstance(files, list) and 0 < len(files) <= 20, "Need 1..20 files")
     validated, seen, total = [], set(), 0
@@ -280,6 +289,11 @@ def write_bundle(bundle: dict, root: Path) -> None:
     for path, _ in validated:
         require(not any(str(parent).lower() in seen for parent in path.parents if str(parent) != "."),
                 "A file path collides with a directory")
+    return validated
+
+
+def write_bundle(bundle: dict, root: Path) -> None:
+    validated = validate_bundle(bundle)
     require(not root.exists(), "Candidate directory already exists; refusing to overwrite")
     root.mkdir(parents=True)
     for path, content in validated:

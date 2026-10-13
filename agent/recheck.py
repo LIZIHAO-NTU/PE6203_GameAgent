@@ -7,10 +7,11 @@ import time
 from . import __version__
 from .contracts import plan_warnings, validate_plan
 from .runner import apply_gate, requirement_results
-from .verification import failure_summary, verify
+from .verification import failure_summary, verify, verify_repeated
+from .evidence import file_hashes
 
 
-def recheck(game, plan_path, output, timeout=60, headful=False, verifier=verify):
+def recheck(game, plan_path, output, timeout=60, headful=False, verifier=verify, repeats=1):
     game, plan_path, output = (Path(p).resolve() for p in (game, plan_path, output))
     if not (game / "index.html").is_file():
         raise ValueError("Game directory must contain index.html")
@@ -22,18 +23,26 @@ def recheck(game, plan_path, output, timeout=60, headful=False, verifier=verify)
         raise ValueError("Cannot replay an unsupported plan")
     if not 10 <= timeout <= 180:
         raise ValueError("Recheck timeout must be 10..180 seconds")
+    if type(repeats) is not int or not 1 <= repeats <= 3:
+        raise ValueError("Recheck repeats must be 1..3")
     files = sorted(p for p in game.rglob("*") if p.is_file())
     hashes = {p.relative_to(game).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     output.mkdir(parents=True, exist_ok=False)
     (output / "plan.json").write_bytes(plan_bytes)
     started = time.monotonic()
-    result = verifier(game, output / "plan.json", output / "evidence", timeout=timeout, headful=headful)
+    result = verify_repeated(game, output / "plan.json", output / "evidence", timeout=timeout,
+                             headful=headful, repeats=repeats, verifier=verifier)
+    integrity = (output / "plan.json").read_bytes() == plan_bytes and file_hashes(game) == hashes
+    if not integrity:
+        result = {**result, "ok": False, "infrastructure_error": "Source/plan changed during read-only replay"}
     result = apply_gate(plan, result, "valid")
     report = {"kind": "offline_recheck", "agent_version": __version__, "api_calls": 0,
               "original_run_success_unchanged": True,
               "game_path": str(game), "source_plan": str(plan_path),
               "plan_sha256": hashlib.sha256(plan_bytes).hexdigest(), "game_sha256": hashes,
               "duration_seconds": round(time.monotonic() - started, 3),
+              "verification_repeats": repeats,
+              "read_only_integrity": integrity,
               "automated_checks_passed": bool(result.get("ok")), "full_game_acceptance": None,
               "failure_summary": failure_summary(result), "plan_warnings": plan_warnings(plan),
               "requirements": requirement_results(plan, result), "verification": result}

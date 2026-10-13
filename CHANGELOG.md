@@ -1,5 +1,24 @@
 # Changelog / 版本记录
 
+## 1.0.0-beta.1 — 2026-10-14
+
+- Rename the 0.5 development snapshot to **1.0 Beta 1**, reflecting the integrated research-beta stage; no functional changes in this version-label update.
+- 将 0.5 开发快照更名为 **1.0 Beta 1**，表示核心流程已成型、进入研究测试阶段；本次版本标记调整不新增功能。
+- Synchronize runtime version and bilingual documentation. Preserve historical version labels and validation records; this is not a stable-release or unseen-game reliability claim.
+- 统一运行版本标记及双语文档，保留历史版本和验证记录；不声称达到稳定正式版或保证未知游戏成功率。
+
+## 0.5.0 — 2026-10-14
+
+- 在原单 Agent Loop 中整合按哈希绑定的局部文件替换，兼容完整输出，校验失败可退回完整模式；拒绝删除、路径越界和错误基础版本。
+- 增加本地资源结构检查、可选可信 Node 语法检查与保守的通过项防退化选优。
+- 增加确定性失败分流、默认关闭且最多一次额外尝试的模型诊断；所有调用仍在原预算内。
+- 增加共享超时的全通过重复验证、只读时间序列采样、前后截图、回放清单及源码／运行环境指纹。
+- 增加零 API `replay`、原样 `export-run`，并保持 benchmark 的独立验收隔离。
+- 增加默认关闭、仅记录同计划下已验证恢复的通用经验；拒绝任意指令注入、损坏文件和并发覆盖。
+- 固定已测试依赖版本，更新中英双语说明。没有引入外部 Coding Agent 运行器或游戏模板。
+
+阶段验证、组合回归与限制见 [INTEGRATION.md](INTEGRATION.md)。未做新的付费模型实验，不声称未知游戏成功率或成本提升。
+
 ## 0.4.0 — 2026-10-14
 
 - 增加独立的确定性完成门禁：缺失、重复、未知或失败的测试证据不算通过；启动检查不能替代核心交互规则。

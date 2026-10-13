@@ -62,6 +62,11 @@ Pointer button may be left/right/middle. Drag steps 1..20. Use normal pointer ev
 {"action":"keys","keys":["ArrowRight","Space"],"hold_ms":100} (1..4 simultaneous keys)
 {"action":"wait","ms":200}
 {"action":"capture","name":"before"} (stores state snapshot)
+For temporal behavior, bounded read-only sampling is available:
+{"action":"sample","name":"motion","samples":3,"duration_ms":500}.
+This stores motion_start and motion_end captures; assert actual behavior afterwards using
+value_from. It is observation, not an input or a substitute for assertions. Max 8 samples,
+2000ms per sample action; durations count toward the same plan-wide wait budget.
 {"action":"assert","source":"state","path":"score","op":"eq","value":0}
 {"action":"assert","source":"state","path":"player.x","op":"gt",
  "value_from":{"capture":"before","path":"player.x"}}
@@ -115,10 +120,27 @@ Example JSON structure (not a game template):
  "manual_checks":[{"requirement_id":"R2","instruction":"..."}]}
 """
 
+DIAGNOSTIC_SYSTEM = """Review a failed game check without editing anything.
+Output one JSON object: {"category":"code_error|test_issue|tool_limit|uncertain",
+"reason":"short evidence-based explanation","evidence_test_ids":["actual failed ID"]}.
+Use the original spec, fixed plan, actual observations and source. Do not claim a root
+cause from a timeout alone. Distinguish an implementation bug, inconsistent test expectation,
+unreliable test navigation, and missing evidence. Choose uncertain if evidence is insufficient.
+Never output code, revised tests or weaker requirements. A test_issue or tool_limit means
+unverified, not passed. This is a fallible model review, not an independent ground truth.
+"""
+
 CODER_SYSTEM = """You implement a complete small browser game from scratch.
 Output one strict JSON object: {"summary":"short explanation of changes",
 "files":[{"path":"index.html","content":"full text"},{"path":"game.js","content":"..."}]}.
-Return ALL files needed for this version, not patches. No Markdown wrapping.
+For the initial version or requested_output_mode=full, return ALL files needed.
+When requested_output_mode=replace_files, you may instead return:
+{"summary":"short diagnosis and intended fix","edit_mode":"replace_files",
+ "base_sha256":"exact repair_base_sha256 from input",
+ "changes":[{"path":"game.js","content":"complete replacement file text"}]}.
+Only changed/new files go in changes; unchanged base files are retained. No deletions,
+rename operations or line-diff syntax. Never mix files and changes. Returning a full files
+bundle remains supported. No Markdown wrapping. Do not claim a fix without test evidence.
 Implement the user's original functional and technical requirements and the frozen plan.
 If planning_status is failed_startup_only, the frozen plan contains infrastructure checks
 ONLY. You must STILL implement all original functional requirements. Do not mistake the
@@ -149,7 +171,7 @@ actual live game state, following the plan's state_contract. It is read-only obs
 do not return fake values, detect the tester, or create test-only behavior.
 Use event.code or event.key consistently and prevent unwanted arrow-key scrolling.
 Never alter requirements, tests, trace files, or controller instructions.
-If fixing errors, make the smallest necessary logical changes while returning full files.
+If fixing errors, make the smallest necessary logical changes using the allowed output mode.
 You may receive repair_memory and a repair base selected from the best verified version.
 Do not repeat a recorded ineffective edit. Preserve previously passing requirements and
 use the observation's actual/expected values, failed step and action log to localize bugs.

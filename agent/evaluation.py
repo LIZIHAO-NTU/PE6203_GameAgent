@@ -13,10 +13,14 @@ def aggregate(root: Path):
         if data.get("schema_version") != 1:
             continue
         usage = data.get("usage", {})
+        features = data.get("features", {})
         rows.append({"run_id": data["run_id"], "model": data.get("model"),
                      "agent_version": data.get("agent_version", "0.1.0-or-unknown"),
                      "prompts_sha256": data.get("prompts_sha256"),
                      "original_spec_sha256": data.get("original_spec_sha256"),
+                     "settings_sha256": data.get("settings_sha256"),
+                     "agent_source_sha256": data.get("runtime", {}).get("agent_source_sha256"),
+                     **{key: features.get(key) for key in ("repair_mode", "verify_repeats", "diagnose_failures", "syntax_check", "lessons_enabled")},
                      "automated_requirement_pass_rate": data.get("automated_requirement_pass_rate"),
                      "status": data["status"], "automated_checks_passed": bool(data.get("automated_checks_passed")),
                      "smoke_passed": bool(data.get("smoke_passed")),
@@ -40,7 +44,7 @@ def aggregate(root: Path):
               "full_game_acceptance_rate": None,
               "notes": ["Rates include ALL saved runs, including unsupported/error runs; no cherry-picking.",
                   "Automated checks use model-authored plans, not independent full-game acceptance.",
-                  "Do not compare mixed models/prompts/specs as a controlled experiment.",
+                  "Do not compare mixed models/prompts/specs/budgets/feature settings as a controlled experiment.",
                   "Preflight failures before output creation are not model runs and are not included."]}
     return {"metrics": totals, "runs": rows}
 
@@ -55,6 +59,7 @@ def export(root: Path, output: Path):
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     fields = ["run_id", "model", "agent_version", "prompts_sha256", "original_spec_sha256",
+              "settings_sha256", "agent_source_sha256", "repair_mode", "verify_repeats", "diagnose_failures", "syntax_check", "lessons_enabled",
               "automated_requirement_pass_rate", "status", "automated_checks_passed", "smoke_passed", "duration_seconds",
               "first_playable_seconds", "api_attempts", "prompt_tokens", "completion_tokens", "cached_input_tokens",
               "calls_with_unknown_usage", "estimated_known_usage_cost", "currency", "cost_is_complete",
