@@ -1,0 +1,41 @@
+{
+  "description": "Six-mechanic screening; independent checks frozen before baseline, not supplied to generator.",
+  "cases": [
+    {
+      "id": "tic_tac_toe",
+      "family": "turn_based_board",
+      "spec": "tic_tac_toe.md",
+      "acceptance_plan": "tic_tac_toe.acceptance.json"
+    },
+    {
+      "id": "sokoban",
+      "family": "discrete_grid_pushing",
+      "spec": "sokoban.md",
+      "acceptance_plan": "sokoban.acceptance.json"
+    },
+    {
+      "id": "memory_pairs",
+      "family": "timed_hidden_matching",
+      "spec": "memory_pairs.md",
+      "acceptance_plan": "memory_pairs.acceptance.json"
+    },
+    {
+      "id": "brick_breaker",
+      "family": "real_time_collision",
+      "spec": "brick_breaker.md",
+      "acceptance_plan": "brick_breaker.acceptance.json"
+    },
+    {
+      "id": "resource_shop",
+      "family": "resource_economy",
+      "spec": "resource_shop.md",
+      "acceptance_plan": "resource_shop.acceptance.json"
+    },
+    {
+      "id": "key_maze",
+      "family": "combined_rules",
+      "spec": "key_maze.md",
+      "acceptance_plan": "key_maze.acceptance.json"
+    }
+  ]
+}

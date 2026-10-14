@@ -1,5 +1,5 @@
 """Cross-mechanic evaluation with held-out checks and a shared API-attempt cap."""
-from collections import defaultdict
+from collections import Counter, defaultdict
 import hashlib
 import json
 from pathlib import Path
@@ -45,13 +45,24 @@ def metrics(rows):
     groups = defaultdict(list)
     for row in rows:
         groups[row["family"]].append(row)
+    def coverage(group):
+        attempted = [r for r in group if r.get("attempted") is True]
+        evaluated = [r for r in group if type(r.get("independent_passed")) is bool]
+        return {"not_attempted": len(group) - len(attempted),
+            "independent_evaluated": len(evaluated),
+            "attempted_without_independent_result": sum(type(r.get("independent_passed")) is not bool for r in attempted),
+            "launch_rate_over_attempted": sum(r.get("launch_passed", False) for r in attempted) / len(attempted) if attempted else None,
+            "independent_pass_rate_over_evaluated": sum(r["independent_passed"] for r in evaluated) / len(evaluated) if evaluated else None,
+            "self_pass_independent_fail": sum(r.get("model_plan_passed") is True and not r["independent_passed"] for r in evaluated),
+            "self_fail_independent_pass": sum(r.get("model_plan_passed") is False and r["independent_passed"] for r in evaluated)}
     by_family = {}
     for family, group in groups.items():
-        by_family[family] = {"scheduled": len(group),
+        by_family[family] = {"scheduled": len(group), **coverage(group),
             "attempted": sum(r.get("attempted", False) for r in group),
             "launch_rate": sum(r.get("launch_passed", False) for r in group) / len(group),
             "independent_pass_rate": sum(r.get("independent_passed", False) for r in group) / len(group)}
     return {"scheduled": len(rows), "attempted": sum(r.get("attempted", False) for r in rows),
+        **coverage(rows), "status_counts": dict(Counter(r.get("status", "unknown") for r in rows)),
         "api_attempts": sum(r.get("usage", {}).get("api_attempts", 0) for r in rows),
         "launch_rate": sum(r.get("launch_passed", False) for r in rows) / len(rows) if rows else None,
         "model_plan_pass_rate": sum(r.get("model_plan_passed", False) for r in rows) / len(rows) if rows else None,
@@ -65,7 +76,15 @@ def metrics(rows):
         "full_game_acceptance_rate": None,
         "notes": ["Independent checks are held out from generation; they still cover only selected requirements.",
                   "One run per family is a feasibility sample, not a reliable generalization estimate.",
-                  "Rates include all scheduled cases, including skipped/error cases; raw rows preserve causes."]}
+                  "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+                  "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+                  "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."]}
+
+
+def check_frozen_sources(case):
+    for key in ("spec", "acceptance_plan"):
+        if hashlib.sha256(case[key].read_bytes()).hexdigest() != case[key + "_sha256"]:
+            raise RuntimeError("Frozen benchmark " + key + " changed: " + case["id"])
 
 
 def save_report(output, report):
@@ -82,6 +101,10 @@ def save_report(output, report):
                      f"{row.get('model_plan_passed', False)} | {checks} | "
                      f"{row.get('usage', {}).get('api_attempts', 0)} | {row['status']} |")
     lines += ["", "独立检查未提供给生成模型，不改变原运行成绩；通过仍不等于完整游戏验收。",
+              f"独立验收覆盖：{report['metrics']['independent_evaluated']}/{report['metrics']['scheduled']}；"
+              f"未尝试：{report['metrics']['not_attempted']}；已尝试但无独立结果：{report['metrics']['attempted_without_independent_result']}。",
+              f"自测通过／独立失败：{report['metrics']['self_pass_independent_fail']}；"
+              f"自测失败／独立通过：{report['metrics']['self_fail_independent_pass']}。分歧需要复核，不自动判定谁正确。",
               "每类一次仅用于可行性检查，不能据此声称已经稳定泛化。", "",
               "各次生成游戏位于 cases/<run_id>/game；模型计划和修复记录位于该目录的 traces/；",
               "独立检查结果和截图位于 acceptance/<run_id>/。使用 python -m agent serve <game目录> 试玩。"]
@@ -110,15 +133,17 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
               "repeats": repeats, "cases": rows}
     report["features"] = {"verify_repeats": verify_repeats, "repair_mode": repair_mode,
                           "diagnose_failures": diagnose_failures, "syntax_check": syntax_check}
-    used, halted = 0, False
+    used, halted, active_row = 0, False, None
     try:
         for index, row in enumerate(rows):
             case = cases[index % len(cases)]
+            check_frozen_sources(case)
             remaining = max_total_calls - used
             if halted or remaining < 2:
                 row["status"] = "skipped_budget_or_prior_error"
                 continue
             destination = output / "cases" / row["run_id"]
+            active_row = row
             row.update(attempted=True, status="running")
             save_report(output, report)
             print(f"\nBenchmark {row['run_id']} [{row['family']}], remaining API attempts: {remaining}", flush=True)
@@ -134,15 +159,20 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
             if type(count) is not int or not 0 <= count <= min(max_calls_per_case, remaining):
                 raise RuntimeError("Cannot safely account for API attempts; stopping benchmark")
             used += count
-            row.update(status=summary["status"], exit_code=exit_code, usage=usage,
+            row.update(status=summary["status"], generation_status=summary["status"], exit_code=exit_code, usage=usage,
                        launch_passed=bool(summary.get("smoke_passed")) and not summary.get("runtime_error_count", 0),
                        model_plan_passed=bool(summary.get("automated_checks_passed")),
-                       prompts_sha256=summary.get("prompts_sha256"))
+                       prompts_sha256=summary.get("prompts_sha256"),
+                       agent_source_sha256=summary.get("runtime", {}).get("agent_source_sha256"),
+                       settings_sha256=summary.get("settings_sha256"), limits=summary.get("limits"),
+                       planning_status=summary.get("planning_status"))
+            check_frozen_sources(case)
             if (destination / "game" / "index.html").is_file():
                 evidence = output / "acceptance" / row["run_id"]
                 result = verify_repeated(destination / "game", case["acceptance_plan"], evidence,
                                          timeout=60, repeats=verify_repeats, verifier=verifier)
                 acceptance = validate_plan(json.loads(case["acceptance_plan"].read_text(encoding="utf-8")))
+                check_frozen_sources(case)
                 result = apply_gate(acceptance, result, "valid")
                 evidence.mkdir(parents=True, exist_ok=True)
                 (evidence / "verification.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -156,7 +186,10 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
                     f"API HTTP {code}" in summary.get("error", "") for code in (400, 401, 402, 403, 404, 422)):
                 halted = True
             save_report(output, report)
+            active_row = None
     except BaseException:
+        if active_row is not None:
+            active_row["status"] = "running"  # Include errors after generation, during independent evaluation.
         for row in rows:
             if row["status"] == "running":
                 row["status"] = "benchmark_error_or_interrupted"

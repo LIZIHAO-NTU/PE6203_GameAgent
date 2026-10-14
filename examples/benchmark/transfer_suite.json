@@ -1,0 +1,11 @@
+{
+  "description": "New within-platform rule variant, frozen before its first generation; not a stability benchmark.",
+  "cases": [
+    {
+      "id": "inventory_delivery",
+      "family": "capacity_inventory",
+      "spec": "inventory_delivery.md",
+      "acceptance_plan": "inventory_delivery.acceptance.json"
+    }
+  ]
+}

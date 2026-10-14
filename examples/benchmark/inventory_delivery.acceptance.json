@@ -1,0 +1,346 @@
+{
+  "supported": true,
+  "title": "Inventory delivery held-out variant",
+  "development_plan": [
+    "Freeze independent behavioral checks before generation"
+  ],
+  "state_contract": {
+    "phase": "Real current phase"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial warehouse",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "One purchase transfers stock and coins",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Capacity blocks another purchase",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Empty delivery is ignored",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Two deliveries win and lock controls",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R6",
+      "text": "Restart restores stock",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial warehouse",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cargo",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stock",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "One purchase transfers stock and coins",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cargo",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stock",
+          "op": "eq",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Capacity blocks another purchase",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cargo",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stock",
+          "op": "eq",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Empty delivery is ignored",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cargo",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Two deliveries win and lock controls",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cargo",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stock",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "description": "Restart restores stock",
+      "requirement_ids": [
+        "R6"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#cargo",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stock",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

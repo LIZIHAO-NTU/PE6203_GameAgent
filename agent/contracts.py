@@ -245,7 +245,8 @@ def validate_plan(plan: dict) -> dict:
                 raise ValueError(f"Unsupported test action: {action}")
         require(assertions > 0, "Every test needs an assertion")
     require(total_wait <= 45000, "Plan waits/holds/goal budgets exceed 45 seconds")
-    require(covered == automated, "Every automated requirement must have a test")
+    require(covered == automated, "Every automated requirement must have a test; missing IDs: "
+            + ", ".join(sorted(automated - covered)))
     manual_checks = plan.get("manual_checks", [])
     require(isinstance(manual_checks, list) and len(manual_checks) <= 6, "Invalid manual_checks")
     manual_covered = set()
@@ -254,7 +255,8 @@ def validate_plan(plan: dict) -> dict:
         if check["requirement_id"] in manual:
             manual_covered.add(check["requirement_id"])
         bounded_text(check.get("instruction"), "manual instruction")
-    require(manual_covered == manual, "Every manual requirement needs a manual check")
+    require(manual_covered == manual, "Every manual requirement needs a manual check; missing IDs: "
+            + ", ".join(sorted(manual - manual_covered)))
     return plan
 
 
@@ -303,9 +305,18 @@ def write_bundle(bundle: dict, root: Path) -> None:
 
 
 def lookup(state, path):
+    """Observe nested snapshots or literal dotted keys; reject conflicting evidence."""
+    flat_present = isinstance(state, dict) and path in state
     value = state
-    for part in path.split("."):
-        value = value[int(part)] if isinstance(value, list) and part.isdigit() else value[part]
+    try:
+        for part in path.split("."):
+            value = value[int(part)] if isinstance(value, list) and part.isdigit() else value[part]
+    except (KeyError, IndexError, TypeError):
+        if flat_present:
+            return state[path]
+        raise
+    if flat_present:
+        require(compare(value, "eq", state[path]), "Ambiguous snapshot: flat and nested values disagree for " + path)
     return value
 
 

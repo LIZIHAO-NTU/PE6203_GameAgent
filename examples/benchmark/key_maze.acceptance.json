@@ -1,0 +1,300 @@
+{
+  "supported": true,
+  "title": "Key door maze independent acceptance",
+  "development_plan": [
+    "Independent checks frozen before generation"
+  ],
+  "state_contract": {
+    "phase": "Real current game phase"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial grid and state",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Wall and locked door block movement",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Key is collected by real movement",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Door, exit and terminal lock",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Restart resets pickup and position",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial grid and state",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.x",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.y",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "hasKey",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Wall and locked door block movement",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.x",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.y",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.x",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.y",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "hasKey",
+          "op": "eq",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Key is collected by real movement",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.x",
+          "op": "eq",
+          "value": 2
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.y",
+          "op": "eq",
+          "value": 2
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "hasKey",
+          "op": "eq",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Door, exit and terminal lock",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.x",
+          "op": "eq",
+          "value": 3
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.y",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "phase",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.x",
+          "op": "eq",
+          "value": 3
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.y",
+          "op": "eq",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Restart resets pickup and position",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.x",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "player.y",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "hasKey",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

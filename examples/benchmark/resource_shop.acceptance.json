@@ -1,0 +1,246 @@
+{
+  "supported": true,
+  "title": "Resource shop independent acceptance",
+  "development_plan": [
+    "Independent checks frozen before generation"
+  ],
+  "state_contract": {
+    "phase": "Real current game phase"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial resource state",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Purchase conserves resources",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Unaffordable purchase has no effect",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Earn, buy and terminal lock",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Restart restores resources",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial resource state",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "10"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#power",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Purchase conserves resources",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#power",
+          "op": "eq",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Unaffordable purchase has no effect",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#power",
+          "op": "eq",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Earn, buy and terminal lock",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#earn"
+        },
+        {
+          "action": "click",
+          "selector": "#earn"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "6"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#power",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "click",
+          "selector": "#earn"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#power",
+          "op": "eq",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Restart restores resources",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "10"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#power",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

@@ -4,6 +4,10 @@ Release identifier: `1.0.0-beta.1`. The 0.5 development snapshot was renamed wit
 
 版本标识：`1.0.0-beta.1`。由 0.5 开发快照更名而来，功能不变；下方验证记录来自该基线。测试版定位不保证任意未知游戏成功。
 
+This document preserves the integration baseline. Current Beta 2 changes and paid screening are in [CAPABILITY.md](CAPABILITY.md); the 143-test record below is historical, not the latest suite count.
+
+本文保留整合基线；当前 Beta 2 改进与付费筛查见 [CAPABILITY.md](CAPABILITY.md)。下方 143 项为历史记录，不是最新测试数量。
+
 This version extends one controller loop rather than stacking independent agent frameworks. All game code is still generated from the supplied specification. No external coding-agent runtime, game engine, game template or solver is embedded.
 
 本版本扩展同一条控制循环，不叠加多套 Agent 框架。游戏代码仍由输入需求生成，不嵌入外部 Coding Agent 运行器、游戏引擎、游戏模板或通关器。

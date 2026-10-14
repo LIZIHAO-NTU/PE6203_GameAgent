@@ -1,5 +1,16 @@
 # Changelog / 版本记录
 
+## 1.0.0-beta.2 — 2026-10-14
+
+- Conduct a bounded real-model capability screening with DeepSeek: six baseline cases, six optimized cases and one new inventory/capacity variant; 47 API attempts in total. Preserve failures and distinguish self-authored tests from held-out checks. See [CAPABILITY.md](CAPABILITY.md).
+- 使用 DeepSeek 完成有上限的真实能力筛查：六次基线、六次优化复测及一次库存／容量新变体，共 47 次 API 尝试。保留失败，区分自测与独立验收。
+- Fix observation interoperability for literal dotted snapshot keys; retain nested paths and fail closed on conflicting representations. Clarify nested snapshots, bounded waits and spec-derived test expectations in prompts. Add missing requirement IDs to planning-validation feedback; never weaken frozen assertions.
+- 修复扁平点路径状态快照兼容，保留嵌套路径，对冲突值拒绝验收；澄清快照、等待上限和按需求推演测试的提示，校验反馈指出遗漏需求编号，不放宽冻结断言。
+- Extend benchmark reporting with evaluation denominators, disagreement counts, run fingerprints and frozen-source integrity checks. Record errors during independent evaluation without losing API accounting. Add evaluation-only fixtures, no prewritten game implementation.
+- 增加独立验收分母、分歧计数、运行指纹及冻结文件完整性检查；独立评估阶段的错误保留调用计数。新增评估需求与计划，不预写游戏实现。
+- 160/160 framework tests pass, including 27 real-browser tests; all 143 previous tests remain. Small-sample results do not prove generalization or cost improvement. Planning semantics and fresh-page setup remain important limitations.
+- 160/160 项框架测试通过，含 27 项真实浏览器测试，保留原有 143 项。小样本不证明泛化或成本提升；测试语义及每项测试独立初始状态仍是重要短板。
+
 ## 1.0.0-beta.1 — 2026-10-14
 
 - Rename the 0.5 development snapshot to **1.0 Beta 1**, reflecting the integrated research-beta stage; no functional changes in this version-label update.

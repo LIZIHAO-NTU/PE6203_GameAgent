@@ -1,0 +1,1228 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "release": "1.0.0-beta.2",
+  "baseline_git_commit": "854ee6b83598e6ec1431e7f81545722b303927ee",
+  "api_attempt_cap": 48,
+  "api_attempts": 47,
+  "generation_runs": 13,
+  "prompt_tokens": 244811,
+  "completion_tokens": 127727,
+  "unknown_usage_calls": 0,
+  "actual_billed_cost": null,
+  "batches": [
+    {
+      "kind": "baseline",
+      "agent_version": "1.0.0-beta.1",
+      "model": "deepseek-flash",
+      "api_attempts": 24,
+      "cases": [
+        {
+          "case_id": "tic_tac_toe",
+          "family": "turn_based_board",
+          "status": "checks_failed",
+          "attempted": true,
+          "spec_sha256": "a06ec9f805e7f977f6cdb7fd0e19521fd98d087357bdcb2f9c0b52b197a370bd",
+          "acceptance_plan_sha256": "0c6d6ee10bb433631d093d50e1cb7c81f716dc596276f4cb7884907a6c2bbfa2",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 99.672,
+          "usage": {
+            "api_attempts": 5,
+            "prompt_tokens": 51288,
+            "completion_tokens": 13164,
+            "cached_input_tokens": 24704,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "cd0b1c1cc400b1b2e85f9c5ebdd69fbe1c1e7b3a745744751f708678f56cb898",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "ed39f6f467efefce65a142142e0b218d92970cecb0b04c2c649213131f4de258",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "f910f79afd8753e9068960f35324bb24172841bbe500981bcccba14926d79e47",
+            "index.html": "fa25ca7b626bdcfdf6c75b6e1046fe9eb59d165da3bad35086f57de750d113c8"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_baseline_20261014/cases/tic_tac_toe_01"
+        },
+        {
+          "case_id": "sokoban",
+          "family": "discrete_grid_pushing",
+          "status": "budget_exhausted",
+          "attempted": true,
+          "spec_sha256": "d9fab008b89f3cd1c6b0ea7b3f8cbbf2b4561bd6fde20964813f064b08ca8520",
+          "acceptance_plan_sha256": "9d1cbf36b52262345b9872c7109d4298fc20b36ed190cb216850809db30ccffe",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 79.531,
+          "usage": {
+            "api_attempts": 5,
+            "prompt_tokens": 27336,
+            "completion_tokens": 14896,
+            "cached_input_tokens": 8832,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "recovered",
+          "planning_error": "Every automated requirement must have a test",
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "cd0b1c1cc400b1b2e85f9c5ebdd69fbe1c1e7b3a745744751f708678f56cb898",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "ed39f6f467efefce65a142142e0b218d92970cecb0b04c2c649213131f4de258",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "2f0eed822f268c6eca554b6a275fdaf77b3f6fd4ba2cbd3e9bdaf0401f42ac51",
+            "index.html": "61dcfdb458b9f97f1ab0d084238e5d9149f2113c0e805cc5facefe25c49f90ab"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_baseline_20261014/cases/sokoban_01"
+        },
+        {
+          "case_id": "memory_pairs",
+          "family": "timed_hidden_matching",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "9c31b771f740f308cd2c47f721e9ad9e59bc1e8219f05aeb80c07653b7679dbd",
+          "acceptance_plan_sha256": "525d602ec534f0bec4bfa4ca6739642bccdd62f7ef11c3a7fe0a34dc4cc2d568",
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 42.438,
+          "usage": {
+            "api_attempts": 2,
+            "prompt_tokens": 7741,
+            "completion_tokens": 5346,
+            "cached_input_tokens": 2816,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "cd0b1c1cc400b1b2e85f9c5ebdd69fbe1c1e7b3a745744751f708678f56cb898",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "ed39f6f467efefce65a142142e0b218d92970cecb0b04c2c649213131f4de258",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "d0876425e556dbeade9b6392ae624ea32c0aac1af5e600faea0506cfef77a855",
+            "index.html": "e80978be5c6a2ca03a066b804d89fb771b0d03747544982f30dde10ee1e8d0c7"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_baseline_20261014/cases/memory_pairs_01"
+        },
+        {
+          "case_id": "brick_breaker",
+          "family": "real_time_collision",
+          "status": "partial_game_plan_failed",
+          "attempted": true,
+          "spec_sha256": "823fbedc455061b84221eece26f53c8e9073e943f61f9a8377e59f68dfda267c",
+          "acceptance_plan_sha256": "a817e707db662dba6cae95589e789a8d7f16197bf15014dda43a8d9e68a8dadb",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 80.422,
+          "usage": {
+            "api_attempts": 5,
+            "prompt_tokens": 17581,
+            "completion_tokens": 17135,
+            "cached_input_tokens": 9344,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "failed_startup_only",
+          "planning_error": "Wait/hold must be 0..2000 ms",
+          "planning_recovery_error": "Invalid manual_checks",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "cd0b1c1cc400b1b2e85f9c5ebdd69fbe1c1e7b3a745744751f708678f56cb898",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "ed39f6f467efefce65a142142e0b218d92970cecb0b04c2c649213131f4de258",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "e8333ac25aa161d1eaf41ebb72801ae56e191c3b59f8791116e2a4351c1ac774",
+            "index.html": "bdf5fef247856388036d05376ed731ee230aa60fcd15f51479055223b13843b0"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_baseline_20261014/cases/brick_breaker_01"
+        },
+        {
+          "case_id": "resource_shop",
+          "family": "resource_economy",
+          "status": "partial_game_plan_failed",
+          "attempted": true,
+          "spec_sha256": "277c61a592a1d4182fe9f950678a28ceeb48ed81486d8ba8a2b55263eac7114f",
+          "acceptance_plan_sha256": "b26cc68f89b91845c2c2cc8939b95056115e0bb7e207d4c15a0d26d329bcbeb6",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 51.141,
+          "usage": {
+            "api_attempts": 4,
+            "prompt_tokens": 15747,
+            "completion_tokens": 10361,
+            "cached_input_tokens": 7424,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "failed_startup_only",
+          "planning_error": "Every automated requirement must have a test",
+          "planning_recovery_error": "Recovery changed an earlier requirement: R11",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "cd0b1c1cc400b1b2e85f9c5ebdd69fbe1c1e7b3a745744751f708678f56cb898",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "ed39f6f467efefce65a142142e0b218d92970cecb0b04c2c649213131f4de258",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "6765d5bf4660327ba3d2c1d5da9583398d5a263625f85a4d2953a07822970a0d",
+            "index.html": "d3eedbfd8fd278f7cc79a42b90826c4ea8923e9b36d40031987d97495ccc1559"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_baseline_20261014/cases/resource_shop_01"
+        },
+        {
+          "case_id": "key_maze",
+          "family": "combined_rules",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "14555280a9adb40490de8190347360e52afab775d28f8d693f9c754f81b493e8",
+          "acceptance_plan_sha256": "5ba9d84d8d75856fb345cc4fb51d69371fda8a9b0eee2caa3c3744f612f7ce98",
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 47.391,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 11144,
+            "completion_tokens": 7257,
+            "cached_input_tokens": 6912,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "cd0b1c1cc400b1b2e85f9c5ebdd69fbe1c1e7b3a745744751f708678f56cb898",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "ed39f6f467efefce65a142142e0b218d92970cecb0b04c2c649213131f4de258",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "ee8e97ef4e7a6a44db3fbbf1c59a4b0632eb773e70f8b7cdfdf76db7d04aa5b3",
+            "index.html": "57f57fb1fe8f2791a48bbcbfac225aa747f7ddfecf2cf8cc02682b68093516a0"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_baseline_20261014/cases/key_maze_01"
+        }
+      ]
+    },
+    {
+      "kind": "optimized",
+      "agent_version": "1.0.0-beta.2",
+      "model": "deepseek-flash",
+      "api_attempts": 19,
+      "cases": [
+        {
+          "case_id": "tic_tac_toe",
+          "family": "turn_based_board",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "a06ec9f805e7f977f6cdb7fd0e19521fd98d087357bdcb2f9c0b52b197a370bd",
+          "acceptance_plan_sha256": "0c6d6ee10bb433631d093d50e1cb7c81f716dc596276f4cb7884907a6c2bbfa2",
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 35.094,
+          "usage": {
+            "api_attempts": 2,
+            "prompt_tokens": 6600,
+            "completion_tokens": 4639,
+            "cached_input_tokens": 512,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "b455518ec884b2d076da93679fe519eace9c02f762aea89ec013bb1dda5147c8",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "a3c45b9ea82683e86fcc9c6559093ec7bf82b23ace84399be168932ab45d2790",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "3b626dafc313fed3ec2ecd3d17f1fc759f8e76cbb51c9318d763ab36d88c82af",
+            "index.html": "6dfb887a32d97354345124f0d7f164035cf92358fdc6d6791b85b8267ffeda74",
+            "style.css": "6f063758861cdce49634c8736a76014121de4c115dcf90c7a1a5a5cd0ba9319b"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_beta2_20261014/cases/tic_tac_toe_01"
+        },
+        {
+          "case_id": "sokoban",
+          "family": "discrete_grid_pushing",
+          "status": "checks_failed",
+          "attempted": true,
+          "spec_sha256": "d9fab008b89f3cd1c6b0ea7b3f8cbbf2b4561bd6fde20964813f064b08ca8520",
+          "acceptance_plan_sha256": "9d1cbf36b52262345b9872c7109d4298fc20b36ed190cb216850809db30ccffe",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 82.688,
+          "usage": {
+            "api_attempts": 4,
+            "prompt_tokens": 26120,
+            "completion_tokens": 12745,
+            "cached_input_tokens": 10752,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "b455518ec884b2d076da93679fe519eace9c02f762aea89ec013bb1dda5147c8",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "a3c45b9ea82683e86fcc9c6559093ec7bf82b23ace84399be168932ab45d2790",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "f99c8b8600839d5fd07eba01cf29d4cd96d5696aa0b2b59b4d3aa136fdb2c11b",
+            "index.html": "d8ac6ba9d24575c97a559eba47270fa4031f4a89805a0852017d38d1ca7dd337"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_beta2_20261014/cases/sokoban_01"
+        },
+        {
+          "case_id": "memory_pairs",
+          "family": "timed_hidden_matching",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "9c31b771f740f308cd2c47f721e9ad9e59bc1e8219f05aeb80c07653b7679dbd",
+          "acceptance_plan_sha256": "525d602ec534f0bec4bfa4ca6739642bccdd62f7ef11c3a7fe0a34dc4cc2d568",
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 36.39,
+          "usage": {
+            "api_attempts": 2,
+            "prompt_tokens": 7127,
+            "completion_tokens": 4699,
+            "cached_input_tokens": 3072,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "b455518ec884b2d076da93679fe519eace9c02f762aea89ec013bb1dda5147c8",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "a3c45b9ea82683e86fcc9c6559093ec7bf82b23ace84399be168932ab45d2790",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "fb1c83223fbee491a5f635f57ce5ace2e5dbbcaeb630247d57f2ccaab8e2c67e",
+            "index.html": "a1214a2b19e34389569ed688fa0d4cb08ee5f30dab65b3db6a08bf8c28406c69"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_beta2_20261014/cases/memory_pairs_01"
+        },
+        {
+          "case_id": "brick_breaker",
+          "family": "real_time_collision",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "823fbedc455061b84221eece26f53c8e9073e943f61f9a8377e59f68dfda267c",
+          "acceptance_plan_sha256": "a817e707db662dba6cae95589e789a8d7f16197bf15014dda43a8d9e68a8dadb",
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 56.906,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 13191,
+            "completion_tokens": 10179,
+            "cached_input_tokens": 5760,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "b455518ec884b2d076da93679fe519eace9c02f762aea89ec013bb1dda5147c8",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "a3c45b9ea82683e86fcc9c6559093ec7bf82b23ace84399be168932ab45d2790",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "9348ea337c285688f4a3763ba1cc2ceac781ddec90a77928d96be652af1bdf47",
+            "index.html": "1acdc06a8b74de4996f739b6e04708b90666249ae7d9f764a93fd7578a8722bf"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_beta2_20261014/cases/brick_breaker_01"
+        },
+        {
+          "case_id": "resource_shop",
+          "family": "resource_economy",
+          "status": "checks_failed",
+          "attempted": true,
+          "spec_sha256": "277c61a592a1d4182fe9f950678a28ceeb48ed81486d8ba8a2b55263eac7114f",
+          "acceptance_plan_sha256": "b26cc68f89b91845c2c2cc8939b95056115e0bb7e207d4c15a0d26d329bcbeb6",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 57.75,
+          "usage": {
+            "api_attempts": 4,
+            "prompt_tokens": 21721,
+            "completion_tokens": 7240,
+            "cached_input_tokens": 9856,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "b455518ec884b2d076da93679fe519eace9c02f762aea89ec013bb1dda5147c8",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "a3c45b9ea82683e86fcc9c6559093ec7bf82b23ace84399be168932ab45d2790",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "a303cde3b7edc2c0fa6d558a235e4819f40a96e10c76a73169aaec8e8922bc69",
+            "index.html": "01939e7dfa3835d0132b178012784b48894180e0744ff64b9dd68505ac1320ae"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_beta2_20261014/cases/resource_shop_01"
+        },
+        {
+          "case_id": "key_maze",
+          "family": "combined_rules",
+          "status": "checks_failed",
+          "attempted": true,
+          "spec_sha256": "14555280a9adb40490de8190347360e52afab775d28f8d693f9c754f81b493e8",
+          "acceptance_plan_sha256": "5ba9d84d8d75856fb345cc4fb51d69371fda8a9b0eee2caa3c3744f612f7ce98",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 5,
+          "independent_tests_total": 5,
+          "duration_seconds": 69.5,
+          "usage": {
+            "api_attempts": 4,
+            "prompt_tokens": 23189,
+            "completion_tokens": 10675,
+            "cached_input_tokens": 13952,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "b455518ec884b2d076da93679fe519eace9c02f762aea89ec013bb1dda5147c8",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "a3c45b9ea82683e86fcc9c6559093ec7bf82b23ace84399be168932ab45d2790",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "4d5df9c42796050eac394bb8355a1ae28f65a411829b9135dd1a84cad37193ab",
+            "index.html": "d113bd759576f89be67ecfe43e502299d53848129e4668f6e68fd38a020f2785"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_beta2_20261014/cases/key_maze_01"
+        }
+      ]
+    },
+    {
+      "kind": "new_variant",
+      "agent_version": "1.0.0-beta.2",
+      "model": "deepseek-flash",
+      "api_attempts": 4,
+      "cases": [
+        {
+          "case_id": "inventory_delivery",
+          "family": "capacity_inventory",
+          "status": "partial_game_plan_failed",
+          "attempted": true,
+          "spec_sha256": "b1c71264c782f029e3cb9983885d8fa05f013d429a8c5f77d50aa1e149fa518b",
+          "acceptance_plan_sha256": "b10f00b5eaf5dfa7bb2fa8f8bb33fdb8e2ad5eae50af43ef0f9f88f3a821c705",
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "duration_seconds": 47.203,
+          "usage": {
+            "api_attempts": 4,
+            "prompt_tokens": 16026,
+            "completion_tokens": 9391,
+            "cached_input_tokens": 8448,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "planning_status": "failed_startup_only",
+          "planning_error": "Need 1..18 steps/test",
+          "planning_recovery_error": "Need 1..18 steps/test",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 5,
+            "max_seconds": 420,
+            "test_timeout": 60
+          },
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null
+          },
+          "prompts_sha256": "b455518ec884b2d076da93679fe519eace9c02f762aea89ec013bb1dda5147c8",
+          "settings_sha256": "adc39000b2d429f995a75ac4f8b7e9980087f9aa2b0afbc5f367c92edca44661",
+          "runtime": {
+            "python": "3.11.9",
+            "system": "Windows",
+            "release": "10",
+            "machine": "AMD64",
+            "playwright": "1.63.0",
+            "agent_source_sha256": "a3c45b9ea82683e86fcc9c6559093ec7bf82b23ace84399be168932ab45d2790",
+            "browser": "155.0.4283.45"
+          },
+          "game_sha256": {
+            "game.js": "4c5e5190aa634e78f69f88d94f1596942de137d54bf19879fcb144d01f8d1e82",
+            "index.html": "681afe3374f34662392ca078222474ab3961d602887417ba7c284d429faa713a"
+          },
+          "manual_interventions_during_run": 0,
+          "independent_tests": [
+            {
+              "id": "T1",
+              "passed": true
+            },
+            {
+              "id": "T2",
+              "passed": true
+            },
+            {
+              "id": "T3",
+              "passed": true
+            },
+            {
+              "id": "T4",
+              "passed": true
+            },
+            {
+              "id": "T5",
+              "passed": true
+            },
+            {
+              "id": "T6",
+              "passed": true
+            }
+          ],
+          "local_run": "runs/capability_transfer_20261014/cases/inventory_delivery_01"
+        }
+      ]
+    }
+  ],
+  "repeat_acceptance": [
+    {
+      "case_id": "brick_breaker",
+      "api_calls": 0,
+      "repeats": 2,
+      "passed": true,
+      "read_only_integrity": true,
+      "reliability": {
+        "requested": 2,
+        "completed": 2,
+        "passed": 2,
+        "unstable": false,
+        "total_budget_seconds": 60
+      },
+      "local_report": "runs/capability_repeat_20261014/brick_breaker_01/recheck.json"
+    },
+    {
+      "case_id": "inventory_delivery",
+      "api_calls": 0,
+      "repeats": 2,
+      "passed": true,
+      "read_only_integrity": true,
+      "reliability": {
+        "requested": 2,
+        "completed": 2,
+        "passed": 2,
+        "unstable": false,
+        "total_budget_seconds": 60
+      },
+      "local_report": "runs/capability_repeat_20261014/inventory_delivery_01/recheck.json"
+    },
+    {
+      "case_id": "key_maze",
+      "api_calls": 0,
+      "repeats": 2,
+      "passed": true,
+      "read_only_integrity": true,
+      "reliability": {
+        "requested": 2,
+        "completed": 2,
+        "passed": 2,
+        "unstable": false,
+        "total_budget_seconds": 60
+      },
+      "local_report": "runs/capability_repeat_20261014/key_maze_01/recheck.json"
+    },
+    {
+      "case_id": "memory_pairs",
+      "api_calls": 0,
+      "repeats": 2,
+      "passed": true,
+      "read_only_integrity": true,
+      "reliability": {
+        "requested": 2,
+        "completed": 2,
+        "passed": 2,
+        "unstable": false,
+        "total_budget_seconds": 60
+      },
+      "local_report": "runs/capability_repeat_20261014/memory_pairs_01/recheck.json"
+    },
+    {
+      "case_id": "resource_shop",
+      "api_calls": 0,
+      "repeats": 2,
+      "passed": true,
+      "read_only_integrity": true,
+      "reliability": {
+        "requested": 2,
+        "completed": 2,
+        "passed": 2,
+        "unstable": false,
+        "total_budget_seconds": 60
+      },
+      "local_report": "runs/capability_repeat_20261014/resource_shop_01/recheck.json"
+    },
+    {
+      "case_id": "sokoban",
+      "api_calls": 0,
+      "repeats": 2,
+      "passed": true,
+      "read_only_integrity": true,
+      "reliability": {
+        "requested": 2,
+        "completed": 2,
+        "passed": 2,
+        "unstable": false,
+        "total_budget_seconds": 60
+      },
+      "local_report": "runs/capability_repeat_20261014/sokoban_01/recheck.json"
+    },
+    {
+      "case_id": "tic_tac_toe",
+      "api_calls": 0,
+      "repeats": 2,
+      "passed": true,
+      "read_only_integrity": true,
+      "reliability": {
+        "requested": 2,
+        "completed": 2,
+        "passed": 2,
+        "unstable": false,
+        "total_budget_seconds": 60
+      },
+      "local_report": "runs/capability_repeat_20261014/tic_tac_toe_01/recheck.json"
+    }
+  ],
+  "snapshot_recheck": {
+    "api_calls": 0,
+    "original_passed": 0,
+    "original_total": 6,
+    "rechecked_passed": 3,
+    "rechecked_total": 6,
+    "read_only_integrity": true,
+    "original_score_unchanged": true
+  },
+  "framework_tests": {
+    "total": 160,
+    "passed": 160,
+    "real_browser_tests": 27,
+    "duration_seconds": 137.681,
+    "paid_api_calls": 0
+  },
+  "limitations": [
+    "One generated sample per case/version; no reliable success-rate or causal improvement estimate.",
+    "Independent checks cover selected requirements only; some rely on game-supplied read-only state.",
+    "Same-case optimization results are development evidence, not held-out generalization.",
+    "New variant is one simple within-platform transfer probe, not a new-platform guarantee.",
+    "Screenshot spot checks are not complete human gameplay acceptance.",
+    "Actual cost unavailable: pricing fields are not configured; provider bill is authoritative."
+  ]
+}
