@@ -88,7 +88,7 @@ def plan_warnings(plan):
     """Advisory only: never silently change a frozen test or mark it passed."""
     warnings = []
     for test in plan.get("tests", []):
-        steps = test["steps"]
+        steps = test_steps(test)
         fixed_movement = any(s["action"] == "key" and s.get("hold_ms", 0) for s in steps)
         goal_action = any(s["action"] in {"move_to", "key_until", "wait_until"} for s in steps)
         rule_assert = any(s["action"] == "assert" and s.get("source") == "state" and
@@ -98,6 +98,11 @@ def plan_warnings(plan):
             warnings.append({"test_id": test["id"], "kind": "fixed_timing_rule_check",
                              "message": "Fixed key duration precedes a score/win check; review whether the target is actually reached."})
     return warnings
+
+
+def test_steps(test):
+    """Setup is ordinary user input on this test's own fresh page, never a state setter."""
+    return test.get("setup_steps", []) + test["steps"]
 
 
 def validate_plan(plan: dict) -> dict:
@@ -172,8 +177,12 @@ def validate_plan(plan: dict) -> dict:
         require(isinstance(related, list) and related and all(isinstance(x, str) and x in automated for x in related),
                 "Tests must reference automated requirements only")
         covered.update(related)
-        steps = test.get("steps")
-        require(isinstance(steps, list) and 0 < len(steps) <= 18, "Need 1..18 steps/test")
+        body = test.get("steps")
+        setup = test.get("setup_steps", [])
+        require(isinstance(body, list) and 0 < len(body) <= 18, "Need 1..18 steps/test")
+        require(isinstance(setup, list) and len(setup) <= 17, "Invalid setup_steps")
+        steps = test_steps(test)
+        require(len(steps) <= 18, "Setup and check together need 1..18 steps/test")
         captures, assertions = set(), 0
         for step in steps:
             require(isinstance(step, dict), "Invalid step")
@@ -244,6 +253,8 @@ def validate_plan(plan: dict) -> dict:
             else:
                 raise ValueError(f"Unsupported test action: {action}")
         require(assertions > 0, "Every test needs an assertion")
+        require(any(s["action"] in {"assert", "assert_consistent"} for s in body),
+                "Every test needs an assertion in check steps, not only setup")
     require(total_wait <= 45000, "Plan waits/holds/goal budgets exceed 45 seconds")
     require(covered == automated, "Every automated requirement must have a test; missing IDs: "
             + ", ".join(sorted(automated - covered)))

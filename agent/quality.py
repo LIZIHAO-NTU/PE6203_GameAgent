@@ -1,5 +1,6 @@
 """Deterministic evidence gates. Structural coverage is not semantic correctness."""
 from collections import Counter
+from .contracts import test_steps
 
 
 INPUT_ACTIONS = {"click", "key", "keys", "drag", "key_until", "move_to"}
@@ -12,7 +13,7 @@ def review_plan(plan):
     core = {r["id"] for r in plan.get("requirements", [])
             if r.get("priority", "core") == "core" and r["verification"] == "automated"}
     for test in plan.get("tests", []):
-        steps = test["steps"]
+        steps = test_steps(test)
         purposes.add(test.get("purpose"))
         acted = False
         meaningful = False
@@ -33,7 +34,7 @@ def review_plan(plan):
         if purpose not in purposes:
             warnings.append({"test_id": "plan", "kind": "review_" + purpose,
                              "message": f"No {purpose} scenario labelled; check applicability against the original spec. Not automatically a failure."})
-    if not any(s["action"] == "assert_consistent" for t in plan.get("tests", []) for s in t["steps"]):
+    if not any(s["action"] == "assert_consistent" for t in plan.get("tests", []) for s in test_steps(t)):
         warnings.append({"test_id": "plan", "kind": "no_cross_observation",
                          "message": "No DOM/state consistency check. Game-supplied snapshots are not independent evidence."})
     return {"functional_test_ids": functional, "warnings": warnings,

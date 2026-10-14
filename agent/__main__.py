@@ -123,6 +123,15 @@ def main(argv=None):
             code = recheck(game, plan, options.output, options.timeout, options.headful, repeats=options.verify_repeats)
             print(f"Offline recheck (0 API calls): {options.output.resolve()}")
             return code
+        if argv and argv[0] == "inspect-plan":
+            from .contracts import validate_plan
+            from .plan_review import inspect_plan
+            parser = argparse.ArgumentParser(prog="python -m agent inspect-plan", description="Read-only plan review; zero API calls")
+            parser.add_argument("plan", type=Path)
+            options = parser.parse_args(argv[1:])
+            plan = validate_plan(json.loads(options.plan.read_text(encoding="utf-8-sig")))
+            print(json.dumps(inspect_plan(plan), ensure_ascii=False, indent=2))
+            return 0
         config = Config.from_env()
         if argv and argv[0] == "benchmark":
             from .benchmark import benchmark
@@ -139,12 +148,13 @@ def main(argv=None):
             parser.add_argument("--verify-repeats", type=int, default=1, choices=(1, 2, 3))
             parser.add_argument("--repair-mode", choices=("auto", "full"), default="auto")
             parser.add_argument("--diagnose", action="store_true")
+            parser.add_argument("--plan-audit", action="store_true", help="One optional pre-freeze model review, within the shared API cap")
             parser.add_argument("--syntax-check", action="store_true")
             options = parser.parse_args(argv[1:])
             report = benchmark(config, options.suite, options.output, options.max_total_calls,
                                options.max_calls_per_case, options.max_rounds, options.max_seconds,
                                options.repeats, verify_repeats=options.verify_repeats, repair_mode=options.repair_mode,
-                               diagnose_failures=options.diagnose, syntax_check=options.syntax_check)
+                               diagnose_failures=options.diagnose, syntax_check=options.syntax_check, plan_audit=options.plan_audit)
             print(json.dumps(report["metrics"], ensure_ascii=False, indent=2))
             print(f"Benchmark: {options.output.resolve()}")
             return 0 if all(r.get("independent_passed") for r in report["cases"]) else 2
@@ -163,6 +173,7 @@ def main(argv=None):
         parser.add_argument("--repair-mode", choices=("auto", "full"), default="auto", help="Auto permits version-bound changed-file responses; full keeps whole-project output")
         parser.add_argument("--verify-repeats", type=int, default=1, choices=(1, 2, 3), help="Repeated browser checks share one test-timeout budget")
         parser.add_argument("--diagnose", action="store_true", help="Optional one-call diagnosis for ambiguous failures, within the shared API cap")
+        parser.add_argument("--plan-audit", action="store_true", help="One optional model review before generation/freezing; never sees game code or held-out checks")
         parser.add_argument("--syntax-check", action="store_true", help="Optional trusted node --check; skipped explicitly if Node is unavailable")
         parser.add_argument("--lessons", type=Path, help="Opt-in local JSON recovery observations; never code templates")
         options = parser.parse_args(argv)
@@ -177,7 +188,8 @@ def main(argv=None):
         return run(config, options.spec, output, options.max_rounds, options.max_calls,
                    options.max_seconds, options.test_timeout, options.headful, strict_plan=options.strict_plan,
                    repair_mode=options.repair_mode, verify_repeats=options.verify_repeats,
-                   diagnose_failures=options.diagnose, syntax_check=options.syntax_check, lessons_path=options.lessons)
+                   diagnose_failures=options.diagnose, syntax_check=options.syntax_check, lessons_path=options.lessons,
+                   plan_audit=options.plan_audit)
     except KeyboardInterrupt:
         print("Stopped by user; interrupted runs are not valid autonomous demonstrations.", file=sys.stderr)
         return 130

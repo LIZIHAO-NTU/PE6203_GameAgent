@@ -1,6 +1,6 @@
 # MVP 0.2：观察式验收与独立复测
 
-> 本文是 0.2 的历史记录，保留当时的功能与测试结果。当前版本为 1.0 Beta 2（`1.0.0-beta.2`），安装使用见 [README.md](README.md)，最新能力筛查见 [CAPABILITY.md](CAPABILITY.md)，整合基线见 [INTEGRATION.md](INTEGRATION.md)；0.3 历史实测见 [GENERALIZATION.md](GENERALIZATION.md)。
+> 本文是 0.2 的历史记录，保留当时的功能与测试结果。当前版本为 1.0 Beta 3（`1.0.0-beta.3`），安装使用见 [README.md](README.md)，最新规划改进见 [PLANNING.md](PLANNING.md)，此前能力筛查见 [CAPABILITY.md](CAPABILITY.md)，整合基线见 [INTEGRATION.md](INTEGRATION.md)；0.3 历史实测见 [GENERALIZATION.md](GENERALIZATION.md)。
 
 本次是在原有 MVP 上适度扩展，重点提高测试可信度和失败诊断能力。保留 DeepSeek 接入、原有配置和启动方式，不增加复杂 UI、多 Agent 或游戏引擎。
 

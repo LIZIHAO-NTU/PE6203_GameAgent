@@ -73,7 +73,7 @@ class ChatClient:
     def ask_json(self, stage: str, system: str, prompt: str) -> dict:
         # One retry for transient transport / formatting failures. All attempts consume budget.
         last_error = None
-        attempts = 1 if stage == "diagnose" else 2
+        attempts = 1 if stage in {"diagnose", "plan_audit"} else 2
         for attempt in range(attempts):
             if self.calls >= self.max_calls or time.monotonic() >= self.deadline:
                 raise BudgetError("API call/time budget reached")

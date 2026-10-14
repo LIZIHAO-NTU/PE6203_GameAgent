@@ -17,7 +17,7 @@ def compact_failure(result):
             failed.append({"id": test["id"], "kind": test.get("failure_kind"),
                            "failed_step": test.get("failed_step"), "error": test.get("error", "")[:1000],
                            "observations": test.get("observations", [])[-2:]})
-            failed[-1]["actions"] = [{k: a[k] for k in ("step", "action", "arguments", "ok", "error", "elapsed_ms") if k in a}
+            failed[-1]["actions"] = [{k: a[k] for k in ("step", "stage", "action", "arguments", "ok", "error", "elapsed_ms") if k in a}
                                      for a in test.get("actions", [])[-8:]]
     return {"smoke": result.get("smoke"), "runtime_errors": result.get("runtime_errors", [])[:5],
             "quality_gate": result.get("quality_gate"),

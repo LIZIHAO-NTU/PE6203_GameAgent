@@ -15,6 +15,13 @@ Distinguish animation frames from discrete turns. Only require pause, timers, AI
 score or movement if the spec requires them. A board/card/logic game need not have a player.x.
 Plan the smallest complete implementation of ALL mandatory requirements, then optional polish.
 Create at most 12 requirements, 10 tests, 18 steps/test and 6 manual checks.
+EXECUTION ISOLATION IS MANDATORY: every test opens a NEW page in the original initial
+state, even if the previous test won or bought something. Never inherit previous-test
+state or captures. Put prerequisite ordinary inputs in this test's setup_steps array,
+then put observations/checks in steps. Existing steps may also contain their own setup.
+setup_steps + steps combined <=18; check steps must contain an explicit assertion.
+To test a post-purchase or terminal state, reproduce every prerequisite in THIS test.
+Do not start by asserting a non-initial balance/phase without first reaching it.
 Prefer 4..6 short high-value tests; merge related requirements rather than creating
 uncovered bookkeeping requirements. Preserve ALL mandatory original-spec obligations.
 Each wait.ms and key/keys hold_ms MUST be an integer 0..2000; longer bounded observation
@@ -47,7 +54,9 @@ manually rather than changing normal play. A core requirement stays core if manu
 Use realistic short interactions; total waits/holds/goal timeout budgets <=45000ms across the plan.
 Keep total goal budgets preferably <=30000ms, leaving browser overhead within a 60s worker timeout.
 Arrange deterministic initial conditions through normal user controls (no state setters).
-Each test runs in a fresh browser page. Define a read-only test contract:
+Each test runs in a fresh browser page. Optional setup_steps use the SAME DSL as steps,
+only on this page; they are not arbitrary JS, a state setter or a hidden scenario loader.
+Define a read-only test contract:
 window.__gameTest.getState() returns a fresh plain JSON snapshot of REAL live game state.
 state_contract is a FLAT map from dot paths to short string descriptions, e.g.
 {"phase":"string", "player.x":"number"}, not nested type objects.
@@ -142,6 +151,27 @@ cause from a timeout alone. Distinguish an implementation bug, inconsistent test
 unreliable test navigation, and missing evidence. Choose uncertain if evidence is insufficient.
 Never output code, revised tests or weaker requirements. A test_issue or tool_limit means
 unverified, not passed. This is a fallible model review, not an independent ground truth.
+"""
+
+PLAN_AUDIT_SYSTEM = """Review a DRAFT test plan BEFORE game generation and freezing.
+You receive only original_spec, draft_plan, execution_contract and deterministic_review;
+never game source, execution results or hidden acceptance tests. Output strict JSON:
+{"status":"approved|revised|unverified","reason":"short explanation","issues":[]}.
+Each issue: {"test_id":"existing ID","reason":"specific error","spec_evidence":"original-spec basis"}.
+Approved means no unresolved issues and no plan field. Unverified has no plan field.
+Revised requires a complete plan field and specific issues for every changed test.
+Check each test from a NEW page: reproduce prerequisite actions in setup_steps, trace
+legal transitions against the exact supplied grid/rules, compute expected resources,
+respect terminal locks and combined 18-step limits. Do not assume state from another test.
+You may correct a draft expectation ONLY from the original specification, not to make
+an implementation pass. Keep ALL requirement IDs/text/priorities/verification, test IDs,
+requirement_ids, state_contract and manual_checks unchanged. Do not drop tests, downgrade
+requirements or remove existing assertions. Keep each assertion's observation and
+comparison operator; only expected values/references and ordinary setup/input sequences
+may be corrected with cited original-spec evidence. Preserve every check when reorganizing.
+Do not invent game features, output game code or substitute new acceptance goals.
+If uncertain or unable to fit a correct test within the DSL, return unverified honestly.
+This review is fallible; do not claim semantic proof or expose hidden reasoning traces.
 """
 
 CODER_SYSTEM = """You implement a complete small browser game from scratch.

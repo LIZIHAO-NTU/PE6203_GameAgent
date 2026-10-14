@@ -113,7 +113,7 @@ def save_report(output, report):
 
 def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case=5,
               max_rounds=3, max_seconds=420, repeats=1, runner=run, verifier=verify,
-              verify_repeats=1, repair_mode="auto", diagnose_failures=False, syntax_check=False):
+              verify_repeats=1, repair_mode="auto", diagnose_failures=False, syntax_check=False, plan_audit=False):
     if not (1 <= max_total_calls <= 200 and 2 <= max_calls_per_case <= 30 and
             1 <= max_rounds <= 10 and 30 <= max_seconds <= 3600 and 1 <= repeats <= 10):
         raise ValueError("Invalid benchmark budget/repetition limits")
@@ -132,7 +132,7 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
               "max_rounds": max_rounds, "max_seconds_per_case": max_seconds,
               "repeats": repeats, "cases": rows}
     report["features"] = {"verify_repeats": verify_repeats, "repair_mode": repair_mode,
-                          "diagnose_failures": diagnose_failures, "syntax_check": syntax_check}
+                          "diagnose_failures": diagnose_failures, "syntax_check": syntax_check, "plan_audit": plan_audit}
     used, halted, active_row = 0, False, None
     try:
         for index, row in enumerate(rows):
@@ -152,7 +152,7 @@ def benchmark(config, suite_path, output, max_total_calls=20, max_calls_per_case
             exit_code = runner(config, case["spec"], destination, max_rounds=max_rounds,
                                max_calls=min(max_calls_per_case, remaining), max_seconds=max_seconds,
                                verify_repeats=verify_repeats, repair_mode=repair_mode,
-                               diagnose_failures=diagnose_failures, syntax_check=syntax_check)
+                               diagnose_failures=diagnose_failures, syntax_check=syntax_check, plan_audit=plan_audit)
             summary = json.loads((destination / "summary.json").read_text(encoding="utf-8"))
             usage = summary["usage"]
             count = usage["api_attempts"]

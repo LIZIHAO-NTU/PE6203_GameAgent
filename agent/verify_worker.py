@@ -9,7 +9,7 @@ import sys
 import time
 from urllib.parse import urlsplit
 
-from .contracts import compare, lookup, validate_plan
+from .contracts import compare, lookup, validate_plan, test_steps
 from .server import running_server
 from .evidence import file_hashes, runtime_metadata
 
@@ -225,8 +225,9 @@ def run_goal(page, step, captures):
 
 def run_test(page, test):
     captures, observations, actions = {}, [], []
-    for index, step in enumerate(test["steps"], start=1):
-        event = {"step": index, "action": step["action"], "arguments": step, "ok": False}
+    for index, step in enumerate(test_steps(test), start=1):
+        event = {"step": index, "action": step["action"], "arguments": step, "ok": False,
+                 "stage": "setup" if index <= len(test.get("setup_steps", [])) else "check"}
         actions.append(event)
         started = time.monotonic()
         try:

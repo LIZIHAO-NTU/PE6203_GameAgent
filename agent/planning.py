@@ -2,7 +2,7 @@
 from collections import Counter
 import json
 
-from .contracts import validate_plan
+from .contracts import validate_plan, test_steps
 from .quality import review_plan
 
 
@@ -29,7 +29,7 @@ def validate_recovery(previous, candidate):
         for test in tests if isinstance(tests, list) else []:
             if not isinstance(test, dict) or not isinstance(test.get("steps"), list):
                 continue
-            for step in test["steps"]:
+            for step in test_steps(test):
                 if not isinstance(step, dict) or step.get("action") not in {"assert", "assert_consistent"}:
                     continue
                 found.append(json.dumps(step, sort_keys=True, ensure_ascii=False))

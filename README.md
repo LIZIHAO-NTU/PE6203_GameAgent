@@ -1,8 +1,8 @@
-# PE6203 Game Agent — 1.0 Beta 2
+# PE6203 Game Agent — 1.0 Beta 3
 
-Current version: `1.0.0-beta.2` — a research beta, not a stable production release. This version addresses state-observation interoperability, planning feedback and capability-evaluation reporting. See [CAPABILITY.md](CAPABILITY.md) for the real-model screening and its unresolved limitations.
+Current version: `1.0.0-beta.3` — a research beta, not a stable production release. This version adds explicit per-test setup, pre-freeze planning review and conservative failure routing. See [PLANNING.md](PLANNING.md) for behavior, defaults and limits; [CAPABILITY.md](CAPABILITY.md) preserves the earlier real-model screening.
 
-当前版本：`1.0.0-beta.2`，定位为研究测试版，不代表生产级稳定正式版。本次改进状态观察兼容、规划反馈和能力评估统计。真实模型筛查及未解决短板见 [CAPABILITY.md](CAPABILITY.md)。历史记录保留原版本标记。
+当前版本：`1.0.0-beta.3`，定位为研究测试版，不代表生产级稳定正式版。本次增加独立准备步骤、冻结前计划审查与保守失败分流，默认值和边界见 [PLANNING.md](PLANNING.md)。[CAPABILITY.md](CAPABILITY.md) 保留此前真实模型筛查；历史记录不改写。
 
 A lightweight game-coding agent for the PE6203 group project: read a Markdown specification, generate vanilla HTML/CSS/JavaScript from scratch, run browser checks, and make bounded repairs from execution feedback.
 
@@ -18,9 +18,9 @@ This is a research beta, not a guarantee of success on arbitrary unseen games. S
 
 ## 1. How it works / 系统如何工作
 
-Version 1.0 Beta 2 retains incremental repair, failure routing, reproducible evidence and optional reliability checks in the existing single-agent loop. See [INTEGRATION.md](INTEGRATION.md) for the integration baseline and [CAPABILITY.md](CAPABILITY.md) for the latest assessment.
+Version 1.0 Beta 3 keeps one controller loop, with draft review before freezing and explicit setup on each fresh test page. See [INTEGRATION.md](INTEGRATION.md) for the integration baseline and [PLANNING.md](PLANNING.md) for the latest changes.
 
-1.0 Beta 2 保留原有单 Agent Loop 中的局部修复、失败分流、可复现证据与可选稳定性检查。整合基线与最新评估分别见上述双语文档。
+1.0 Beta 3 保持同一条 Agent Loop，加入冻结前草稿审查及每项测试的显式初始化。整合基线与最新改进分别见上述双语文档。
 
 ~~~text
 Spec → Plan → Generate → Browser verification → Bounded repair
@@ -161,6 +161,7 @@ Read `REPORT.md` and `summary.json`; opening a page or checking an exit code alo
 |---|---|---|
 | `automated_passed_manual_pending` | Selected automated checks passed; full acceptance remains pending. | 所选自动检查通过，完整游戏仍待验收。 |
 | `checks_failed` | Checks failed; a better launchable version may be preserved. | 检查失败，可能保留了可启动的较好版本。 |
+| `plan_review_required` | Review is unverified, a failed test has an initialization conflict, or repair/diagnosis remains inconclusive. No success claim; an existing game is preserved. | 审查未确认、失败测试有初始化矛盾或修复／诊断仍不明确；不算成功，有游戏则保留。 |
 | `partial_game_plan_failed` | Functional planning/recovery failed; startup-only evidence. | 功能规划／恢复失败，仅检查启动。 |
 | `partial_game_evidence_missing` | Valid format, insufficient core-interaction evidence. | 计划格式有效，但核心交互证据不足。 |
 | `unsupported_spec` | Outside the current scope; no silent substitution. | 超出当前范围，未擅自换技术实现。 |
@@ -237,6 +238,10 @@ This command makes no model calls and reads only immediate child runs. For bench
 
 ## 6. Tests and recorded results / 框架测试与实测记录
 
+Beta 3 validation uses simulated models, real browsers and read-only historical artifacts; **no new paid API experiment** was run. Its optional model-audit effectiveness with DeepSeek is not yet measured. See [PLANNING.md](PLANNING.md). Do not reuse Beta 2 paid results as a Beta 3 generation success rate.
+
+Beta 3 使用模拟模型、真实浏览器及历史产物只读复测，**未新增付费 API 实验**；可选模型审查在 DeepSeek 上的实际效果尚未测量。详见 [PLANNING.md](PLANNING.md)，不能把 Beta 2 的付费成绩当作 Beta 3 生成成功率。
+
 Version 1.0 Beta 2 has a small real DeepSeek screening documented in [CAPABILITY.md](CAPABILITY.md): 13 generations across baseline, optimized and new-variant batches, using 47 API attempts. These small deterministic fixtures do not establish arbitrary unseen-game reliability. Earlier 0.5/0.4/0.3 records below retain their original scope.
 
 1.0 Beta 2 的小型真实 DeepSeek 筛查详见 [CAPABILITY.md](CAPABILITY.md)：基线、优化及新变体三批共生成 13 次，消耗 47 次 API 尝试。这些简单确定性样例不能证明任意未知游戏可靠完成。下方 0.5／0.4／0.3 记录保留当时口径。
@@ -259,7 +264,17 @@ Leave `PLAYWRIGHT_CHANNEL` blank for Playwright Chromium. Temporary test artifac
 
 使用 Playwright Chromium 时将 `PLAYWRIGHT_CHANNEL` 留空。临时测试产物位于 `.codex-tmp/`；任务结束后清理本次临时文件，不误删其他人的材料。
 
-### Version 1.0 Beta 2 — 2026-10-14 / 当前版本框架验证
+### Version 1.0 Beta 3 — 2026-10-14 / 当前版本验证
+
+**195/195 framework tests passed, including 33 real-browser tests.** All prior 160 tests remain. No paid API calls were made for this release's validation.
+
+**195/195 项框架测试通过，含 33 项真实浏览器测试**，保留原有 160 项。本次验证未调用付费 API。
+
+See [PLANNING.md](PLANNING.md) for regression and read-only replay results. The audit is opt-in (`--plan-audit`), consumes at most one actual API attempt from the existing cap, and runs only before game generation/freezing. `inspect-plan` is zero-API.
+
+回归及只读复测记录见上述文档。`--plan-audit` 默认关闭，最多占用原预算内一次实际 API 尝试，仅在生成游戏和冻结计划前运行；`inspect-plan` 不调用模型。
+
+### Version 1.0 Beta 2 — 2026-10-14 / 历史版本框架验证
 
 **160/160 tests passed, including 27 real-browser tests.** All 143 previous tests are retained. These framework tests simulate model responses and are separate from the paid capability screening.
 
@@ -309,6 +324,7 @@ QUALITY.md             0.4 gates, recovery and limitations / 0.4 门禁、恢复
 INTEGRATION.md         Integrated reliability baseline / 可靠性整合基线
 CAPABILITY.md          Beta 2 capability screening and limits / Beta 2 能力筛查与短板
 CAPABILITY_RESULTS.json Sanitized run-level evidence / 脱敏逐次评估证据
+PLANNING.md            Beta 3 setup, review and routing / Beta 3 初始化、审查与分流
 ~~~
 
 - Each teammate creates their own environment and `.env`; never copy another person's key. 每个成员创建自己的环境和 `.env`，不复制他人的 key。

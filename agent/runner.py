@@ -8,7 +8,7 @@ import time
 
 from . import __version__
 from .contracts import plan_warnings, validate_plan, write_bundle
-from .prompts import CODER_SYSTEM, PLANNER_SYSTEM, DIAGNOSTIC_SYSTEM
+from .prompts import CODER_SYSTEM, PLANNER_SYSTEM, DIAGNOSTIC_SYSTEM, PLAN_AUDIT_SYSTEM
 from .provider import BudgetError, ChatClient
 from .trace import Trace
 from .state import AgentState, bundle_digest, compact_failure
@@ -20,6 +20,7 @@ from .artifacts import check_artifacts
 from .diagnostics import route_failure, validate_diagnosis
 from .evidence import runtime_metadata
 from .lessons import load_lessons, select_hints, record_recovery
+from .plan_review import EXECUTION_CONTRACT, PlanReviewError, inspect_plan, validate_audit, failure_fingerprint
 
 
 def verification_score(result):
@@ -66,7 +67,7 @@ def prefer_candidate(old, new):
 def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
         test_timeout=60, headful=False, client_factory=ChatClient, verifier=verify,
         preflight_fn=preflight, strict_plan=False, repair_mode="auto", syntax_check=False,
-        diagnose_failures=False, verify_repeats=1, lessons_path=None):
+        diagnose_failures=False, verify_repeats=1, lessons_path=None, plan_audit=False):
     if repair_mode not in {"auto", "full"}:
         raise ValueError("repair_mode must be auto or full")
     if type(verify_repeats) is not int or not 1 <= verify_repeats <= 3:
@@ -95,17 +96,18 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
     client = client_factory(config, trace, max_calls, deadline)
     summary = {"schema_version": 1, "agent_version": __version__, "run_id": output.name, "model": config.model,
                "original_spec_sha256": hashlib.sha256(spec.encode("utf-8")).hexdigest(),
-               "prompts_sha256": hashlib.sha256((PLANNER_SYSTEM + CODER_SYSTEM + DIAGNOSTIC_SYSTEM).encode("utf-8")).hexdigest(),
+               "prompts_sha256": hashlib.sha256((PLANNER_SYSTEM + CODER_SYSTEM + DIAGNOSTIC_SYSTEM + PLAN_AUDIT_SYSTEM).encode("utf-8")).hexdigest(),
                "limits": {"max_rounds": max_rounds, "max_calls": max_calls,
                           "max_seconds": max_seconds, "test_timeout": test_timeout},
                "features": {"repair_mode": repair_mode, "syntax_check": syntax_check,
                             "diagnose_failures": diagnose_failures, "verify_repeats": verify_repeats,
-                            "lessons_enabled": False, "lesson_store_sha256": None},
+                            "lessons_enabled": False, "lesson_store_sha256": None, "plan_audit": plan_audit},
                "runtime": {**runtime_metadata(), "browser": check.get("browser_version")},
                "base_url": config.base_url, "status": "started", "automated_checks_passed": False,
                "full_game_acceptance": None, "manual_interventions_during_run": 0,
                "planning_status": "pending", "infrastructure_checks_passed": False,
                "planning_recovery_attempted": False, "planning_recovered": False,
+               "plan_audit_status": "not_requested", "plan_audit_attempted": False,
                "first_playable_seconds": None, "had_verification_failure": False,
                "recovered_after_verification_failure": False, "attempts": [],
                "limitations": ["Vanilla offline 2D browser games only; not the full course scope.",
@@ -120,6 +122,8 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
     repeated_code = 0
     force_full = False
     diagnosis_attempted = False
+    last_failure = None
+    identical_failures = 0
     lesson_store = {"schema_version": 1, "records": []}
     lessons_enabled = False
     exit_code = 4
@@ -138,7 +142,8 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
         raw_plan = None
         for _ in range(2):
             prompt = json.dumps({"original_spec": spec, "validation_feedback": plan_error,
-                                 "previous_plan": raw_plan if plan_error else None}, ensure_ascii=False)
+                                 "previous_plan": raw_plan if plan_error else None,
+                                 "execution_contract": EXECUTION_CONTRACT}, ensure_ascii=False)
             raw_plan = client.ask_json("plan", PLANNER_SYSTEM, prompt)
             try:
                 plan = validate_plan(raw_plan)
@@ -156,6 +161,33 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                         decision="Generate original-spec game; startup-only checks are NOT functional acceptance")
         if summary["planning_status"] == "pending":
             summary["planning_status"] = "valid" if plan["supported"] else "unsupported"
+        summary["plan_review"] = inspect_plan(plan)
+        if plan_audit:
+            if not plan["supported"] or summary["planning_status"] != "valid":
+                summary["plan_audit_status"] = "not_applicable"
+            elif max_calls - client.calls < 2 or deadline - time.monotonic() < 15:
+                summary["plan_audit_status"] = "skipped_budget"
+                trace.event("plan_audit_skipped", reason="Reserve at least one call for generation; review not performed")
+            else:
+                trace.save("draft_plan.json", plan)
+                summary["draft_plan_sha256"] = hashlib.sha256((trace.root / "draft_plan.json").read_bytes()).hexdigest()
+                summary["plan_audit_attempted"] = True
+                try:
+                    raw_audit = client.ask_json("plan_audit", PLAN_AUDIT_SYSTEM, json.dumps({
+                        "original_spec": spec, "draft_plan": plan,
+                        "execution_contract": EXECUTION_CONTRACT, "deterministic_review": summary["plan_review"]}, ensure_ascii=False))
+                    trace.save("plan_audit_response.json", raw_audit)
+                    reviewed, audit = validate_audit(raw_audit, plan)
+                    summary["plan_audit_status"] = audit["status"]
+                    trace.save("plan_audit.json", audit)
+                    if audit["status"] == "unverified":
+                        raise PlanReviewError("Draft plan review is unverified: " + audit["reason"])
+                    plan = reviewed
+                    summary["plan_review"] = inspect_plan(plan)
+                except Exception as error:
+                    summary["plan_audit_status"] = "unverified"
+                    summary["plan_audit_error"] = trace.redact(str(error))
+                    raise PlanReviewError(summary["plan_audit_error"]) from None
         summary["gameplay"] = plan.get("gameplay")
         plan_path, plan_bytes, plan_hash = record_plan(trace, plan)
         summary["plan_sha256"] = plan_hash
@@ -240,6 +272,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                             recovered_raw = client.ask_json("plan_recovery", PLANNER_SYSTEM, json.dumps({
                                 "original_spec": spec, "previous_plan": raw_plan,
                                 "validation_feedback": plan_error, "recovery_mode": True,
+                                "execution_contract": EXECUTION_CONTRACT,
                                 "instruction": "Repair the functional plan against the original spec. Do not weaken earlier requirements or assertions. No game implementation or held-out checks are supplied."}, ensure_ascii=False))
                             trace.save("recovery_response.json", recovered_raw)
                             recovered = validate_recovery(raw_plan, recovered_raw)
@@ -255,6 +288,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                             summary.update(planning_status="recovered", planning_recovered=True,
                                            plan_sha256=plan_hash, active_plan=plan_path.name, gameplay=plan.get("gameplay"),
                                            plan_warnings=plan_warnings(plan), plan_quality=review_plan(plan))
+                            summary["plan_review"] = inspect_plan(plan)
                             trace.save("functional_plan_review.json", summary["plan_quality"])
                             trace.event("plan_recovered", plan_sha256=plan_hash,
                                         decision="New functional checks frozen before repair; startup results are not reused")
@@ -274,7 +308,11 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 if plan_path.read_bytes() != plan_bytes:
                     raise RuntimeError("Frozen plan changed during verification; refusing completion")
                 result = apply_gate(plan, result, summary["planning_status"])
-                result["repair_route"] = route_failure(result)
+                fingerprint = failure_fingerprint(result)
+                current_failure = (plan_hash, fingerprint) if fingerprint else None
+                identical_failures = identical_failures + 1 if current_failure and current_failure == last_failure else (1 if current_failure else 0)
+                last_failure = current_failure
+                result["repair_route"] = route_failure(result, summary["plan_review"], identical_failures >= 2)
                 trace.save(f"attempts/{round_number:02d}/verification.json", result)
                 elapsed = round(time.monotonic() - started, 3)
                 entry = {"round": round_number, "bundle_valid": True,
@@ -286,6 +324,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                          "plan_sha256": plan_hash, "quality_gate": result["quality_gate"],
                          "edit": edit_info, "artifacts_passed": artifacts["ok"],
                          "reliability": result.get("reliability"),
+                         "identical_assertion_failures": identical_failures,
                          "infrastructure_error": result.get("infrastructure_error")}
                 summary["attempts"].append(entry)
                 state.observe(round_number, digest, result, bundle.get("summary", ""), plan_hash)
@@ -325,6 +364,10 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 if route["action"] == "stop_unverified":
                     state.stop_reason = "verification_evidence_incomplete"
                     break
+                if route["action"] == "stop_test_review":
+                    state.stop_reason = "plan_review_required"
+                    summary["had_verification_failure"] = True
+                    break
                 summary["had_verification_failure"] = True
                 if (diagnose_failures and not diagnosis_attempted and route["action"] == "review_failure"
                         and max_calls - client.calls >= 2 and deadline - time.monotonic() >= 15
@@ -341,7 +384,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                         trace.save("diagnosis.json", diagnosis)
                         best[1]["diagnosis"] = diagnosis
                         summary["diagnosis"] = diagnosis
-                        if diagnosis["category"] in {"test_issue", "tool_limit"}:
+                        if diagnosis["category"] in {"test_issue", "tool_limit", "uncertain"}:
                             state.stop_reason = "diagnosis_unverified"
                             break
                 feedback = best[1]
@@ -369,6 +412,9 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 elif not result["quality_gate"]["functional_evidence_present"]:
                     summary.update(status="partial_game_evidence_missing", automated_checks_passed=False)
                     exit_code = 2
+                elif state.stop_reason in {"plan_review_required", "diagnosis_unverified"}:
+                    summary.update(status="plan_review_required", automated_checks_passed=False)
+                    exit_code = 2
                 if lessons_enabled and result.get("ok"):
                     try:
                         summary["lessons_recorded"] = record_recovery(lessons_path, lesson_store, state.repair_memory,
@@ -380,7 +426,8 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 exit_code = 2
     except (Exception, KeyboardInterrupt) as error:
         status = "interrupted" if isinstance(error, KeyboardInterrupt) else (
-            "budget_exhausted" if isinstance(error, BudgetError) else "run_error")
+            "budget_exhausted" if isinstance(error, BudgetError) else
+            "plan_review_required" if isinstance(error, PlanReviewError) else "run_error")
         summary.update(status=status,
                        error=trace.redact(str(error)))
         trace.event("run_error", error=summary["error"])
@@ -396,7 +443,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
         elif pending_candidate is not None and not (output / "game").exists():
             shutil.copytree(pending_candidate, output / "game")
             summary["preserved_unverified_candidate"] = True
-        exit_code = 130 if isinstance(error, KeyboardInterrupt) else 4
+        exit_code = 130 if isinstance(error, KeyboardInterrupt) else (2 if isinstance(error, PlanReviewError) else 4)
     finally:
         summary["settings_sha256"] = hashlib.sha256(json.dumps(summary["features"], sort_keys=True).encode()).hexdigest()
         summary["stop_reason"] = state.stop_reason or summary.get("status")
@@ -436,6 +483,7 @@ def write_report(output, summary):
               f"- Agent 版本：{summary.get('agent_version', 'unknown')}",
               f"- 停止原因：{summary.get('stop_reason')}",
               f"- 规划状态：{summary.get('planning_status')}",
+              f"- 冻结前模型审查：{summary.get('plan_audit_status', 'not_requested')}",
               f"- 功能规划恢复成功：{summary.get('planning_recovered', False)}",
               f"- 完成门禁：{json.dumps(summary.get('quality_gate'), ensure_ascii=False)}",
               f"- 玩法分析：{json.dumps(summary.get('gameplay'), ensure_ascii=False)}",
@@ -450,13 +498,18 @@ def write_report(output, summary):
         lines.append(f"- {warning['test_id']}: {warning['message']}")
     for warning in summary.get("plan_quality", {}).get("warnings", []):
         lines.append(f"- 计划质量提醒 {warning['test_id']}: {warning['message']}")
+    for warning in summary.get("plan_review", {}).get("warnings", []):
+        lines.append(f"- 独立初始化复核 {warning['test_id']}: {warning['message']}")
     lines += ["", "## 人工试玩待办", "", "- [ ] 根据原始需求完整试玩，检查自动测试遗漏和状态钩子的真实性。"]
     for check in summary.get("manual_checks", []):
         lines.append(f"- [ ] {check['requirement_id']}: {check['instruction']}")
     if summary.get("error"):
         lines += ["", "## 未完成或错误", "", summary["error"]]
-    lines += ["", "## 启动游戏", "", "在 Game Agent 项目目录运行：", "", "```powershell",
-              f'python -m agent serve "{output.resolve() / "game"}"', "```", "",
-              "原始需求、固定测试计划、API 用量、每轮结果和截图均位于 traces/。", "",
+    if (output / "game" / "index.html").is_file():
+        lines += ["", "## 启动游戏", "", "在 Game Agent 项目目录运行：", "", "```powershell",
+                  f'python -m agent serve "{output.resolve() / "game"}"', "```"]
+    else:
+        lines += ["", "本次未生成可启动游戏；请先查看上述停止原因及 traces/ 中的计划／审查记录。"]
+    lines += ["", "原始需求、已保存的计划、API 用量及可用的执行证据位于 traces/。", "",
               "计价依赖用户配置；失败/超时请求也可能计费，以服务商账单为准。"]
     (output / "REPORT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")

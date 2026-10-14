@@ -9,6 +9,7 @@ from .contracts import plan_warnings, validate_plan
 from .runner import apply_gate, requirement_results
 from .verification import failure_summary, verify, verify_repeated
 from .evidence import file_hashes
+from .plan_review import inspect_plan
 
 
 def recheck(game, plan_path, output, timeout=60, headful=False, verifier=verify, repeats=1):
@@ -45,6 +46,7 @@ def recheck(game, plan_path, output, timeout=60, headful=False, verifier=verify,
               "read_only_integrity": integrity,
               "automated_checks_passed": bool(result.get("ok")), "full_game_acceptance": None,
               "failure_summary": failure_summary(result), "plan_warnings": plan_warnings(plan),
+              "plan_review": inspect_plan(plan),
               "requirements": requirement_results(plan, result), "verification": result}
     (output / "recheck.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     lines = ["# 独立复测报告", "", "本次不调用模型、不改写游戏，不替代原始自主开发成绩。", "",

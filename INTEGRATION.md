@@ -4,9 +4,11 @@ Release identifier: `1.0.0-beta.1`. The 0.5 development snapshot was renamed wit
 
 版本标识：`1.0.0-beta.1`。由 0.5 开发快照更名而来，功能不变；下方验证记录来自该基线。测试版定位不保证任意未知游戏成功。
 
-This document preserves the integration baseline. Current Beta 2 changes and paid screening are in [CAPABILITY.md](CAPABILITY.md); the 143-test record below is historical, not the latest suite count.
+This document preserves the integration baseline. Beta 2 changes and paid screening are in [CAPABILITY.md](CAPABILITY.md); the 143-test record below is historical, not the latest suite count.
 
-本文保留整合基线；当前 Beta 2 改进与付费筛查见 [CAPABILITY.md](CAPABILITY.md)。下方 143 项为历史记录，不是最新测试数量。
+本文保留整合基线；Beta 2 改进与付费筛查见 [CAPABILITY.md](CAPABILITY.md)。下方 143 项为历史记录，不是最新测试数量。
+
+Latest Beta 3 planning changes / 最新 Beta 3 规划改进：[PLANNING.md](PLANNING.md)。
 
 This version extends one controller loop rather than stacking independent agent frameworks. All game code is still generated from the supplied specification. No external coding-agent runtime, game engine, game template or solver is embedded.
 

@@ -1,5 +1,16 @@
 # Changelog / 版本记录
 
+## 1.0.0-beta.3 — 2026-10-14
+
+- Add optional per-test `setup_steps` using the trusted input/observation DSL on each fresh page. Setup and check share one 18-step cap and existing wait budgets; checks still require assertions. Preserve legacy plans, record action stages, and protect setup assertions during late recovery.
+- 新增每项测试的独立准备步骤，与检查共用原有步骤／等待预算，仅用普通输入和观察；兼容旧计划，记录动作阶段，晚期恢复不得修改冻结的准备断言。
+- Add zero-API initial-state contradiction inspection and opt-in, one-attempt `--plan-audit` before game generation/freezing. Review sees only specification/draft, preserves requirement/test coverage and assertion observation/operator shapes, records original/revised plans, and cannot edit frozen acceptance. `inspect-plan` exposes read-only inspection.
+- 新增零 API 初始状态冲突检查及可选单次冻结前模型审查；只看需求／草稿，保留需求责任、测试覆盖及断言观察／操作，保存草稿／修订，不能改冻结验收。
+- Route failed initialization conflicts, repeated identical assertion evidence and uncertain diagnosis to `plan_review_required`, retaining artifacts without manufacturing success. Runtime/infrastructure failures remain distinct; conservative stopping can also stop a real implementation bug early.
+- 对初始化矛盾、修复后相同断言及不确定诊断停止盲修，保留产物但不算成功；区分运行／环境错误，明确保守停止可能提前终止真实代码缺陷的修复。
+- 195/195 tests passed, including 33 real-browser tests; all previous 160 retained. No paid API calls or new real-model effectiveness claims. See [PLANNING.md](PLANNING.md).
+- 195/195 项测试通过，含 33 项真实浏览器测试，保留原有 160 项；未调用付费 API，不声称真实模型效果已提升，详见上述双语说明。
+
 ## 1.0.0-beta.2 — 2026-10-14
 
 - Conduct a bounded real-model capability screening with DeepSeek: six baseline cases, six optimized cases and one new inventory/capacity variant; 47 API attempts in total. Preserve failures and distinguish self-authored tests from held-out checks. See [CAPABILITY.md](CAPABILITY.md).

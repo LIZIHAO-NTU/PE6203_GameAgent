@@ -1,6 +1,10 @@
 # Capability Screening / 小型能力评估
 
-Date / 日期：2026-10-14. Current release / 当前版本：`1.0.0-beta.2`.
+Date / 日期：2026-10-14. Evaluated release / 当时评估版本：`1.0.0-beta.2`.
+
+This report is historical. Beta 3 planning improvements and zero-API verification are documented in [PLANNING.md](PLANNING.md); the paid results below remain Beta 2 evidence.
+
+本文为历史评估。Beta 3 的规划改进及零 API 验证见 [PLANNING.md](PLANNING.md)；下方付费结果仍属于 Beta 2，不改写为新版成绩。
 
 ## 1. Decision / 结论
 
@@ -118,7 +122,7 @@ runs/capability_repeat_20261014/
 runs/capability_snapshot_recheck_20261014/
 ~~~
 
-Current-version screening commands / 当前版筛查命令（会重新付费；独立命令各自计数，不自动共享总预算）：
+Same-suite screening commands / 同套样例筛查命令（使用当前代码会测试当前版本；会重新付费，独立命令不自动共享总预算）：
 
 ~~~powershell
 python -m agent benchmark examples/benchmark/capability_suite.json --max-total-calls 24 --max-calls-per-case 5 --max-rounds 3 --max-seconds 420

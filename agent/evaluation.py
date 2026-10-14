@@ -20,7 +20,8 @@ def aggregate(root: Path):
                      "original_spec_sha256": data.get("original_spec_sha256"),
                      "settings_sha256": data.get("settings_sha256"),
                      "agent_source_sha256": data.get("runtime", {}).get("agent_source_sha256"),
-                     **{key: features.get(key) for key in ("repair_mode", "verify_repeats", "diagnose_failures", "syntax_check", "lessons_enabled")},
+                     **{key: features.get(key) for key in ("repair_mode", "verify_repeats", "diagnose_failures", "syntax_check", "lessons_enabled", "plan_audit")},
+                     "plan_audit_status": data.get("plan_audit_status"),
                      "automated_requirement_pass_rate": data.get("automated_requirement_pass_rate"),
                      "status": data["status"], "automated_checks_passed": bool(data.get("automated_checks_passed")),
                      "smoke_passed": bool(data.get("smoke_passed")),
@@ -59,7 +60,7 @@ def export(root: Path, output: Path):
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     fields = ["run_id", "model", "agent_version", "prompts_sha256", "original_spec_sha256",
-              "settings_sha256", "agent_source_sha256", "repair_mode", "verify_repeats", "diagnose_failures", "syntax_check", "lessons_enabled",
+              "settings_sha256", "agent_source_sha256", "repair_mode", "verify_repeats", "diagnose_failures", "syntax_check", "lessons_enabled", "plan_audit", "plan_audit_status",
               "automated_requirement_pass_rate", "status", "automated_checks_passed", "smoke_passed", "duration_seconds",
               "first_playable_seconds", "api_attempts", "prompt_tokens", "completion_tokens", "cached_input_tokens",
               "calls_with_unknown_usage", "estimated_known_usage_cost", "currency", "cost_is_complete",
