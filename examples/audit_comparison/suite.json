@@ -1,0 +1,29 @@
+{
+  "description": "Four new rule variants, frozen for audit-off/on comparison; no game implementations.",
+  "cases": [
+    {
+      "id": "one_way_gate",
+      "family": "grid_constraints",
+      "spec": "one_way_gate.md",
+      "acceptance_plan": "one_way_gate.acceptance.json"
+    },
+    {
+      "id": "stamp_exchange",
+      "family": "resource_arithmetic",
+      "spec": "stamp_exchange.md",
+      "acceptance_plan": "stamp_exchange.acceptance.json"
+    },
+    {
+      "id": "last_stone_loses",
+      "family": "terminal_rules",
+      "spec": "last_stone_loses.md",
+      "acceptance_plan": "last_stone_loses.acceptance.json"
+    },
+    {
+      "id": "energy_bridge",
+      "family": "combined_rules",
+      "spec": "energy_bridge.md",
+      "acceptance_plan": "energy_bridge.acceptance.json"
+    }
+  ]
+}

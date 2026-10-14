@@ -2,6 +2,10 @@
 
 Release / 版本：`1.0.0-beta.3`.
 
+Follow-up: a later real DeepSeek on/off comparison is recorded in [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md). This document's zero-API statements describe the initial implementation/verification session, not that later evaluation.
+
+后续说明：之后进行的真实 DeepSeek 开关对照见 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)。本文零 API 记录指初次实施／验证任务，不包括该后续评估。
+
 This update targets the planning weaknesses observed in [CAPABILITY.md](CAPABILITY.md). It does not expand the game platform, embed game templates, or claim that model-authored tests are now always correct. No paid API calls were made for this update.
 
 本次针对上一轮评估发现的规划短板，不扩大游戏技术平台，不加入游戏模板，也不声称自编测试已经可靠正确。本轮未调用付费 API。

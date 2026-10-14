@@ -2,7 +2,11 @@
 
 Current version: `1.0.0-beta.3` — a research beta, not a stable production release. This version adds explicit per-test setup, pre-freeze planning review and conservative failure routing. See [PLANNING.md](PLANNING.md) for behavior, defaults and limits; [CAPABILITY.md](CAPABILITY.md) preserves the earlier real-model screening.
 
+The subsequent four-case real DeepSeek audit on/off comparison is in [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md): 24 API attempts; keep audit opt-in/off by default. The agent implementation was unchanged for that evaluation.
+
 当前版本：`1.0.0-beta.3`，定位为研究测试版，不代表生产级稳定正式版。本次增加独立准备步骤、冻结前计划审查与保守失败分流，默认值和边界见 [PLANNING.md](PLANNING.md)。[CAPABILITY.md](CAPABILITY.md) 保留此前真实模型筛查；历史记录不改写。
+
+后续四类新需求的真实 DeepSeek 审查开关对照见 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)：共 24 次 API 尝试，结论为暂时保持审查默认关闭；评估期间未改 Agent 实现。
 
 A lightweight game-coding agent for the PE6203 group project: read a Markdown specification, generate vanilla HTML/CSS/JavaScript from scratch, run browser checks, and make bounded repairs from execution feedback.
 
@@ -15,6 +19,16 @@ A lightweight game-coding agent for the PE6203 group project: read a Markdown sp
 This is a research beta, not a guarantee of success on arbitrary unseen games. Scope: offline 2D browser games; historical tests include single-player games and local two-player tic-tac-toe, not networked multiplayer, 3D, backends or complex engines.
 
 当前为研究测试版，不保证任意未知游戏稳定完成。范围是离线二维网页游戏；已测包含单人玩法和本机双人井字棋，不含联网多人、3D、后端或复杂引擎。
+
+### Game UI language / 游戏界面语言
+
+Player-facing text defaults to **English**, even when the specification is written in another language. An explicit UI language requirement takes precedence, including bilingual or per-element instructions. Exact required display strings are preserved unless translation is explicitly requested. Technical identifiers, selectors, state keys and contract values are not translated. Planning, optional pre-freeze review and code generation/repair share this policy; frozen tests remain unchanged. No language switcher is added unless requested. This is a prompt policy, not a guarantee of model compliance; verify the generated UI. Existing saved games are unaffected.
+
+游戏标题、规则、按钮、提示及可访问性标签默认使用**英文**，不根据需求正文的语言自动切换。需求明确指定界面语言时优先遵从，包括双语或特定元素的语言要求；要求原样显示的文字保留原文，除非明确要求翻译。技术标识、选择器、状态字段及接口约定值不翻译。规划、可选冻结前审查、代码生成及修复共用此规则，不改动已冻结测试；未要求时不增加语言切换器。这是提示词规则，不保证模型每次都遵从，仍需检查生成界面；不影响已保存游戏。
+
+Language smoke checks (2026-10-14): a Chinese specification without a UI-language instruction produced English text; an English specification requesting Simplified Chinese produced Chinese text while preserving the exact button label `Again`. Both generated artifacts passed independent language and basic-play checks. Six real DeepSeek API attempts were used in total, including an initial default-language run blocked by a plan-schema error followed by a transport timeout; that blocked run is not counted as a success. These are small smoke checks, not a general compliance rate. Temporary test games were removed. Four prompt-wiring tests were added: the final full regression passed 199/199 tests, including 33 real-browser tests. The first full run had two browser errors (including a screenshot timeout); the affected 29-test group and subsequent full rerun passed without code or test-standard changes.
+
+语言冒烟检查（2026-10-14）：中文需求未指定界面语言时生成英文；英文需求指定简体中文时生成中文，并保留指定按钮文字 `Again`。两份产物均通过独立语言及基本玩法检查。总计 6 次真实 DeepSeek API 尝试，包含第一次默认语言测试中计划格式错误后的请求超时；该次阻断不计为成功。这是小样例检查，不是普遍遵从率；临时测试游戏已清理。新增 4 项提示词接入测试，最终全量回归 199/199 通过，含 33 项真实浏览器测试。首轮出现两项浏览器异常（含截图超时），随后对应 29 项测试组及完整套件复跑均通过，期间未修改代码或放宽验收。
 
 ## 1. How it works / 系统如何工作
 
@@ -238,9 +252,9 @@ This command makes no model calls and reads only immediate child runs. For bench
 
 ## 6. Tests and recorded results / 框架测试与实测记录
 
-Beta 3 validation uses simulated models, real browsers and read-only historical artifacts; **no new paid API experiment** was run. Its optional model-audit effectiveness with DeepSeek is not yet measured. See [PLANNING.md](PLANNING.md). Do not reuse Beta 2 paid results as a Beta 3 generation success rate.
+Initial Beta 3 implementation validation used simulated models, real browsers and read-only historical artifacts, with zero paid API calls; see [PLANNING.md](PLANNING.md). A subsequent fixed-version, four-case real-model comparison is recorded separately in [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md). Do not reuse Beta 2 paid results or either small sample as a general Beta 3 success rate.
 
-Beta 3 使用模拟模型、真实浏览器及历史产物只读复测，**未新增付费 API 实验**；可选模型审查在 DeepSeek 上的实际效果尚未测量。详见 [PLANNING.md](PLANNING.md)，不能把 Beta 2 的付费成绩当作 Beta 3 生成成功率。
+Beta 3 初次实施验证使用模拟模型、真实浏览器及历史产物只读复测，付费 API 为零，详见 [PLANNING.md](PLANNING.md)。之后固定版本的四类真实模型对照单独记录于 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)。不能把 Beta 2 成绩或这些小样本当作 Beta 3 的普遍成功率。
 
 Version 1.0 Beta 2 has a small real DeepSeek screening documented in [CAPABILITY.md](CAPABILITY.md): 13 generations across baseline, optimized and new-variant batches, using 47 API attempts. These small deterministic fixtures do not establish arbitrary unseen-game reliability. Earlier 0.5/0.4/0.3 records below retain their original scope.
 
@@ -266,9 +280,9 @@ Leave `PLAYWRIGHT_CHANNEL` blank for Playwright Chromium. Temporary test artifac
 
 ### Version 1.0 Beta 3 — 2026-10-14 / 当前版本验证
 
-**195/195 framework tests passed, including 33 real-browser tests.** All prior 160 tests remain. No paid API calls were made for this release's validation.
+**195/195 framework tests passed, including 33 real-browser tests.** All prior 160 tests remain. This initial framework validation used zero paid API calls; the later paid comparison did not change agent code or rerun this suite.
 
-**195/195 项框架测试通过，含 33 项真实浏览器测试**，保留原有 160 项。本次验证未调用付费 API。
+**195/195 项框架测试通过，含 33 项真实浏览器测试**，保留原有 160 项。该初次框架验证未调用付费 API；后续付费对照未改 Agent 代码，也未重跑该全量套件。
 
 See [PLANNING.md](PLANNING.md) for regression and read-only replay results. The audit is opt-in (`--plan-audit`), consumes at most one actual API attempt from the existing cap, and runs only before game generation/freezing. `inspect-plan` is zero-API.
 
@@ -325,6 +339,8 @@ INTEGRATION.md         Integrated reliability baseline / 可靠性整合基线
 CAPABILITY.md          Beta 2 capability screening and limits / Beta 2 能力筛查与短板
 CAPABILITY_RESULTS.json Sanitized run-level evidence / 脱敏逐次评估证据
 PLANNING.md            Beta 3 setup, review and routing / Beta 3 初始化、审查与分流
+AUDIT_COMPARISON.md    Fixed-version real-model audit comparison / 固定版本真实审查对照
+AUDIT_COMPARISON_RESULTS.json Sanitized comparison evidence / 脱敏对照证据
 ~~~
 
 - Each teammate creates their own environment and `.env`; never copy another person's key. 每个成员创建自己的环境和 `.env`，不复制他人的 key。

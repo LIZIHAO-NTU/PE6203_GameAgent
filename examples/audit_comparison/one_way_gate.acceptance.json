@@ -1,0 +1,292 @@
+{
+  "supported": true,
+  "title": "One-way gate independent checks",
+  "development_plan": [
+    "Independent selected checks frozen before either audit arm runs"
+  ],
+  "state_contract": {
+    "phase": "Real live phase"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial grid position and moves",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Wall and forbidden gate direction do not count",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Enter the gate only from below",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Exit wins and stops movement",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Restart restores initial position",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R6",
+      "text": "Walking into the lower-row wall is blocked",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial grid position and moves",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "1,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Wall and forbidden gate direction do not count",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "1,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Enter the gate only from below",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "2,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Exit wins and stops movement",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "3,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "3,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Restart restores initial position",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "1,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "description": "Walking into the lower-row wall is blocked",
+      "requirement_ids": [
+        "R6"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#moves",
+          "op": "eq",
+          "value": "2"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

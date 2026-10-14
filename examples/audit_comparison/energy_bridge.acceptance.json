@@ -1,0 +1,409 @@
+{
+  "supported": true,
+  "title": "Energy bridge independent checks",
+  "development_plan": [
+    "Independent selected checks frozen before either audit arm runs"
+  ],
+  "state_contract": {
+    "phase": "Real live phase"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial position energy and bridge",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Blocked input and off-switch Space cost nothing",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Switch toggles and consumes one energy",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Exit with zero energy wins before exhaustion and locks controls",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Exhausting energy off-exit loses and locks controls",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R6",
+      "text": "Restart after a terminal loss resets bridge and energy",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial position energy and bridge",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "1,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#bridge",
+          "op": "eq",
+          "value": "Closed"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Blocked input and off-switch Space cost nothing",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "1,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#bridge",
+          "op": "eq",
+          "value": "Closed"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Switch toggles and consumes one energy",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#bridge",
+          "op": "eq",
+          "value": "Open"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#bridge",
+          "op": "eq",
+          "value": "Closed"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Exit with zero energy wins before exhaustion and locks controls",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "3,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "3,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Exhausting energy off-exit loses and locks controls",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Lost"
+        },
+        {
+          "action": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "2,2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Lost"
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "description": "Restart after a terminal loss resets bridge and energy",
+      "requirement_ids": [
+        "R6"
+      ],
+      "steps": [
+        {
+          "action": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "action": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "key",
+          "key": "Space"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#pos",
+          "op": "eq",
+          "value": "1,1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#bridge",
+          "op": "eq",
+          "value": "Closed"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

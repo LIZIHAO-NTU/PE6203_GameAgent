@@ -1,0 +1,1327 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "protocol": {
+    "date": "2026-10-14",
+    "agent_version": "1.0.0-beta.3",
+    "git_commit": "1f8c548a279718ebea6221da4bbe30d0752463ae",
+    "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+    "model": "deepseek-flash",
+    "base_url": "https://api.deepseek.com",
+    "api_attempt_cap": 48,
+    "max_calls_per_run": 6,
+    "max_rounds": 3,
+    "max_seconds": 420,
+    "verify_repeats": 1,
+    "repair_mode": "auto",
+    "diagnose": false,
+    "syntax_check": false,
+    "lessons_enabled": false,
+    "model_config": {
+      "thinking": "disabled",
+      "json_mode": true,
+      "max_tokens": 12000,
+      "timeout_seconds": 90
+    },
+    "cases": [
+      {
+        "id": "one_way_gate",
+        "family": "grid_constraints",
+        "spec_sha256": "be79d3374603ffcf2d93065fad879f4e0b6746e18bab2bd595cfa28ece7370b2",
+        "acceptance_plan_sha256": "c4a137b6a2b3b515e0d6e8319d67e09ec2f0d7359cdb2fd94f6fce89c445d345"
+      },
+      {
+        "id": "stamp_exchange",
+        "family": "resource_arithmetic",
+        "spec_sha256": "97bc42d70079ba0bfd20c956c4157c3191d0cf690f1b00bd1e64a283f2d0851c",
+        "acceptance_plan_sha256": "fa6b2ab484f921cc5fb0ada79580f5b02eb4157a1aa229f46b1229992df0240d"
+      },
+      {
+        "id": "last_stone_loses",
+        "family": "terminal_rules",
+        "spec_sha256": "149f3c90fe0d919180421a8a3c8dbcf61507b56682a56ad36102e742b91b19bc",
+        "acceptance_plan_sha256": "d70031084cd36bf941b5fd80aa3c1d951650d23d45bbecdb7908547d235f7682"
+      },
+      {
+        "id": "energy_bridge",
+        "family": "combined_rules",
+        "spec_sha256": "ee8f69c63c6b322b37a39e09b8ed6a51bf633119df0286468d519c4ad7d17c08",
+        "acceptance_plan_sha256": "562c648bd922473f45a90ce132e5d70272d92551759be884d01941973855e1cb"
+      }
+    ],
+    "schedule": [
+      {
+        "case_id": "one_way_gate",
+        "plan_audit": false
+      },
+      {
+        "case_id": "one_way_gate",
+        "plan_audit": true
+      },
+      {
+        "case_id": "stamp_exchange",
+        "plan_audit": true
+      },
+      {
+        "case_id": "stamp_exchange",
+        "plan_audit": false
+      },
+      {
+        "case_id": "last_stone_loses",
+        "plan_audit": false
+      },
+      {
+        "case_id": "last_stone_loses",
+        "plan_audit": true
+      },
+      {
+        "case_id": "energy_bridge",
+        "plan_audit": true
+      },
+      {
+        "case_id": "energy_bridge",
+        "plan_audit": false
+      }
+    ],
+    "limitations": [
+      "One independent generation per case/condition; no seed control or statistical confidence.",
+      "Equal total per-run budgets; an audit uses one attempt that cannot then be spent on repair.",
+      "Independent checks are selected coverage, not complete game acceptance."
+    ]
+  },
+  "api_attempts": 24,
+  "prompt_tokens": 119910,
+  "completion_tokens": 67408,
+  "unknown_usage_calls": 0,
+  "actual_billed_cost": null,
+  "arm_results": {
+    "off": {
+      "assigned": 4,
+      "attempted": 4,
+      "artifact_produced": 4,
+      "independent_evaluated": 4,
+      "independent_passed": 4,
+      "self_plan_passed": 2,
+      "api_attempts": 12,
+      "actual_audit_api_attempts": 0,
+      "audit_status_counts": {
+        "not_requested": 4
+      },
+      "status_counts": {
+        "automated_passed_manual_pending": 2,
+        "plan_review_required": 2
+      },
+      "elapsed_seconds_sum": 216.874,
+      "prompt_tokens": 67574,
+      "completion_tokens": 34888,
+      "repeated_assertion_evidence_events": 2,
+      "invalid_bundle_rounds": 1,
+      "manually_reviewed_functional_plans": 4,
+      "manually_reviewed_active_tests": 23,
+      "confirmed_wrong_active_tests": 5,
+      "semantic_count_warning": "Different artifact/plan availability; counts are not comparable semantic error rates."
+    },
+    "on": {
+      "assigned": 4,
+      "attempted": 4,
+      "artifact_produced": 2,
+      "independent_evaluated": 2,
+      "independent_passed": 2,
+      "self_plan_passed": 0,
+      "api_attempts": 12,
+      "actual_audit_api_attempts": 3,
+      "audit_status_counts": {
+        "unverified": 2,
+        "approved": 1,
+        "not_applicable": 1
+      },
+      "status_counts": {
+        "plan_review_required": 3,
+        "partial_game_plan_failed": 1
+      },
+      "elapsed_seconds_sum": 165.061,
+      "prompt_tokens": 52336,
+      "completion_tokens": 32520,
+      "repeated_assertion_evidence_events": 1,
+      "invalid_bundle_rounds": 0,
+      "manually_reviewed_functional_plans": 1,
+      "manually_reviewed_active_tests": 6,
+      "confirmed_wrong_active_tests": 2,
+      "semantic_count_warning": "Different artifact/plan availability; counts are not comparable semantic error rates."
+    }
+  },
+  "runs": [
+    {
+      "case_id": "one_way_gate",
+      "plan_audit": false,
+      "status": "automated_passed_manual_pending",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/one_way_gate_off",
+      "run_id": "one_way_gate_01",
+      "family": "grid_constraints",
+      "spec_sha256": "be79d3374603ffcf2d93065fad879f4e0b6746e18bab2bd595cfa28ece7370b2",
+      "acceptance_plan_sha256": "c4a137b6a2b3b515e0d6e8319d67e09ec2f0d7359cdb2fd94f6fce89c445d345",
+      "generation_status": "automated_passed_manual_pending",
+      "exit_code": 0,
+      "usage": {
+        "api_attempts": 2,
+        "prompt_tokens": 7534,
+        "completion_tokens": 6759,
+        "cached_input_tokens": 896,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": true,
+      "model_plan_passed": true,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "valid",
+      "independent_passed": true,
+      "independent_tests_passed": 6,
+      "independent_tests_total": 6,
+      "independent_failure_kinds": [],
+      "duration_seconds": 41.437,
+      "plan_audit_status": "not_requested",
+      "plan_audit_attempted": false,
+      "stop_reason": "automated_checks_passed",
+      "original_plan_sha256": "31ff4f1f6f47faff6e0ab88510c081ca54469f68a410156888d77c6a50e81c8b",
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": null,
+      "planning_error": null,
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": false
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 1,
+        "code_1": 1
+      },
+      "artifact_produced": true,
+      "game_sha256": {
+        "game.js": "18ed4eca3037a24269dd6be1551d08b7739b2d012390698df487eaa988a99a61",
+        "index.html": "add0d60d5801b824a328fa2f5e8b6083acfb64d52051db769e4ffe16a1d260df"
+      },
+      "planning_recovery_error": null,
+      "planning_validation_errors": [],
+      "manual_interventions_during_run": 0,
+      "attempts": [
+        {
+          "round": 1,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "identical_assertion_failures": 0,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        }
+      ],
+      "manual_plan_review": {
+        "active_wrong_test_ids": [],
+        "active_reviewed_tests": 6,
+        "notes": [
+          "No executable expected-value contradiction found in the six frozen tests."
+        ]
+      },
+      "repeated_assertion_evidence_events": 0,
+      "repeat_acceptance": {
+        "api_calls": 0,
+        "passed": true,
+        "repetitions": 2,
+        "read_only_integrity": true
+      }
+    },
+    {
+      "case_id": "one_way_gate",
+      "plan_audit": true,
+      "status": "plan_review_required",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/one_way_gate_on",
+      "run_id": "one_way_gate_01",
+      "family": "grid_constraints",
+      "spec_sha256": "be79d3374603ffcf2d93065fad879f4e0b6746e18bab2bd595cfa28ece7370b2",
+      "acceptance_plan_sha256": "c4a137b6a2b3b515e0d6e8319d67e09ec2f0d7359cdb2fd94f6fce89c445d345",
+      "generation_status": "plan_review_required",
+      "exit_code": 2,
+      "usage": {
+        "api_attempts": 2,
+        "prompt_tokens": 6913,
+        "completion_tokens": 3384,
+        "cached_input_tokens": 2944,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": false,
+      "model_plan_passed": false,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "415e7df0125b093f5c5d10c62b42fdbb3d3ecb97409937046c06240433e90105",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "valid",
+      "duration_seconds": 20.515,
+      "plan_audit_status": "unverified",
+      "plan_audit_attempted": true,
+      "stop_reason": "plan_review_required",
+      "original_plan_sha256": null,
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": "Missing supported boolean",
+      "planning_error": null,
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": true
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 1,
+        "plan_audit": 1
+      },
+      "artifact_produced": false,
+      "game_sha256": null,
+      "planning_recovery_error": null,
+      "planning_validation_errors": [],
+      "manual_interventions_during_run": 0,
+      "attempts": [],
+      "manual_plan_review": {
+        "active_wrong_test_ids": null,
+        "active_reviewed_tests": 0,
+        "draft_wrong_test_ids": [],
+        "draft_reviewed_tests": 7,
+        "notes": [
+          "No executable expected-value contradiction found in the seven draft tests. The auditor requested revision but omitted the required plan field, preventing generation."
+        ]
+      },
+      "repeated_assertion_evidence_events": 0,
+      "repeat_acceptance": null
+    },
+    {
+      "case_id": "stamp_exchange",
+      "plan_audit": true,
+      "status": "plan_review_required",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/stamp_exchange_on",
+      "run_id": "stamp_exchange_01",
+      "family": "resource_arithmetic",
+      "spec_sha256": "97bc42d70079ba0bfd20c956c4157c3191d0cf690f1b00bd1e64a283f2d0851c",
+      "acceptance_plan_sha256": "fa6b2ab484f921cc5fb0ada79580f5b02eb4157a1aa229f46b1229992df0240d",
+      "generation_status": "plan_review_required",
+      "exit_code": 2,
+      "usage": {
+        "api_attempts": 2,
+        "prompt_tokens": 7053,
+        "completion_tokens": 5676,
+        "cached_input_tokens": 2688,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": false,
+      "model_plan_passed": false,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "415e7df0125b093f5c5d10c62b42fdbb3d3ecb97409937046c06240433e90105",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "valid",
+      "duration_seconds": 24.781,
+      "plan_audit_status": "unverified",
+      "plan_audit_attempted": true,
+      "stop_reason": "plan_review_required",
+      "original_plan_sha256": null,
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": "Setup and check together need 1..18 steps/test",
+      "planning_error": null,
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": true
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 1,
+        "plan_audit": 1
+      },
+      "artifact_produced": false,
+      "game_sha256": null,
+      "planning_recovery_error": null,
+      "planning_validation_errors": [],
+      "manual_interventions_during_run": 0,
+      "attempts": [],
+      "manual_plan_review": {
+        "active_wrong_test_ids": null,
+        "active_reviewed_tests": 0,
+        "draft_wrong_test_ids": [
+          "T3",
+          "T4"
+        ],
+        "draft_reviewed_tests": 5,
+        "notes": [
+          "T3 compares numeric state stamps to string 2. T4 assumes three affordable purchases from 7 coins despite cost 3, expecting three stamps and one remaining after delivery. Only two purchases succeed and delivery leaves zero.",
+          "Audit corrects these observed expectation/type errors, but expands T5 from 18 to 20 combined steps; candidate cannot be accepted."
+        ]
+      },
+      "repeated_assertion_evidence_events": 0,
+      "repeat_acceptance": null
+    },
+    {
+      "case_id": "stamp_exchange",
+      "plan_audit": false,
+      "status": "plan_review_required",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/stamp_exchange_off",
+      "run_id": "stamp_exchange_01",
+      "family": "resource_arithmetic",
+      "spec_sha256": "97bc42d70079ba0bfd20c956c4157c3191d0cf690f1b00bd1e64a283f2d0851c",
+      "acceptance_plan_sha256": "fa6b2ab484f921cc5fb0ada79580f5b02eb4157a1aa229f46b1229992df0240d",
+      "generation_status": "plan_review_required",
+      "exit_code": 2,
+      "usage": {
+        "api_attempts": 3,
+        "prompt_tokens": 14152,
+        "completion_tokens": 6694,
+        "cached_input_tokens": 7424,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": true,
+      "model_plan_passed": false,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "valid",
+      "independent_passed": true,
+      "independent_tests_passed": 6,
+      "independent_tests_total": 6,
+      "independent_failure_kinds": [],
+      "duration_seconds": 47.687,
+      "plan_audit_status": "not_requested",
+      "plan_audit_attempted": false,
+      "stop_reason": "plan_review_required",
+      "original_plan_sha256": "aceb9e1ac644a15e824b2cca2984d909acbdc244a7e0cc9031e6664d7fb2fdef",
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": null,
+      "planning_error": null,
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": false
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 1,
+        "code_1": 1,
+        "code_2": 1
+      },
+      "artifact_produced": true,
+      "game_sha256": {
+        "game.js": "f3d936a70546f7f5227285c8e7fe2dc9aa6d200fd623f8312639f9539e7a8344",
+        "index.html": "863ffb45baebc12e6b96bcc533fb3ad9cdaf2d10e000c476eac023759d47e94c"
+      },
+      "planning_recovery_error": null,
+      "planning_validation_errors": [],
+      "manual_interventions_during_run": 0,
+      "attempts": [
+        {
+          "round": 1,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 5,
+          "tests_total": 6,
+          "identical_assertion_failures": 1,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 1
+            },
+            "review_test_ids": [
+              "T3"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        {
+          "round": 2,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 5,
+          "tests_total": 6,
+          "identical_assertion_failures": 2,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 1
+            },
+            "review_test_ids": [
+              "T3"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        }
+      ],
+      "manual_plan_review": {
+        "active_wrong_test_ids": [
+          "T3"
+        ],
+        "active_reviewed_tests": 6,
+        "notes": [
+          "Fresh initial coins=7 can afford a 3-coin purchase. After click buy, coins=4 and stamps=1, not the asserted coins=7 and stamps=0."
+        ]
+      },
+      "repeated_assertion_evidence_events": 1,
+      "repeat_acceptance": {
+        "api_calls": 0,
+        "passed": true,
+        "repetitions": 2,
+        "read_only_integrity": true
+      }
+    },
+    {
+      "case_id": "last_stone_loses",
+      "plan_audit": false,
+      "status": "automated_passed_manual_pending",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/last_stone_loses_off",
+      "run_id": "last_stone_loses_01",
+      "family": "terminal_rules",
+      "spec_sha256": "149f3c90fe0d919180421a8a3c8dbcf61507b56682a56ad36102e742b91b19bc",
+      "acceptance_plan_sha256": "d70031084cd36bf941b5fd80aa3c1d951650d23d45bbecdb7908547d235f7682",
+      "generation_status": "automated_passed_manual_pending",
+      "exit_code": 0,
+      "usage": {
+        "api_attempts": 3,
+        "prompt_tokens": 14408,
+        "completion_tokens": 7640,
+        "cached_input_tokens": 6912,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": true,
+      "model_plan_passed": true,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "valid",
+      "independent_passed": true,
+      "independent_tests_passed": 6,
+      "independent_tests_total": 6,
+      "independent_failure_kinds": [],
+      "duration_seconds": 49.859,
+      "plan_audit_status": "not_requested",
+      "plan_audit_attempted": false,
+      "stop_reason": "automated_checks_passed",
+      "original_plan_sha256": "15f420445af289c7605649383a43307cd71cd43cb7401e9b253bb90462cdd973",
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": null,
+      "planning_error": null,
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": false
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 1,
+        "code_1": 1,
+        "code_2": 1
+      },
+      "artifact_produced": true,
+      "game_sha256": {
+        "game.js": "201379671185f202db94a033d2d01b34b23ffd51c1ae1c3ff528bbc94eaa57a1",
+        "index.html": "027b4eacc2d47927b957a09386d2606516cfc1a6d9f7c0f1ee67b2c804b17c43"
+      },
+      "planning_recovery_error": null,
+      "planning_validation_errors": [],
+      "manual_interventions_during_run": 0,
+      "attempts": [
+        {
+          "round": 1,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 4,
+          "tests_total": 5,
+          "identical_assertion_failures": 1,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 1
+            },
+            "review_test_ids": [
+              "T5"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Rendered startup check did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        {
+          "round": 2,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 5,
+          "tests_total": 5,
+          "identical_assertion_failures": 0,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        }
+      ],
+      "manual_plan_review": {
+        "active_wrong_test_ids": [],
+        "active_reviewed_tests": 5,
+        "notes": [
+          "Frozen test expectations follow the specified turns. First generated restart failed; one code repair fixed it, after which self and independent checks passed."
+        ]
+      },
+      "repeated_assertion_evidence_events": 0,
+      "repeat_acceptance": {
+        "api_calls": 0,
+        "passed": true,
+        "repetitions": 2,
+        "read_only_integrity": true
+      }
+    },
+    {
+      "case_id": "last_stone_loses",
+      "plan_audit": true,
+      "status": "plan_review_required",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/last_stone_loses_on",
+      "run_id": "last_stone_loses_01",
+      "family": "terminal_rules",
+      "spec_sha256": "149f3c90fe0d919180421a8a3c8dbcf61507b56682a56ad36102e742b91b19bc",
+      "acceptance_plan_sha256": "d70031084cd36bf941b5fd80aa3c1d951650d23d45bbecdb7908547d235f7682",
+      "generation_status": "plan_review_required",
+      "exit_code": 2,
+      "usage": {
+        "api_attempts": 4,
+        "prompt_tokens": 18576,
+        "completion_tokens": 6418,
+        "cached_input_tokens": 7552,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": true,
+      "model_plan_passed": false,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "415e7df0125b093f5c5d10c62b42fdbb3d3ecb97409937046c06240433e90105",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "valid",
+      "independent_passed": true,
+      "independent_tests_passed": 6,
+      "independent_tests_total": 6,
+      "independent_failure_kinds": [],
+      "duration_seconds": 48.921,
+      "plan_audit_status": "approved",
+      "plan_audit_attempted": true,
+      "stop_reason": "plan_review_required",
+      "original_plan_sha256": "9a52fd7187ed712910960516f1b2b450817266b8d288aab9ef948739800604a3",
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": null,
+      "planning_error": null,
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": true
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 1,
+        "plan_audit": 1,
+        "code_1": 1,
+        "code_2": 1
+      },
+      "artifact_produced": true,
+      "game_sha256": {
+        "game.js": "ef3f8f6687df43752c3b8cb16ae31de9ae68fd8a2103db642774245540dddb32",
+        "index.html": "2cdef8fc6bbc362de331119c8eb6a534084b1e12017cfaabd8be9e13a19752a1"
+      },
+      "planning_recovery_error": null,
+      "planning_validation_errors": [],
+      "manual_interventions_during_run": 0,
+      "attempts": [
+        {
+          "round": 1,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 4,
+          "tests_total": 6,
+          "identical_assertion_failures": 1,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 2
+            },
+            "review_test_ids": [
+              "T4",
+              "T5"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        {
+          "round": 2,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 4,
+          "tests_total": 6,
+          "identical_assertion_failures": 2,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 2
+            },
+            "review_test_ids": [
+              "T4",
+              "T5"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        }
+      ],
+      "manual_plan_review": {
+        "active_wrong_test_ids": [
+          "T4",
+          "T5"
+        ],
+        "active_reviewed_tests": 6,
+        "draft_wrong_test_ids": [
+          "T4",
+          "T5"
+        ],
+        "draft_reviewed_tests": 6,
+        "notes": [
+          "After A takes 2 then B takes 2, one stone remains and it is A's turn, not B's. If A takes the last stone, B wins; the audited T5 expects the opposite turn/winner. Auditor approved the erroneous draft."
+        ]
+      },
+      "repeated_assertion_evidence_events": 1,
+      "repeat_acceptance": {
+        "api_calls": 0,
+        "passed": true,
+        "repetitions": 2,
+        "read_only_integrity": true
+      }
+    },
+    {
+      "case_id": "energy_bridge",
+      "plan_audit": true,
+      "status": "partial_game_plan_failed",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/energy_bridge_on",
+      "run_id": "energy_bridge_01",
+      "family": "combined_rules",
+      "spec_sha256": "ee8f69c63c6b322b37a39e09b8ed6a51bf633119df0286468d519c4ad7d17c08",
+      "acceptance_plan_sha256": "562c648bd922473f45a90ce132e5d70272d92551759be884d01941973855e1cb",
+      "generation_status": "partial_game_plan_failed",
+      "exit_code": 2,
+      "usage": {
+        "api_attempts": 4,
+        "prompt_tokens": 19794,
+        "completion_tokens": 17042,
+        "cached_input_tokens": 8960,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": true,
+      "model_plan_passed": false,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "415e7df0125b093f5c5d10c62b42fdbb3d3ecb97409937046c06240433e90105",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "failed_startup_only",
+      "independent_passed": true,
+      "independent_tests_passed": 6,
+      "independent_tests_total": 6,
+      "independent_failure_kinds": [],
+      "duration_seconds": 70.844,
+      "plan_audit_status": "not_applicable",
+      "plan_audit_attempted": false,
+      "stop_reason": "startup_only_functional_acceptance_unverified",
+      "original_plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": null,
+      "planning_error": "Need 1..18 steps/test",
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": true
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 2,
+        "code_1": 1,
+        "plan_recovery": 1
+      },
+      "artifact_produced": true,
+      "game_sha256": {
+        "game.js": "a77869f0c9231eefc6b327f1a27be83d870393a4841b6dc011bc4f6f61d11c97",
+        "index.html": "85386d4d8d21514fd110a73f8d57685159fcc6f57ea67c60484e2f7fd626c253"
+      },
+      "planning_recovery_error": "Need 1..18 steps/test",
+      "planning_validation_errors": [
+        "Need 1..18 steps/test",
+        "Need 1..18 steps/test"
+      ],
+      "manual_interventions_during_run": 0,
+      "attempts": [
+        {
+          "round": 1,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 1,
+          "tests_total": 1,
+          "identical_assertion_failures": 0,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": false,
+              "evidence_complete": true,
+              "reasons": [
+                "Functional acceptance has not been established by this plan"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        }
+      ],
+      "manual_plan_review": {
+        "active_wrong_test_ids": null,
+        "active_reviewed_tests": 0,
+        "notes": [
+          "Both planning attempts and late recovery exceed the DSL step limit. Model audit is not_applicable, not a successful or failed semantic review. Only a startup fallback plan is frozen; excluded from functional-test error counts."
+        ]
+      },
+      "repeated_assertion_evidence_events": 0,
+      "repeat_acceptance": {
+        "api_calls": 0,
+        "passed": true,
+        "repetitions": 2,
+        "read_only_integrity": true
+      }
+    },
+    {
+      "case_id": "energy_bridge",
+      "plan_audit": false,
+      "status": "plan_review_required",
+      "attempted": true,
+      "local_batch": "runs/audit_comparison_20261014/energy_bridge_off",
+      "run_id": "energy_bridge_01",
+      "family": "combined_rules",
+      "spec_sha256": "ee8f69c63c6b322b37a39e09b8ed6a51bf633119df0286468d519c4ad7d17c08",
+      "acceptance_plan_sha256": "562c648bd922473f45a90ce132e5d70272d92551759be884d01941973855e1cb",
+      "generation_status": "plan_review_required",
+      "exit_code": 2,
+      "usage": {
+        "api_attempts": 4,
+        "prompt_tokens": 31480,
+        "completion_tokens": 13795,
+        "cached_input_tokens": 18048,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "launch_passed": true,
+      "model_plan_passed": false,
+      "prompts_sha256": "4ac68f8def808506ba73ddb410b191541b7142522c77a5de53c4f1fa3d832bf9",
+      "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+      "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+      "limits": {
+        "max_rounds": 3,
+        "max_calls": 6,
+        "max_seconds": 420,
+        "test_timeout": 60
+      },
+      "planning_status": "valid",
+      "independent_passed": true,
+      "independent_tests_passed": 6,
+      "independent_tests_total": 6,
+      "independent_failure_kinds": [],
+      "duration_seconds": 77.891,
+      "plan_audit_status": "not_requested",
+      "plan_audit_attempted": false,
+      "stop_reason": "plan_review_required",
+      "original_plan_sha256": "447eeaf58a76f394acc926c32736f09ceba9ddc97392726366e4ce030299150d",
+      "plan_review": {
+        "warnings": [],
+        "execution_contract": {
+          "isolation": "Each test runs on its own NEW page at the original initial state.",
+          "setup": "Optional setup_steps use ordinary input/observation before this test's check steps.",
+          "no_inheritance": "No state or captures carry between tests; repeat all prerequisites locally.",
+          "limits": {
+            "combined_setup_and_check_steps": 18,
+            "plan_wait_budget_ms": 45000,
+            "individual_wait_or_hold_ms": 2000,
+            "individual_goal_timeout_ms": 8000
+          },
+          "safety": "No state setters, injected game scripts or weakening frozen acceptance."
+        },
+        "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."
+      },
+      "plan_audit_error": null,
+      "planning_error": null,
+      "features": {
+        "repair_mode": "auto",
+        "syntax_check": false,
+        "diagnose_failures": false,
+        "verify_repeats": 1,
+        "lessons_enabled": false,
+        "lesson_store_sha256": null,
+        "plan_audit": false
+      },
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "b2355ec08cb1a889699b77e9fc63ba0f3d455712e5694ef6cedd3e7432bcb20f",
+        "browser": "155.0.4283.45"
+      },
+      "api_stage_attempts": {
+        "plan": 1,
+        "code_1": 1,
+        "code_2": 1,
+        "code_3": 1
+      },
+      "artifact_produced": true,
+      "game_sha256": {
+        "game.js": "8622a1bac2f12556cab258de2f85590497a580202fe5195382acbc342bf0ae03",
+        "index.html": "236b6ad3453d8357f4c98369fdcdefa5bd2b286c3c7b9fd7822818c11245cb11"
+      },
+      "planning_recovery_error": null,
+      "planning_validation_errors": [],
+      "manual_interventions_during_run": 0,
+      "attempts": [
+        {
+          "round": 1,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 2,
+          "tests_total": 6,
+          "identical_assertion_failures": 1,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 4
+            },
+            "review_test_ids": [
+              "T2",
+              "T3",
+              "T5",
+              "T6"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        {
+          "round": 2,
+          "bundle_valid": false,
+          "bundle_validation_error": "Need 1..20 files",
+          "tests_passed": null,
+          "tests_total": null,
+          "identical_assertion_failures": null,
+          "failure_summary": null
+        },
+        {
+          "round": 3,
+          "bundle_valid": true,
+          "bundle_validation_error": null,
+          "tests_passed": 2,
+          "tests_total": 6,
+          "identical_assertion_failures": 2,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 4
+            },
+            "review_test_ids": [
+              "T2",
+              "T3",
+              "T5",
+              "T6"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        }
+      ],
+      "manual_plan_review": {
+        "active_wrong_test_ids": [
+          "T2",
+          "T3",
+          "T5",
+          "T6"
+        ],
+        "active_reviewed_tests": 6,
+        "notes": [
+          "T2 and T3 expect the initial right move to enter a closed bridge and spend energy, contrary to the specification. T2 also compares the x,y position text to scalar player.x.",
+          "T5 starts with the same blocked right move, then reaches floor (1,2), not switch (2,2); Space is a no-op, and returning up leaves energy=3 and Playing, not energy=0 and Lost.",
+          "T6 likewise reaches (1,2) and presses Space off the switch: energy remains 4 and bridge closed, not energy=3 and bridge open."
+        ]
+      },
+      "repeated_assertion_evidence_events": 1,
+      "repeat_acceptance": {
+        "api_calls": 0,
+        "passed": true,
+        "repetitions": 2,
+        "read_only_integrity": true
+      }
+    }
+  ],
+  "manual_label_method": "Assistant manually traced the recorded executable tests against the frozen original specifications after completion; not blinded, not an automatic semantic oracle. Counts refer to distinct test IDs, not assertions or failed attempts.",
+  "decision": "Keep plan-audit opt-in/off by default; improve review response reliability and failure handling before further expansion.",
+  "limitations": [
+    "One stochastic generation per case/condition, no seed control, independent drafts differ.",
+    "Actual model review ran in three of four on assignments; energy case was structurally invalid before review.",
+    "Absent artifacts are missing independent evidence, not proof the game implementation is wrong.",
+    "Repeated validation uses the same artifacts, not extra generated samples.",
+    "Independent checks cover selected obligations only. Screenshot spot checks are not full human gameplay acceptance.",
+    "Elapsed-time sums include early stops and acceptance; faster aborted runs are not efficiency gains.",
+    "Pricing not configured, provider billing not inspected; token usage is not an actual monetary cost.",
+    "No causal success-rate improvement or regression estimate from this small sample."
+  ]
+}

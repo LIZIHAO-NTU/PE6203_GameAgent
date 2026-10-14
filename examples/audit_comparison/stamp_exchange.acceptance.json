@@ -1,0 +1,359 @@
+{
+  "supported": true,
+  "title": "Stamp exchange independent checks",
+  "development_plan": [
+    "Independent selected checks frozen before either audit arm runs"
+  ],
+  "state_contract": {
+    "phase": "Real live phase"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial resources",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Earn then buy uses exact arithmetic",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Insufficient coins do not buy",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Partial delivery is ignored",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Delivery consumes two stamps and locks terminal actions",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R6",
+      "text": "Restart from win restores initial resources",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial resources",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "7"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Earn then buy uses exact arithmetic",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#earn"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "9"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "6"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Insufficient coins do not buy",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Partial delivery is ignored",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Delivery consumes two stamps and locks terminal actions",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "click",
+          "selector": "#earn"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "description": "Restart from win restores initial resources",
+      "requirement_ids": [
+        "R6"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#buy"
+        },
+        {
+          "action": "click",
+          "selector": "#deliver"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#coins",
+          "op": "eq",
+          "value": "7"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stamps",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#delivered",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

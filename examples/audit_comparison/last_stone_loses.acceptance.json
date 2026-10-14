@@ -1,0 +1,366 @@
+{
+  "supported": true,
+  "title": "Last stone loses independent checks",
+  "development_plan": [
+    "Independent selected checks frozen before either audit arm runs"
+  ],
+  "state_contract": {
+    "phase": "Real live phase"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial turn and stones",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Nonterminal moves alternate",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Oversized take at one stone is ignored",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "A takes last and B wins with terminal lock",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "B can lose by taking the last stone",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R6",
+      "text": "Restart from finished restores everything",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial turn and stones",
+      "requirement_ids": [
+        "R1"
+      ],
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#winner",
+          "op": "eq",
+          "value": "-"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Nonterminal moves alternate",
+      "requirement_ids": [
+        "R2"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#take1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "B"
+        },
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Oversized take at one stone is ignored",
+      "requirement_ids": [
+        "R3"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "A takes last and B wins with terminal lock",
+      "requirement_ids": [
+        "R4"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "click",
+          "selector": "#take1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#winner",
+          "op": "eq",
+          "value": "B"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Finished"
+        },
+        {
+          "action": "click",
+          "selector": "#take1"
+        },
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#winner",
+          "op": "eq",
+          "value": "B"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "B can lose by taking the last stone",
+      "requirement_ids": [
+        "R5"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "click",
+          "selector": "#take1"
+        },
+        {
+          "action": "click",
+          "selector": "#take1"
+        },
+        {
+          "action": "click",
+          "selector": "#take1"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#winner",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "B"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Finished"
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "description": "Restart from finished restores everything",
+      "requirement_ids": [
+        "R6"
+      ],
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "click",
+          "selector": "#take2"
+        },
+        {
+          "action": "click",
+          "selector": "#take1"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#stones",
+          "op": "eq",
+          "value": "5"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#winner",
+          "op": "eq",
+          "value": "-"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#status",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}
