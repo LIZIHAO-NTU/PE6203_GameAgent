@@ -1,10 +1,10 @@
 # PlayForge: Build a Coding Agent That Can Build a Game
 
-Current version: `1.1.0` — an experimental course-project release, not a production reliability guarantee. Adds structured expectation/assertion agreement, native form-input tools, six small cross-mechanic samples and an optional read-only run dashboard. See [RELEASE_1_1.md](RELEASE_1_1.md) for evidence and limits; [EXTENSION_PLAN.md](EXTENSION_PLAN.md) tracks implemented and deferred work. Historical evaluations remain unchanged.
+Current version: `1.2.0` — an experimental course-project release, not a production reliability guarantee. Adds located planning feedback, evidence-linked repair scenarios, an explicit blocked-repair response and joint self/independent check metrics. See [RELEASE_1_2.md](RELEASE_1_2.md) for real default-mode baseline, targeted follow-ups and new mixed-rule samples. [RELEASE_1_1.md](RELEASE_1_1.md) preserves the earlier expansion; [EXTENSION_PLAN.md](EXTENSION_PLAN.md) tracks deferred work.
 
 The subsequent four-case real DeepSeek audit on/off comparison is in [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md): 24 API attempts; keep audit opt-in/off by default. The agent implementation was unchanged for that evaluation.
 
-当前版本：`1.1.0`，改用常规版本编号，仍是实验性课程项目，不保证生产级稳定。本轮增加结构化预期与断言核对、原生表单输入工具、六类小规模玩法样本及可选只读运行状态页。实测证据与限制见 [RELEASE_1_1.md](RELEASE_1_1.md)，已做和暂缓项目见 [EXTENSION_PLAN.md](EXTENSION_PLAN.md)，历史评估不改写。
+当前版本：`1.2.0`，仍是实验性课程项目。本轮增加具体测试／步骤错误定位、按证据组织的修复反馈、明确的修复待复核响应及自测与独立检查联合指标。真实默认模式基线、定向复测及新规则组合见 [RELEASE_1_2.md](RELEASE_1_2.md)。保留 1.1.0 的输入工具、可选摘要核对及只读状态页，不改历史评估。
 
 后续四类新需求的真实 DeepSeek 审查开关对照见 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)：共 24 次 API 尝试，结论为暂时保持审查默认关闭；评估期间未改 Agent 实现。
 
@@ -278,7 +278,27 @@ Leave `PLAYWRIGHT_CHANNEL` blank for Playwright Chromium. Temporary test artifac
 
 使用 Playwright Chromium 时将 `PLAYWRIGHT_CHANNEL` 留空。临时测试产物位于 `.codex-tmp/`；任务结束后清理本次临时文件，不误删其他人的材料。
 
-### Version 1.1.0 — 2026-10-16 / 当前版本验证
+### Version 1.2.0 — 2026-10-17 / 当前版本验证
+
+Located validation errors identify the test, setup/check index and combined step. Repair feedback links the failed action to frozen requirements and actual/expected observations; full evidence remains in traces. No new provider, arbitrary script tool, game template or multi-agent framework is added.
+
+校验反馈指出具体测试、准备／检查下标及合并步骤；修复反馈关联失败动作、冻结需求及实际／预期观察，完整记录仍留在 traces。不新增模型适配、任意脚本工具、游戏模板或多 Agent 框架。
+
+After failed verification, the coder may return only a validated `blocked` object citing actual failed tests. The controller preserves the best artifact, leaves the frozen plan unchanged and reports `plan_review_required`, never success. This is model-reported uncertainty, not an independent semantic detector; contradictory repairs can still be missed.
+
+验证失败后，模型可返回引用真实失败测试的 `blocked` 响应。控制器保留较好产物、不改冻结计划，标记待复核而非成功。这仍依赖模型识别问题，不是独立规则真值判定，不能保证发现所有错误修复。
+
+The benchmark now reports `joint_selected_checks_passed` and its attempted-run rate: both self-plan and held-out selected checks must pass. Missing independent evidence does not count as confirmed success. Full gameplay acceptance remains separate. See [RELEASE_1_2.md](RELEASE_1_2.md) and [RELIABILITY_1_2_RESULTS.json](RELIABILITY_1_2_RESULTS.json); no universal success-rate or cost reduction claim is made.
+
+新增联合通过数量及按尝试次数计算的比例：自测和独立所选检查必须同时通过，缺失独立证据不计确认通过；仍不是完整玩法验收，不声称通用成功率或成本下降。
+
+New mixed-rule evaluation / 新组合评估（生成消耗 API）：
+
+~~~powershell
+python -m agent benchmark examples/reliability_1_2/suite.json --output runs/mixed_trial --max-total-calls 8 --max-calls-per-case 4 --max-rounds 3 --max-seconds 300
+~~~
+
+### Version 1.1.0 — 2026-10-16 / 历史版本验证
 
 See [RELEASE_1_1.md](RELEASE_1_1.md) and [EXPANSION_RESULTS.json](EXPANSION_RESULTS.json). Supplied structured summaries detect disagreement with literal assertions before freezing; they do not prove arithmetic or interpret arbitrary prose. Requesting these duplicate lists is experimental and **off by default** because real trials showed planning failures; opt in with `--structured-expectations` for generation or benchmark. Supplied mismatches are always rejected, never silently discarded. Native `fill` / `select_option` use real browser events; `source: "value"` observes form values. Password/file/hidden inputs and arbitrary script actions are not added. Input echo alone is not a gameplay check.
 
@@ -372,6 +392,9 @@ AUDIT_COMPARISON_RESULTS.json Sanitized comparison evidence / 脱敏对照证据
 TEST_RELIABILITY.md    Beta 4 changes, comparison and rehearsal / Beta 4 改进、对照与演练
 RELIABILITY_RESULTS.json Sanitized Beta 4 evidence / Beta 4 脱敏证据
 RELEASE_1_1.md         1.1.0 changes, evaluation and limits / 扩展、评估与边界
+RELEASE_1_2.md         1.2.0 feedback, real baseline and mixed rules / 反馈、真实基线与规则组合
+RELIABILITY_1_2_RESULTS.json Sanitized 1.2.0 evaluation evidence / 1.2.0 脱敏评估证据
+examples/reliability_1_2/ Mixed-rule English requirements and held-out checks / 组合规则英文需求及独立检查
 EXPANSION_RESULTS.json Sanitized initial/follow-up/replay evidence / 首批、复测及复放证据
 examples/expansion_1_1/ Six English specifications and held-out checks / 六类英文需求及独立检查
 EXTENSION_PLAN.md     Implemented scope and deferred work / 已实施范围与暂缓项目

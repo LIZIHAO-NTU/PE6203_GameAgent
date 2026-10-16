@@ -13,6 +13,7 @@ from .provider import BudgetError, ChatClient
 from .trace import Trace
 from .state import AgentState, bundle_digest, compact_failure
 from .planning import startup_only_plan, validate_recovery
+from .feedback import validation_feedback, repair_feedback
 from .quality import completion_gate, review_plan
 from .verification import failure_summary, preflight, verify, verify_repeated
 from .editing import resolve_edit
@@ -144,9 +145,11 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 trace.event("lessons_disabled", reason=trace.redact(str(error)))
         print("[2/4] Planning requirements and frozen acceptance tests...", flush=True)
         plan_error = None
+        plan_details = None
         raw_plan = None
         for _ in range(2):
             prompt = json.dumps({"original_spec": spec, "validation_feedback": plan_error,
+                                 "validation_details": plan_details,
                                  "previous_plan": raw_plan if plan_error else None,
                                  "execution_contract": EXECUTION_CONTRACT}, ensure_ascii=False)
             raw_plan = client.ask_json("plan", planning_system, prompt)
@@ -155,7 +158,8 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 break
             except (ValueError, TypeError, KeyError) as error:
                 plan_error = str(error)
-                trace.event("plan_validation_failed", error=plan_error)
+                plan_details = validation_feedback(error)
+                trace.event("plan_validation_failed", error=plan_error, details=plan_details)
         else:
             if strict_plan or not isinstance(raw_plan, dict) or raw_plan.get("supported") is not True:
                 raise ValueError("Could not produce a valid test plan: " + str(plan_error))
@@ -209,8 +213,11 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 if time.monotonic() >= deadline:
                     raise BudgetError("Run time budget reached")
                 print(f"[3/4] Generation / repair {round_number}/{max_rounds}...", flush=True)
+                current_feedback = repair_feedback(feedback, plan) if feedback and "tests" in feedback else feedback
+                if current_feedback:
+                    trace.save(f"attempts/{round_number:02d}/model_feedback.json", current_feedback)
                 prompt = json.dumps({"original_spec": spec, "frozen_plan": plan,
-                    "previous_version": previous, "verification_feedback": compact_failure(feedback) if feedback and "tests" in feedback else feedback,
+                    "previous_version": previous, "verification_feedback": current_feedback,
                     "repair_memory": state.context(),
                     "planning_status": summary["planning_status"],
                     "requested_output_mode": "replace_files" if previous and repair_mode == "auto" and not force_full else "full",
@@ -218,6 +225,17 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     "debug_hints": select_hints(lesson_store, feedback) if lessons_enabled else [],
                     "remaining_seconds": max(0, int(deadline - time.monotonic()))}, ensure_ascii=False)
                 response = client.ask_json(f"code_{round_number}", CODER_SYSTEM, prompt)
+                if isinstance(response, dict) and "blocked" in response:
+                    if set(response) != {"blocked"} or not best or not feedback or "tests" not in feedback:
+                        raise ValueError("Blocked response requires prior failed verification and no proposed file edits")
+                    blocked = validate_diagnosis(response["blocked"], feedback)
+                    if blocked["category"] == "code_error":
+                        raise ValueError("A demonstrated code error should be repaired, not labelled blocked")
+                    summary["repair_blocked"] = blocked
+                    trace.event("repair_blocked", **blocked)
+                    trace.save("repair_blocked.json", blocked)
+                    state.stop_reason = "diagnosis_unverified"
+                    break
                 attempt_dir = trace.root / "attempts" / f"{round_number:02d}"
                 candidate = attempt_dir / "game"
                 try:

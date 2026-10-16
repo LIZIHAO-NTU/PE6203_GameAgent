@@ -1,0 +1,7 @@
+{
+  "description":"Matched small follow-up on the observed false-positive repair and real-time planning failures. Not a general success-rate estimate.",
+  "cases":[
+    {"id":"word_lock","family":"word_input","spec":"word_lock.md","acceptance_plan":"word_lock.acceptance.json"},
+    {"id":"platform_hop","family":"platform_physics","spec":"platform_hop.md","acceptance_plan":"platform_hop.acceptance.json"}
+  ]
+}

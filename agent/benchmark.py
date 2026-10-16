@@ -64,6 +64,10 @@ def metrics(rows):
     return {"scheduled": len(rows), "attempted": sum(r.get("attempted", False) for r in rows),
         **coverage(rows), "status_counts": dict(Counter(r.get("status", "unknown") for r in rows)),
         "api_attempts": sum(r.get("usage", {}).get("api_attempts", 0) for r in rows),
+        "joint_selected_checks_passed": sum(r.get("model_plan_passed") is True and r.get("independent_passed") is True for r in rows),
+        "joint_selected_checks_rate_over_attempted": (
+            sum(r.get("model_plan_passed") is True and r.get("independent_passed") is True for r in rows)
+            / sum(r.get("attempted") is True for r in rows)) if any(r.get("attempted") is True for r in rows) else None,
         "launch_rate": sum(r.get("launch_passed", False) for r in rows) / len(rows) if rows else None,
         "model_plan_pass_rate": sum(r.get("model_plan_passed", False) for r in rows) / len(rows) if rows else None,
         "independent_pass_rate": sum(r.get("independent_passed", False) for r in rows) / len(rows) if rows else None,
@@ -75,6 +79,7 @@ def metrics(rows):
         "by_family": by_family,
         "full_game_acceptance_rate": None,
         "notes": ["Independent checks are held out from generation; they still cover only selected requirements.",
+                  "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
                   "One run per family is a feasibility sample, not a reliable generalization estimate.",
                   "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
                   "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",

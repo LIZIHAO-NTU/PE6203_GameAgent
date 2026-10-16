@@ -40,6 +40,12 @@ To test a post-purchase or terminal state, reproduce every prerequisite in THIS 
 Do not start by asserting a non-initial balance/phase without first reaching it.
 Prefer 4..6 short high-value tests, usually 3..8 steps each; merge related requirements rather than creating
 uncovered bookkeeping requirements. Preserve ALL mandatory original-spec obligations.
+Prefer 2..3 focused rule assertions per scenario over a long inventory of every control.
+For counter/resource tests, explicitly account for EVERY accepted action, including the
+winning action, before terminal locking applies. Winning does not undo a submission cost
+or attempt increment unless the original spec explicitly says so. Keep uncertain long
+winning paths manual rather than inventing exact arithmetic or timing. Do not downgrade
+mandatory requirements; report their manual verification honestly.
 Each wait.ms and key/keys hold_ms MUST be an integer 0..2000; longer bounded observation
 uses wait_until (timeout_ms 100..8000), not a wait.ms outside the DSL limits.
 Before output, list the automated requirement IDs mentally and ensure each occurs in
@@ -288,6 +294,14 @@ Failure categories are observations, not certain root-cause diagnoses. A goal_ti
 mean unreachable targets, slow/blocked movement, or unsuitable test navigation. Examine the
 recorded state and original spec before changing game logic. Do not speed up or relocate
 objects merely to satisfy arbitrary test timing; do not invent controls absent from the
-spec just for a test. If a frozen test is inconsistent, explain it honestly in summary;
-do not fake hook values, delete functionality or lower the acceptance criteria.
+spec just for a test. During repair, if a frozen test contradicts original_spec or the
+evidence cannot justify a safe code fix, return ONLY:
+{"blocked":{"category":"test_issue|tool_limit|uncertain","reason":"short original-rule and observation evidence","evidence_test_ids":["actual failed test ID"]}}.
+Do not include files, changes or summary in a blocked response. The controller retains
+the best artifact and marks acceptance unverified, not successful. This is available
+only after recorded failed verification, never for initial generation. If the code is
+wrong, repair it normally. Never remove a submission cost or attempt increment for the
+winning action unless the original spec requires it. Do not fake hook values, delete
+functionality or lower the acceptance criteria. The frozen test is not the authority
+to override the user's original rules; do not implement a knowingly contradictory fix.
 """

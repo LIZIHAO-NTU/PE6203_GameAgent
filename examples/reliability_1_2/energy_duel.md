@@ -1,0 +1,5 @@
+# Energy Duel
+Build an English offline local two-player vanilla HTML/CSS/JavaScript game. Use a visible [data-game-surface], a native #action select with values attack and charge, buttons #act and #restart. Show bare integer counters #hpA, #hpB, #energyA and #energyB, and exact text in #turn (A or B) and #phase (Playing, WonA or WonB).
+Initially both players have 4 HP and 2 energy; turn A, phase Playing, selected action attack. Attack requires at least 2 energy: spend 2 and deal 2 damage to the other player, never below 0 HP. Insufficient energy means a complete no-op: no damage and no turn advance. Charge adds 1 energy capped at 3. Each successful non-winning attack or charge advances to the other player's turn, even if charging at the cap.
+Reducing opponent HP to 0 immediately wins for the actor: phase WonA or WonB, and turn remains on the winning actor. After winning #act is a no-op. Restart resets all initial values and attack selection. No random elements, timers, hidden AI, animations, networking or extra rules.
+Expose window.__gameTest.getState() as a fresh read-only snapshot of actual hpA,hpB,energyA,energyB,turn and phase.

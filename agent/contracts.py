@@ -2,6 +2,7 @@
 import json
 import math
 from copy import deepcopy
+from contextvars import ContextVar
 from pathlib import Path, PurePosixPath
 import re
 
@@ -9,10 +10,21 @@ ALLOWED_SUFFIXES = {".html", ".css", ".js", ".json", ".svg", ".txt", ".md"}
 RESERVED = {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(10)),
             *(f"LPT{i}" for i in range(10))}
 OPS = {"eq", "ne", "gt", "ge", "lt", "le", "contains"}
+_plan_location = ContextVar("plan_validation_location", default=None)
+
+
+class PlanValidationError(ValueError):
+    """Machine-readable location without changing a rejected plan."""
+    def __init__(self, message, location):
+        self.location = location
+        self.detail = message
+        super().__init__(f"{location}: {message}")
 
 
 def require(condition, message):
     if not condition:
+        if _plan_location.get() is not None:
+            raise PlanValidationError(message, _plan_location.get())
         raise ValueError(message)
 
 
@@ -131,6 +143,18 @@ def validate_expected_observations(test):
 
 
 def validate_plan(plan: dict) -> dict:
+    token = _plan_location.set("$")
+    try:
+        return _validate_plan(plan)
+    except PlanValidationError:
+        raise
+    except (ValueError, TypeError, KeyError) as error:
+        raise PlanValidationError(str(error), _plan_location.get()) from error
+    finally:
+        _plan_location.reset(token)
+
+
+def _validate_plan(plan: dict) -> dict:
     require(isinstance(plan, dict) and type(plan.get("supported")) is bool, "Missing supported boolean")
     plan = deepcopy(plan)  # Canonicalization must not rewrite the original model response.
     if not plan["supported"]:
@@ -177,7 +201,8 @@ def validate_plan(plan: dict) -> dict:
     requirements = plan.get("requirements")
     require(isinstance(requirements, list) and 0 < len(requirements) <= 12, "Need 1..12 requirements")
     ids, automated, manual = set(), set(), set()
-    for item in requirements:
+    for requirement_index, item in enumerate(requirements):
+        _plan_location.set(f"requirements[{requirement_index}]")
         require(isinstance(item, dict), "Invalid requirement record")
         rid = identifier(item.get("id"))
         require(rid not in ids, "Duplicate requirement id")
@@ -186,12 +211,17 @@ def validate_plan(plan: dict) -> dict:
         require(item.get("priority", "core") in {"core", "secondary", "visual"}, "Invalid priority")
         require(item.get("verification") in {"automated", "manual"}, "Invalid verification mode")
         (automated if item["verification"] == "automated" else manual).add(rid)
+    _plan_location.set("tests")
     tests = plan.get("tests")
     require(isinstance(tests, list) and 0 < len(tests) <= 10, "Need 1..10 automated tests")
     seen, covered, total_wait = set(), set(), 0
-    for test in tests:
+    for test_index, test in enumerate(tests):
+        test_location = f"tests[{test_index}]"
+        _plan_location.set(test_location)
         require(isinstance(test, dict), "Invalid test record")
         tid = identifier(test.get("id"))
+        test_location += f" ({tid})"
+        _plan_location.set(test_location)
         require(tid not in seen, "Duplicate test id")
         seen.add(tid)
         bounded_text(test.get("description"), "test description")
@@ -216,7 +246,11 @@ def validate_plan(plan: dict) -> dict:
         steps = test_steps(test)
         require(len(steps) <= 18, "Setup and check together need 1..18 steps/test")
         captures, assertions = set(), 0
-        for step in steps:
+        for step_index, step in enumerate(steps):
+            setup_count = len(setup)
+            stage = "setup_steps" if step_index < setup_count else "steps"
+            local_index = step_index if stage == "setup_steps" else step_index - setup_count
+            _plan_location.set(f"{test_location}.{stage}[{local_index}] (combined step {step_index + 1})")
             require(isinstance(step, dict), "Invalid step")
             action = step.get("action")
             if action in {"click", "hover", "drag"}:
@@ -301,17 +335,21 @@ def validate_plan(plan: dict) -> dict:
                 validate_condition(step, captures)
             else:
                 raise ValueError(f"Unsupported test action: {action}")
+        _plan_location.set(test_location)
         require(assertions > 0, "Every test needs an assertion")
         require(any(s["action"] in {"assert", "assert_consistent", "assert_stable"} for s in body),
                 "Every test needs an assertion in check steps, not only setup")
         validate_expected_observations(test)
+    _plan_location.set("tests")
     require(total_wait <= 45000, "Plan waits/holds/goal budgets exceed 45 seconds")
     require(covered == automated, "Every automated requirement must have a test; missing IDs: "
             + ", ".join(sorted(automated - covered)))
+    _plan_location.set("manual_checks")
     manual_checks = plan.get("manual_checks", [])
     require(isinstance(manual_checks, list) and len(manual_checks) <= 6, "Invalid manual_checks")
     manual_covered = set()
-    for check in manual_checks:
+    for manual_index, check in enumerate(manual_checks):
+        _plan_location.set(f"manual_checks[{manual_index}]")
         require(isinstance(check, dict) and check.get("requirement_id") in ids, "Invalid manual check")
         if check["requirement_id"] in manual:
             manual_covered.add(check["requirement_id"])

@@ -1,0 +1,555 @@
+{
+  "supported": true,
+  "title": "Independent energy_duel",
+  "development_plan": [
+    "Selected independent acceptance fixed before paid generation; never sent to the model"
+  ],
+  "state_contract": {
+    "hpA": "Actual public game state",
+    "hpB": "Actual public game state",
+    "energyA": "Actual public game state",
+    "energyB": "Actual public game state",
+    "turn": "Actual public game state",
+    "phase": "Actual public game state"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial counters and turn",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Attack cost, damage and turn",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Insufficient energy leaves entire turn unchanged",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Capped charge still advances turn",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "A wins and later act is ignored",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R6",
+      "text": "B has a reachable win",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R7",
+      "text": "Restart resets resources and action",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial counters and turn",
+      "requirement_ids": [
+        "R1"
+      ],
+      "purpose": "initial",
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpA",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpB",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyA",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyB",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Attack cost, damage and turn",
+      "requirement_ids": [
+        "R2"
+      ],
+      "purpose": "legal_action",
+      "steps": [
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpB",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyA",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "B"
+        },
+        {
+          "action": "assert_consistent",
+          "source": "text",
+          "selector": "#hpB",
+          "state_path": "hpB",
+          "coerce": "number"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Insufficient energy leaves entire turn unchanged",
+      "requirement_ids": [
+        "R3"
+      ],
+      "purpose": "invalid_action",
+      "steps": [
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpA",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpB",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyA",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Capped charge still advances turn",
+      "requirement_ids": [
+        "R4"
+      ],
+      "purpose": "legal_action",
+      "steps": [
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyA",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyB",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "B"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "A wins and later act is ignored",
+      "requirement_ids": [
+        "R5"
+      ],
+      "purpose": "terminal",
+      "steps": [
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "WonA"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpB",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "description": "B has a reachable win",
+      "requirement_ids": [
+        "R6"
+      ],
+      "purpose": "terminal",
+      "steps": [
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "WonB"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpA",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T7",
+      "description": "Restart resets resources and action",
+      "requirement_ids": [
+        "R7"
+      ],
+      "purpose": "reset",
+      "steps": [
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "attack"
+        },
+        {
+          "action": "click",
+          "selector": "#act"
+        },
+        {
+          "action": "select_option",
+          "selector": "#action",
+          "value": "charge"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpA",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#hpB",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyA",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energyB",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#turn",
+          "op": "eq",
+          "value": "A"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "Playing"
+        },
+        {
+          "action": "assert",
+          "source": "value",
+          "selector": "#action",
+          "op": "eq",
+          "value": "attack"
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}

@@ -1,5 +1,18 @@
 # PlayForge Changelog / 版本记录
 
+## 1.2.0 — 2026-10-17
+
+- Add machine-readable planning-error locations (test, setup/check index, combined step), preserving validation rules and legacy plans. Provide structured details to the next planning attempt without inferring or changing expectations.
+- 新增可机器读取的测试／步骤错误位置，保留原校验规则及旧计划兼容；下一次规划收到具体反馈，不推断或修改预期。
+- Link repair feedback to frozen scenarios, requirements, failed actions and actual/expected evidence. Keep raw traces and existing bounded repair memory; no extra summarizing API call or new framework dependency.
+- 修复反馈关联冻结情景、需求、失败动作及实际／预期证据；保留原记录与修复记忆，不增加摘要模型调用或框架依赖。
+- Support a validated `blocked` response only after failed verification: cite actual failed tests, disallow mixed file edits, preserve best artifacts and report unverified acceptance. Model fallibility remains; this does not independently prove a test defect.
+- 仅在验证失败后支持受校验的修复待复核响应，必须引用真实失败测试、不能混入文件修改；保留较好产物，不算成功，仍可能受模型误判影响。
+- Add joint self/independent selected-check metrics and two preregistered mixed-rule fixtures. Record real 1.1.0 default-mode baseline, targeted 1.2.0 trials, failures and repeat checks in RELEASE_1_2.md.
+- 增加自测／独立联合指标及两份事前固定的组合规则样本，保留真实默认基线、定向复测和失败，不宣称小样本证明泛化。
+- Research-informed implementation uses original code, not copied agent runtimes: SWE-agent tool feedback, Aider test-after-edit discipline and OpenHands selective context principles are discussed with sources in RELEASE_1_2.md.
+- 参考相关项目的工具反馈、修改后测试和上下文组织思想，以自有代码实现；来源和适用边界见版本报告。模型适配、大型交互 UI、联网、3D 及引擎暂缓。
+
 ## 1.1.0 — 2026-10-16
 
 - Adopt ordinary numeric releases; still an experimental course project, not a guarantee of arbitrary-game reliability. Historical Beta labels and results are preserved.

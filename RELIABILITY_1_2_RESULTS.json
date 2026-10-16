@@ -1,0 +1,2693 @@
+{
+  "agent_version": "1.2.0",
+  "date": "2026-10-17",
+  "evaluation_started_local_date": "2026-10-16",
+  "base_commit": "f715c234de21851544b807070079f7a1cc640b8c",
+  "runtime": {
+    "python": "3.11.9",
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "playwright": "1.63.0",
+    "agent_source_sha256": "b93932b3b34b7c7cad8f824f1ee509c7458469847a3a68ae9e932f7d05b9db6a"
+  },
+  "api_attempt_cap": 30,
+  "batches": [
+    {
+      "id": "baseline",
+      "original_agent_version": "1.1.0",
+      "original_metrics": {
+        "scheduled": 6,
+        "attempted": 5,
+        "not_attempted": 1,
+        "independent_evaluated": 5,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 0.8,
+        "self_pass_independent_fail": 1,
+        "self_fail_independent_pass": 2,
+        "status_counts": {
+          "automated_passed_manual_pending": 3,
+          "budget_exhausted": 1,
+          "partial_game_plan_failed": 1,
+          "skipped_budget_or_prior_error": 1
+        },
+        "api_attempts": 16,
+        "launch_rate": 0.8333333333333334,
+        "model_plan_pass_rate": 0.5,
+        "independent_pass_rate": 0.6666666666666666,
+        "macro_family_independent_pass_rate": 0.6666666666666666,
+        "prompt_tokens": 82445,
+        "completion_tokens": 40552,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "word_input": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 0,
+            "self_pass_independent_fail": 1,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 0
+          },
+          "numeric_input": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "platform_physics": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "projectile_aiming": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "local_tactics": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "resource_budget": {
+            "scheduled": 1,
+            "not_attempted": 1,
+            "independent_evaluated": 0,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": null,
+            "independent_pass_rate_over_evaluated": null,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 0,
+            "launch_rate": 0,
+            "independent_pass_rate": 0
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      },
+      "limits": {
+        "max_total_calls": 16,
+        "max_calls_per_case": 4,
+        "max_rounds": 3,
+        "max_seconds_per_case": 300
+      },
+      "cases": [
+        {
+          "run_id": "word_lock_01",
+          "case_id": "word_lock",
+          "family": "word_input",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "39df987fad7e457bbbe33cd9421662e1052bdae0e5f3072c9672bfcaffcf46a6",
+          "acceptance_plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d",
+          "generation_status": "automated_passed_manual_pending",
+          "exit_code": 0,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 14778,
+            "completion_tokens": 4907,
+            "cached_input_tokens": 5632,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+          "agent_source_sha256": "a403ce84feecdc7fcb32133e0663bb22f1dfd0c946271c210897b82e7539e2cd",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 4,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "valid",
+          "independent_passed": false,
+          "independent_tests_passed": 4,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [
+            "assertion_mismatch",
+            "assertion_mismatch"
+          ],
+          "duration_seconds": 35.484,
+          "original_summary": {
+            "status": "automated_passed_manual_pending",
+            "automated_checks_passed": true,
+            "planning_status": "valid",
+            "planning_error": null,
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 2,
+            "plan_sha256": "91ed96eb0e92470dabc58c86412eed14078406495a5dafb405326d44637a7034",
+            "initial_plan_sha256": "91ed96eb0e92470dabc58c86412eed14078406495a5dafb405326d44637a7034",
+            "repair_blocked": null,
+            "stop_reason": "automated_checks_passed",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": false,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {
+                "assertion_mismatch": 2
+              },
+              "review_test_ids": [
+                "T4",
+                "T5"
+              ],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": false,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [
+                  "One or more recorded tests did not pass",
+                  "Verifier did not report a clean run"
+                ],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "d6d25d0f70ab4bf878474bcb6b1d1da841fdafcaa516065718343608526c38e3",
+              "index.html": "6da5317cb9cdbe292a337c14dd8df4dd03c838438e492f0013e09e6cd4c04686"
+            },
+            "plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d"
+          }
+        },
+        {
+          "run_id": "number_dial_01",
+          "case_id": "number_dial",
+          "family": "numeric_input",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "d300da6695e41166c9abdf86351ce52cd5d89b91e1c92f21bc929a7f4115ede3",
+          "acceptance_plan_sha256": "95568747dde6e15c731b492f44e9188684575697a38e28cafb2035b1bda34fbe",
+          "generation_status": "automated_passed_manual_pending",
+          "exit_code": 0,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 16884,
+            "completion_tokens": 5291,
+            "cached_input_tokens": 7936,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+          "agent_source_sha256": "a403ce84feecdc7fcb32133e0663bb22f1dfd0c946271c210897b82e7539e2cd",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 4,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "valid",
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [],
+          "duration_seconds": 35.875,
+          "original_summary": {
+            "status": "automated_passed_manual_pending",
+            "automated_checks_passed": true,
+            "planning_status": "valid",
+            "planning_error": null,
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 2,
+            "plan_sha256": "23f92bb8f186337e2b97a5ad7347c6d790f6152fc5e53dc9c1ba49b837a4794a",
+            "initial_plan_sha256": "23f92bb8f186337e2b97a5ad7347c6d790f6152fc5e53dc9c1ba49b837a4794a",
+            "repair_blocked": null,
+            "stop_reason": "automated_checks_passed",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "321c51d12f086981a051369b5a74e98347b0a0a2b565cc1b67d2833aa575069e",
+              "index.html": "41b4f9fe7f31531a26634f53ceaa09c20cffdf7016e892cc73fb94ea19beec23"
+            },
+            "plan_sha256": "95568747dde6e15c731b492f44e9188684575697a38e28cafb2035b1bda34fbe"
+          }
+        },
+        {
+          "run_id": "platform_hop_01",
+          "case_id": "platform_hop",
+          "family": "platform_physics",
+          "status": "budget_exhausted",
+          "attempted": true,
+          "spec_sha256": "a9be0d4da4cb80e9ec35d39cea827a79d8260218c3a10ce2ebc8f5efa71fedf3",
+          "acceptance_plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+          "generation_status": "budget_exhausted",
+          "exit_code": 4,
+          "usage": {
+            "api_attempts": 4,
+            "prompt_tokens": 19258,
+            "completion_tokens": 11277,
+            "cached_input_tokens": 11648,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+          "agent_source_sha256": "a403ce84feecdc7fcb32133e0663bb22f1dfd0c946271c210897b82e7539e2cd",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 4,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "recovered",
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [],
+          "duration_seconds": 72.453,
+          "original_summary": {
+            "status": "budget_exhausted",
+            "automated_checks_passed": false,
+            "planning_status": "recovered",
+            "planning_error": "Invalid state path",
+            "planning_recovery_error": null,
+            "planning_recovered": true,
+            "failure_summary": {
+              "counts": {
+                "assertion_mismatch": 1,
+                "goal_timeout": 1
+              },
+              "review_test_ids": [
+                "T2",
+                "T6"
+              ],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": false,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [
+                  "One or more recorded tests did not pass",
+                  "Verifier did not report a clean run"
+                ],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 1,
+            "plan_sha256": "698032be558962d0eec654ce7c251716879d1434fde406f711f7ca4f98138cd7",
+            "initial_plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+            "repair_blocked": null,
+            "stop_reason": "budget_exhausted",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [
+            {
+              "event": "plan_validation_failed",
+              "error": "Invalid state path"
+            },
+            {
+              "event": "plan_validation_failed",
+              "error": "Invalid state path"
+            }
+          ],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "ba275c590cd011d272d21b4422e4e86a166c2c290e2c2236b5c5212da8e6d24d",
+              "index.html": "017623909529c6d7d598b7534a530c4004ca39e826a2660d2d3af31022cf1627"
+            },
+            "plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e"
+          }
+        },
+        {
+          "run_id": "aim_range_01",
+          "case_id": "aim_range",
+          "family": "projectile_aiming",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "78ec0f3f96f2c392d8b1fb32eb0b5082a3d448b4eda0bf75bb1664f85ad1c030",
+          "acceptance_plan_sha256": "a37779b38fad2e457ac6cf13aa76406ababd13675195efb2014fd977360639f8",
+          "generation_status": "automated_passed_manual_pending",
+          "exit_code": 0,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 18844,
+            "completion_tokens": 9977,
+            "cached_input_tokens": 8064,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+          "agent_source_sha256": "a403ce84feecdc7fcb32133e0663bb22f1dfd0c946271c210897b82e7539e2cd",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 4,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "valid",
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [],
+          "duration_seconds": 62.579,
+          "original_summary": {
+            "status": "automated_passed_manual_pending",
+            "automated_checks_passed": true,
+            "planning_status": "valid",
+            "planning_error": null,
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 2,
+            "plan_sha256": "b0bc4e239512e5d3eb18222482c11b0b4e818931a02e8561acd8a99cc517c23c",
+            "initial_plan_sha256": "b0bc4e239512e5d3eb18222482c11b0b4e818931a02e8561acd8a99cc517c23c",
+            "repair_blocked": null,
+            "stop_reason": "automated_checks_passed",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "67480c7a74eb10f75d8dcdbbe1e62c5b2a1bf281b55e5908b2bd5f6205230819",
+              "index.html": "5f4bb431535f79a8130cf016317516ec7105d4d5f8db6c2efd29980ec265ba03"
+            },
+            "plan_sha256": "a37779b38fad2e457ac6cf13aa76406ababd13675195efb2014fd977360639f8"
+          }
+        },
+        {
+          "run_id": "tactical_duel_01",
+          "case_id": "tactical_duel",
+          "family": "local_tactics",
+          "status": "partial_game_plan_failed",
+          "attempted": true,
+          "spec_sha256": "ec27f26133c18f5309e30b7208a63855ce9dfe8e74ca2d96c37bc7665f61c796",
+          "acceptance_plan_sha256": "1d52dbe779e66645430cd30bccac3eb189052c4d2f6cca985f7fbc3fb96aedd5",
+          "generation_status": "partial_game_plan_failed",
+          "exit_code": 2,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 12681,
+            "completion_tokens": 9100,
+            "cached_input_tokens": 8192,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+          "agent_source_sha256": "a403ce84feecdc7fcb32133e0663bb22f1dfd0c946271c210897b82e7539e2cd",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 3,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "failed_startup_only",
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [],
+          "duration_seconds": 40.516,
+          "original_summary": {
+            "status": "partial_game_plan_failed",
+            "automated_checks_passed": false,
+            "planning_status": "failed_startup_only",
+            "planning_error": "Setup and check together need 1..18 steps/test",
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": false,
+                "functional_evidence_present": false,
+                "evidence_complete": true,
+                "reasons": [
+                  "Functional acceptance has not been established by this plan"
+                ],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 1,
+            "plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+            "initial_plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+            "repair_blocked": null,
+            "stop_reason": "startup_only_functional_acceptance_unverified",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [
+            {
+              "event": "plan_validation_failed",
+              "error": "Setup and check together need 1..18 steps/test"
+            },
+            {
+              "event": "plan_validation_failed",
+              "error": "Setup and check together need 1..18 steps/test"
+            }
+          ],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "74bd6cd728036f0c05b76e5a2414170b29b53de42854a81c9b99e139bec05ec2",
+              "index.html": "62b154d305330739be69cfa6519b3c24833cc2e2ab82ba3d3a21dd2ec9793410"
+            },
+            "plan_sha256": "1d52dbe779e66645430cd30bccac3eb189052c4d2f6cca985f7fbc3fb96aedd5"
+          }
+        },
+        {
+          "run_id": "market_budget_01",
+          "case_id": "market_budget",
+          "family": "resource_budget",
+          "status": "skipped_budget_or_prior_error",
+          "attempted": false,
+          "spec_sha256": "e7c2141f1a0af70e98c442e4efffacc0d9c3c9d0442c7d11f91ce20d3aae37d3",
+          "acceptance_plan_sha256": "8a105aed8386eef5ec2fcef2e6b1f26281b5c3971ea3c4f3b96bfd221474caf8"
+        }
+      ],
+      "recomputed_joint_metrics": {
+        "scheduled": 6,
+        "attempted": 5,
+        "not_attempted": 1,
+        "independent_evaluated": 5,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 0.8,
+        "self_pass_independent_fail": 1,
+        "self_fail_independent_pass": 2,
+        "status_counts": {
+          "automated_passed_manual_pending": 3,
+          "budget_exhausted": 1,
+          "partial_game_plan_failed": 1,
+          "skipped_budget_or_prior_error": 1
+        },
+        "api_attempts": 16,
+        "joint_selected_checks_passed": 2,
+        "joint_selected_checks_rate_over_attempted": 0.4,
+        "launch_rate": 0.8333333333333334,
+        "model_plan_pass_rate": 0.5,
+        "independent_pass_rate": 0.6666666666666666,
+        "macro_family_independent_pass_rate": 0.6666666666666666,
+        "prompt_tokens": 82445,
+        "completion_tokens": 40552,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "word_input": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 0,
+            "self_pass_independent_fail": 1,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 0
+          },
+          "numeric_input": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "platform_physics": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "projectile_aiming": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "local_tactics": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "resource_budget": {
+            "scheduled": 1,
+            "not_attempted": 1,
+            "independent_evaluated": 0,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": null,
+            "independent_pass_rate_over_evaluated": null,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 0,
+            "launch_rate": 0,
+            "independent_pass_rate": 0
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      }
+    },
+    {
+      "id": "baseline_market",
+      "original_agent_version": "1.1.0",
+      "original_metrics": {
+        "scheduled": 1,
+        "attempted": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 0,
+        "status_counts": {
+          "automated_passed_manual_pending": 1
+        },
+        "api_attempts": 3,
+        "launch_rate": 1,
+        "model_plan_pass_rate": 1,
+        "independent_pass_rate": 1,
+        "macro_family_independent_pass_rate": 1,
+        "prompt_tokens": 12957,
+        "completion_tokens": 5204,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "resource_budget": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      },
+      "limits": {
+        "max_total_calls": 4,
+        "max_calls_per_case": 4,
+        "max_rounds": 3,
+        "max_seconds_per_case": 300
+      },
+      "cases": [
+        {
+          "run_id": "market_budget_01",
+          "case_id": "market_budget",
+          "family": "resource_budget",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "2f558d0c62ad579efaad2b9673f2539f0fe9a06c5085ef5d078e1d34e0c71d52",
+          "acceptance_plan_sha256": "8b15dcd1761c2d5f61afbc9b3c18dea3ef5dfd2ff728ef9cb19c1bce35faf564",
+          "generation_status": "automated_passed_manual_pending",
+          "exit_code": 0,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 12957,
+            "completion_tokens": 5204,
+            "cached_input_tokens": 7552,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+          "agent_source_sha256": "76b1e587869401dc9e0cb1dfefb2f59313ae21aac45758ed8dcee90ff1faf4a2",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 4,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "valid",
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [],
+          "duration_seconds": 33.625,
+          "original_summary": {
+            "status": "automated_passed_manual_pending",
+            "automated_checks_passed": true,
+            "planning_status": "valid",
+            "planning_error": null,
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 2,
+            "plan_sha256": "b099b664c664320ffdb9fc4b1657b0a48e366e2a87fe8d8aac521a826ad9e488",
+            "initial_plan_sha256": "b099b664c664320ffdb9fc4b1657b0a48e366e2a87fe8d8aac521a826ad9e488",
+            "repair_blocked": null,
+            "stop_reason": "automated_checks_passed",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [],
+          "frozen_fixture_integrity": true,
+          "fixture_origin": "Archived 1.1.0 files; raw newline representation differs from working checkout",
+          "canonical_fixture_matches_repository": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "ed44e7fd8f17920c3503e58df85e9c5953eaeb54bde3d6fc5f022cfb23fce1ec",
+              "index.html": "8d988872ece17b305eb4f5a973497cad06a3100bd93f210fa9928f305a0f7f45"
+            },
+            "plan_sha256": "8a105aed8386eef5ec2fcef2e6b1f26281b5c3971ea3c4f3b96bfd221474caf8"
+          }
+        }
+      ],
+      "recomputed_joint_metrics": {
+        "scheduled": 1,
+        "attempted": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 0,
+        "status_counts": {
+          "automated_passed_manual_pending": 1
+        },
+        "api_attempts": 3,
+        "joint_selected_checks_passed": 1,
+        "joint_selected_checks_rate_over_attempted": 1,
+        "launch_rate": 1,
+        "model_plan_pass_rate": 1,
+        "independent_pass_rate": 1,
+        "macro_family_independent_pass_rate": 1,
+        "prompt_tokens": 12957,
+        "completion_tokens": 5204,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "resource_budget": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      }
+    },
+    {
+      "id": "followup",
+      "original_agent_version": "1.2.0",
+      "original_metrics": {
+        "scheduled": 2,
+        "attempted": 2,
+        "not_attempted": 0,
+        "independent_evaluated": 2,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "status_counts": {
+          "automated_passed_manual_pending": 1,
+          "partial_game_plan_failed": 1
+        },
+        "api_attempts": 6,
+        "joint_selected_checks_passed": 1,
+        "joint_selected_checks_rate_over_attempted": 0.5,
+        "launch_rate": 1,
+        "model_plan_pass_rate": 0.5,
+        "independent_pass_rate": 1,
+        "macro_family_independent_pass_rate": 1,
+        "prompt_tokens": 24383,
+        "completion_tokens": 14274,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "word_input": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "platform_physics": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      },
+      "limits": {
+        "max_total_calls": 6,
+        "max_calls_per_case": 4,
+        "max_rounds": 3,
+        "max_seconds_per_case": 300
+      },
+      "cases": [
+        {
+          "run_id": "word_lock_01",
+          "case_id": "word_lock",
+          "family": "word_input",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "39df987fad7e457bbbe33cd9421662e1052bdae0e5f3072c9672bfcaffcf46a6",
+          "acceptance_plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d",
+          "generation_status": "automated_passed_manual_pending",
+          "exit_code": 0,
+          "usage": {
+            "api_attempts": 2,
+            "prompt_tokens": 8462,
+            "completion_tokens": 5332,
+            "cached_input_tokens": 1408,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "prompts_sha256": "bc45070b3e10c88a07e112c59d573819adae60826b45657147633642e175dc2e",
+          "agent_source_sha256": "b93932b3b34b7c7cad8f824f1ee509c7458469847a3a68ae9e932f7d05b9db6a",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 4,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "valid",
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [],
+          "duration_seconds": 30.829,
+          "original_summary": {
+            "status": "automated_passed_manual_pending",
+            "automated_checks_passed": true,
+            "planning_status": "valid",
+            "planning_error": null,
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 1,
+            "plan_sha256": "be43fab4429d3f76c752f109525bbda53183e5afbb8c6a9973e1e1f137f68f80",
+            "initial_plan_sha256": "be43fab4429d3f76c752f109525bbda53183e5afbb8c6a9973e1e1f137f68f80",
+            "repair_blocked": null,
+            "stop_reason": "automated_checks_passed",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "95a124560469bf1e91d738acb0a138e9f01047da53bc1ad2da77291113677da2",
+              "index.html": "cb62a011015ae989b65e29b1a7aba2e99f8ed181fcf2e4e4056d210de1f34d01"
+            },
+            "plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d"
+          }
+        },
+        {
+          "run_id": "platform_hop_01",
+          "case_id": "platform_hop",
+          "family": "platform_physics",
+          "status": "partial_game_plan_failed",
+          "attempted": true,
+          "spec_sha256": "a9be0d4da4cb80e9ec35d39cea827a79d8260218c3a10ce2ebc8f5efa71fedf3",
+          "acceptance_plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+          "generation_status": "partial_game_plan_failed",
+          "exit_code": 2,
+          "usage": {
+            "api_attempts": 4,
+            "prompt_tokens": 15921,
+            "completion_tokens": 8942,
+            "cached_input_tokens": 11776,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "prompts_sha256": "bc45070b3e10c88a07e112c59d573819adae60826b45657147633642e175dc2e",
+          "agent_source_sha256": "b93932b3b34b7c7cad8f824f1ee509c7458469847a3a68ae9e932f7d05b9db6a",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 4,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "failed_startup_only",
+          "independent_passed": true,
+          "independent_tests_passed": 6,
+          "independent_tests_total": 6,
+          "independent_failure_kinds": [],
+          "duration_seconds": 50.5,
+          "original_summary": {
+            "status": "partial_game_plan_failed",
+            "automated_checks_passed": false,
+            "planning_status": "failed_startup_only",
+            "planning_error": "tests[4] (T5).steps[0] (combined step 2): Goal timeout must be 100..8000 ms",
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": false,
+                "functional_evidence_present": false,
+                "evidence_complete": true,
+                "reasons": [
+                  "Functional acceptance has not been established by this plan"
+                ],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 1,
+            "plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+            "initial_plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+            "repair_blocked": null,
+            "stop_reason": "startup_only_functional_acceptance_unverified",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [
+            {
+              "event": "plan_validation_failed",
+              "error": "tests[3] (T4): Every test needs an assertion",
+              "details": {
+                "location": "tests[3] (T4)",
+                "detail": "Every test needs an assertion",
+                "policy": "Correct this draft's structure against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation."
+              }
+            },
+            {
+              "event": "plan_validation_failed",
+              "error": "tests[4] (T5).steps[0] (combined step 2): Goal timeout must be 100..8000 ms",
+              "details": {
+                "location": "tests[4] (T5).steps[0] (combined step 2)",
+                "detail": "Goal timeout must be 100..8000 ms",
+                "policy": "Correct this draft's structure against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation."
+              }
+            }
+          ],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "63dc81ebf23b4a61958c83a81bdb70509c0fe99fd68b5c373e8a54a2bc17f273",
+              "index.html": "52239fd380aa8867f4d5576008bb7c1b823cf35515ba90ff26912b2820bbe98e"
+            },
+            "plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e"
+          }
+        }
+      ],
+      "recomputed_joint_metrics": {
+        "scheduled": 2,
+        "attempted": 2,
+        "not_attempted": 0,
+        "independent_evaluated": 2,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "status_counts": {
+          "automated_passed_manual_pending": 1,
+          "partial_game_plan_failed": 1
+        },
+        "api_attempts": 6,
+        "joint_selected_checks_passed": 1,
+        "joint_selected_checks_rate_over_attempted": 0.5,
+        "launch_rate": 1,
+        "model_plan_pass_rate": 0.5,
+        "independent_pass_rate": 1,
+        "macro_family_independent_pass_rate": 1,
+        "prompt_tokens": 24383,
+        "completion_tokens": 14274,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "word_input": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "platform_physics": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      }
+    },
+    {
+      "id": "mixed",
+      "original_agent_version": "1.2.0",
+      "original_metrics": {
+        "scheduled": 2,
+        "attempted": 2,
+        "not_attempted": 0,
+        "independent_evaluated": 2,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "status_counts": {
+          "automated_passed_manual_pending": 1,
+          "budget_exhausted": 1
+        },
+        "api_attempts": 5,
+        "joint_selected_checks_passed": 1,
+        "joint_selected_checks_rate_over_attempted": 0.5,
+        "launch_rate": 1,
+        "model_plan_pass_rate": 0.5,
+        "independent_pass_rate": 1,
+        "macro_family_independent_pass_rate": 1,
+        "prompt_tokens": 26340,
+        "completion_tokens": 15487,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "text_resource": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "turn_resource": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      },
+      "limits": {
+        "max_total_calls": 5,
+        "max_calls_per_case": 3,
+        "max_rounds": 3,
+        "max_seconds_per_case": 300
+      },
+      "cases": [
+        {
+          "run_id": "signal_vault_01",
+          "case_id": "signal_vault",
+          "family": "text_resource",
+          "status": "automated_passed_manual_pending",
+          "attempted": true,
+          "spec_sha256": "c5d43b2d90ddab767a5866556dff0515669c0558d15a090cc8a28a8b94ac0c3f",
+          "acceptance_plan_sha256": "6fba2d35339893840bd72592b214d7405994642ba44c227ea70ab435427945ea",
+          "generation_status": "automated_passed_manual_pending",
+          "exit_code": 0,
+          "usage": {
+            "api_attempts": 3,
+            "prompt_tokens": 17593,
+            "completion_tokens": 9723,
+            "cached_input_tokens": 8064,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": true,
+          "prompts_sha256": "bc45070b3e10c88a07e112c59d573819adae60826b45657147633642e175dc2e",
+          "agent_source_sha256": "b93932b3b34b7c7cad8f824f1ee509c7458469847a3a68ae9e932f7d05b9db6a",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 3,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "valid",
+          "independent_passed": true,
+          "independent_tests_passed": 7,
+          "independent_tests_total": 7,
+          "independent_failure_kinds": [],
+          "duration_seconds": 46.281,
+          "original_summary": {
+            "status": "automated_passed_manual_pending",
+            "automated_checks_passed": true,
+            "planning_status": "valid",
+            "planning_error": null,
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 1,
+            "plan_sha256": "1d83bdf2c495547c20405f5f1b2b105e1893c205bafd83e99e2ada443aadd044",
+            "initial_plan_sha256": "1d83bdf2c495547c20405f5f1b2b105e1893c205bafd83e99e2ada443aadd044",
+            "repair_blocked": null,
+            "stop_reason": "automated_checks_passed",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [
+            {
+              "event": "plan_validation_failed",
+              "error": "tests[0] (T1).steps[5] (combined step 6): Invalid observation source",
+              "details": {
+                "location": "tests[0] (T1).steps[5] (combined step 6)",
+                "detail": "Invalid observation source",
+                "policy": "Correct this draft's structure against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation."
+              }
+            }
+          ],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "4e5a37ebd2c36f40198b865054fbd55d42999a865623f88e9388f1df558dbbfe",
+              "index.html": "c0875161dddd5041ec1bd55bcb3a4403d4a8d1c983df1017ab3fa0f27cc9e51f"
+            },
+            "plan_sha256": "6fba2d35339893840bd72592b214d7405994642ba44c227ea70ab435427945ea"
+          }
+        },
+        {
+          "run_id": "energy_duel_01",
+          "case_id": "energy_duel",
+          "family": "turn_resource",
+          "status": "budget_exhausted",
+          "attempted": true,
+          "spec_sha256": "a74071d849ab09463e6c9feff4d020fcdc3c47f1be84f00e3fee08e08488a1cf",
+          "acceptance_plan_sha256": "e7e9995fb01d579b36739174d8fd27bd306f279b5c792af6ef69ea30f366bfa9",
+          "generation_status": "budget_exhausted",
+          "exit_code": 4,
+          "usage": {
+            "api_attempts": 2,
+            "prompt_tokens": 8747,
+            "completion_tokens": 5764,
+            "cached_input_tokens": 4480,
+            "calls_with_unknown_usage": 0,
+            "estimated_known_usage_cost": null,
+            "currency": "USD",
+            "cost_is_complete": false,
+            "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+          },
+          "launch_passed": true,
+          "model_plan_passed": false,
+          "prompts_sha256": "bc45070b3e10c88a07e112c59d573819adae60826b45657147633642e175dc2e",
+          "agent_source_sha256": "b93932b3b34b7c7cad8f824f1ee509c7458469847a3a68ae9e932f7d05b9db6a",
+          "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+          "limits": {
+            "max_rounds": 3,
+            "max_calls": 2,
+            "max_seconds": 300,
+            "test_timeout": 60
+          },
+          "planning_status": "valid",
+          "independent_passed": true,
+          "independent_tests_passed": 7,
+          "independent_tests_total": 7,
+          "independent_failure_kinds": [],
+          "duration_seconds": 29.547,
+          "original_summary": {
+            "status": "budget_exhausted",
+            "automated_checks_passed": false,
+            "planning_status": "valid",
+            "planning_error": null,
+            "planning_recovery_error": null,
+            "planning_recovered": false,
+            "failure_summary": {
+              "counts": {
+                "assertion_mismatch": 2
+              },
+              "review_test_ids": [
+                "T3",
+                "T5"
+              ],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": false,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [
+                  "One or more recorded tests did not pass",
+                  "Verifier did not report a clean run"
+                ],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "selected_round": 1,
+            "plan_sha256": "c92e01816b4276847319e0f6330f94579b50b5bf8bcbf8fcc4f0cf442a37c199",
+            "initial_plan_sha256": "c92e01816b4276847319e0f6330f94579b50b5bf8bcbf8fcc4f0cf442a37c199",
+            "repair_blocked": null,
+            "stop_reason": "budget_exhausted",
+            "features": {
+              "repair_mode": "auto",
+              "syntax_check": false,
+              "diagnose_failures": false,
+              "verify_repeats": 1,
+              "lessons_enabled": false,
+              "lesson_store_sha256": null,
+              "plan_audit": false,
+              "structured_expectations": false
+            },
+            "manual_interventions_during_run": 0
+          },
+          "planning_errors": [],
+          "frozen_fixture_integrity": true,
+          "final_read_only_replay": {
+            "agent_version": "1.2.0",
+            "verification_repeats": 2,
+            "read_only_integrity": true,
+            "automated_checks_passed": true,
+            "full_game_acceptance": null,
+            "failure_summary": {
+              "counts": {},
+              "review_test_ids": [],
+              "infrastructure_error": null,
+              "quality_gate": {
+                "passed": true,
+                "functional_evidence_present": true,
+                "evidence_complete": true,
+                "reasons": [],
+                "full_game_acceptance": null
+              },
+              "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+            },
+            "game_sha256": {
+              "game.js": "1af84d86a6f5a30d301c53d432d4be13542a500044b8356b96e9e1379844745c",
+              "index.html": "5f75c63fb68b789036ce7423b2bfe2fa7919776cf136b55e8925f31dc2a32982"
+            },
+            "plan_sha256": "e7e9995fb01d579b36739174d8fd27bd306f279b5c792af6ef69ea30f366bfa9"
+          }
+        }
+      ],
+      "recomputed_joint_metrics": {
+        "scheduled": 2,
+        "attempted": 2,
+        "not_attempted": 0,
+        "independent_evaluated": 2,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "status_counts": {
+          "automated_passed_manual_pending": 1,
+          "budget_exhausted": 1
+        },
+        "api_attempts": 5,
+        "joint_selected_checks_passed": 1,
+        "joint_selected_checks_rate_over_attempted": 0.5,
+        "launch_rate": 1,
+        "model_plan_pass_rate": 0.5,
+        "independent_pass_rate": 1,
+        "macro_family_independent_pass_rate": 1,
+        "prompt_tokens": 26340,
+        "completion_tokens": 15487,
+        "calls_with_unknown_usage": 0,
+        "by_family": {
+          "text_resource": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 0,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          },
+          "turn_resource": {
+            "scheduled": 1,
+            "not_attempted": 0,
+            "independent_evaluated": 1,
+            "attempted_without_independent_result": 0,
+            "launch_rate_over_attempted": 1,
+            "independent_pass_rate_over_evaluated": 1,
+            "self_pass_independent_fail": 0,
+            "self_fail_independent_pass": 1,
+            "attempted": 1,
+            "launch_rate": 1,
+            "independent_pass_rate": 1
+          }
+        },
+        "full_game_acceptance_rate": null,
+        "notes": [
+          "Independent checks are held out from generation; they still cover only selected requirements.",
+          "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+          "One run per family is a feasibility sample, not a reliable generalization estimate.",
+          "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+          "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+          "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Baseline main batch scheduled six cases; five ran and one was skipped under its shared cap. The skipped market case was supplemented separately, not silently relabelled.",
+    "Both versions use default structured-expectations OFF and plan-audit OFF. No model migration was made.",
+    "Mixed fixtures were authored and hashed before generation; no independent checks were sent to the model or used for repairs.",
+    "Paid repair-blocked responses were not observed in these runs. The protocol was verified through synthetic clients and a real-browser mismatch, not proven effective for arbitrary real-model repairs.",
+    "Located errors and feedback do not infer game truth. Missing metadata, incorrect arithmetic and JSON/schema errors remain possible.",
+    "Small targeted single-run comparisons do not establish generalization, causal improvement, cost reduction or full-game acceptance.",
+    "Temporary generated games, raw API traces, screenshots, dependency cache and baseline snapshot are removed after retaining sanitized evidence."
+  ],
+  "api_attempts": 30,
+  "baseline_combined_metrics": {
+    "scheduled": 6,
+    "attempted": 6,
+    "not_attempted": 0,
+    "independent_evaluated": 6,
+    "attempted_without_independent_result": 0,
+    "launch_rate_over_attempted": 1,
+    "independent_pass_rate_over_evaluated": 0.8333333333333334,
+    "self_pass_independent_fail": 1,
+    "self_fail_independent_pass": 2,
+    "status_counts": {
+      "automated_passed_manual_pending": 4,
+      "budget_exhausted": 1,
+      "partial_game_plan_failed": 1
+    },
+    "api_attempts": 19,
+    "joint_selected_checks_passed": 3,
+    "joint_selected_checks_rate_over_attempted": 0.5,
+    "launch_rate": 1,
+    "model_plan_pass_rate": 0.6666666666666666,
+    "independent_pass_rate": 0.8333333333333334,
+    "macro_family_independent_pass_rate": 0.8333333333333334,
+    "prompt_tokens": 95402,
+    "completion_tokens": 45756,
+    "calls_with_unknown_usage": 0,
+    "by_family": {
+      "word_input": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 0,
+        "self_pass_independent_fail": 1,
+        "self_fail_independent_pass": 0,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 0
+      },
+      "numeric_input": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 0,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      },
+      "platform_physics": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      },
+      "projectile_aiming": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 0,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      },
+      "local_tactics": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      },
+      "resource_budget": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 0,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      }
+    },
+    "full_game_acceptance_rate": null,
+    "notes": [
+      "Independent checks are held out from generation; they still cover only selected requirements.",
+      "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+      "One run per family is a feasibility sample, not a reliable generalization estimate.",
+      "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+      "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+      "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+    ]
+  },
+  "candidate_combined_metrics": {
+    "scheduled": 4,
+    "attempted": 4,
+    "not_attempted": 0,
+    "independent_evaluated": 4,
+    "attempted_without_independent_result": 0,
+    "launch_rate_over_attempted": 1,
+    "independent_pass_rate_over_evaluated": 1,
+    "self_pass_independent_fail": 0,
+    "self_fail_independent_pass": 2,
+    "status_counts": {
+      "automated_passed_manual_pending": 2,
+      "partial_game_plan_failed": 1,
+      "budget_exhausted": 1
+    },
+    "api_attempts": 11,
+    "joint_selected_checks_passed": 2,
+    "joint_selected_checks_rate_over_attempted": 0.5,
+    "launch_rate": 1,
+    "model_plan_pass_rate": 0.5,
+    "independent_pass_rate": 1,
+    "macro_family_independent_pass_rate": 1,
+    "prompt_tokens": 50723,
+    "completion_tokens": 29761,
+    "calls_with_unknown_usage": 0,
+    "by_family": {
+      "word_input": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 0,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      },
+      "platform_physics": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      },
+      "text_resource": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 0,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      },
+      "turn_resource": {
+        "scheduled": 1,
+        "not_attempted": 0,
+        "independent_evaluated": 1,
+        "attempted_without_independent_result": 0,
+        "launch_rate_over_attempted": 1,
+        "independent_pass_rate_over_evaluated": 1,
+        "self_pass_independent_fail": 0,
+        "self_fail_independent_pass": 1,
+        "attempted": 1,
+        "launch_rate": 1,
+        "independent_pass_rate": 1
+      }
+    },
+    "full_game_acceptance_rate": null,
+    "notes": [
+      "Independent checks are held out from generation; they still cover only selected requirements.",
+      "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+      "One run per family is a feasibility sample, not a reliable generalization estimate.",
+      "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+      "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+      "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+    ]
+  },
+  "matched_pairs": [
+    {
+      "case_id": "word_lock",
+      "before": {
+        "run_id": "word_lock_01",
+        "case_id": "word_lock",
+        "family": "word_input",
+        "status": "automated_passed_manual_pending",
+        "attempted": true,
+        "spec_sha256": "39df987fad7e457bbbe33cd9421662e1052bdae0e5f3072c9672bfcaffcf46a6",
+        "acceptance_plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d",
+        "generation_status": "automated_passed_manual_pending",
+        "exit_code": 0,
+        "usage": {
+          "api_attempts": 3,
+          "prompt_tokens": 14778,
+          "completion_tokens": 4907,
+          "cached_input_tokens": 5632,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": true,
+        "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+        "agent_source_sha256": "a403ce84feecdc7fcb32133e0663bb22f1dfd0c946271c210897b82e7539e2cd",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "planning_status": "valid",
+        "independent_passed": false,
+        "independent_tests_passed": 4,
+        "independent_tests_total": 6,
+        "independent_failure_kinds": [
+          "assertion_mismatch",
+          "assertion_mismatch"
+        ],
+        "duration_seconds": 35.484,
+        "original_summary": {
+          "status": "automated_passed_manual_pending",
+          "automated_checks_passed": true,
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "planning_recovered": false,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "selected_round": 2,
+          "plan_sha256": "91ed96eb0e92470dabc58c86412eed14078406495a5dafb405326d44637a7034",
+          "initial_plan_sha256": "91ed96eb0e92470dabc58c86412eed14078406495a5dafb405326d44637a7034",
+          "repair_blocked": null,
+          "stop_reason": "automated_checks_passed",
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null,
+            "plan_audit": false,
+            "structured_expectations": false
+          },
+          "manual_interventions_during_run": 0
+        },
+        "planning_errors": [],
+        "frozen_fixture_integrity": true,
+        "final_read_only_replay": {
+          "agent_version": "1.2.0",
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "automated_checks_passed": false,
+          "full_game_acceptance": null,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 2
+            },
+            "review_test_ids": [
+              "T4",
+              "T5"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "game_sha256": {
+            "game.js": "d6d25d0f70ab4bf878474bcb6b1d1da841fdafcaa516065718343608526c38e3",
+            "index.html": "6da5317cb9cdbe292a337c14dd8df4dd03c838438e492f0013e09e6cd4c04686"
+          },
+          "plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d"
+        }
+      },
+      "after": {
+        "run_id": "word_lock_01",
+        "case_id": "word_lock",
+        "family": "word_input",
+        "status": "automated_passed_manual_pending",
+        "attempted": true,
+        "spec_sha256": "39df987fad7e457bbbe33cd9421662e1052bdae0e5f3072c9672bfcaffcf46a6",
+        "acceptance_plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d",
+        "generation_status": "automated_passed_manual_pending",
+        "exit_code": 0,
+        "usage": {
+          "api_attempts": 2,
+          "prompt_tokens": 8462,
+          "completion_tokens": 5332,
+          "cached_input_tokens": 1408,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": true,
+        "prompts_sha256": "bc45070b3e10c88a07e112c59d573819adae60826b45657147633642e175dc2e",
+        "agent_source_sha256": "b93932b3b34b7c7cad8f824f1ee509c7458469847a3a68ae9e932f7d05b9db6a",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "planning_status": "valid",
+        "independent_passed": true,
+        "independent_tests_passed": 6,
+        "independent_tests_total": 6,
+        "independent_failure_kinds": [],
+        "duration_seconds": 30.829,
+        "original_summary": {
+          "status": "automated_passed_manual_pending",
+          "automated_checks_passed": true,
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "planning_recovered": false,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "selected_round": 1,
+          "plan_sha256": "be43fab4429d3f76c752f109525bbda53183e5afbb8c6a9973e1e1f137f68f80",
+          "initial_plan_sha256": "be43fab4429d3f76c752f109525bbda53183e5afbb8c6a9973e1e1f137f68f80",
+          "repair_blocked": null,
+          "stop_reason": "automated_checks_passed",
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null,
+            "plan_audit": false,
+            "structured_expectations": false
+          },
+          "manual_interventions_during_run": 0
+        },
+        "planning_errors": [],
+        "frozen_fixture_integrity": true,
+        "final_read_only_replay": {
+          "agent_version": "1.2.0",
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "automated_checks_passed": true,
+          "full_game_acceptance": null,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "game_sha256": {
+            "game.js": "95a124560469bf1e91d738acb0a138e9f01047da53bc1ad2da77291113677da2",
+            "index.html": "cb62a011015ae989b65e29b1a7aba2e99f8ed181fcf2e4e4056d210de1f34d01"
+          },
+          "plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d"
+        }
+      },
+      "note": "Same spec, held-out plan, configured model and per-case call cap; one stochastic run per version, not an improvement estimate."
+    },
+    {
+      "case_id": "platform_hop",
+      "before": {
+        "run_id": "platform_hop_01",
+        "case_id": "platform_hop",
+        "family": "platform_physics",
+        "status": "budget_exhausted",
+        "attempted": true,
+        "spec_sha256": "a9be0d4da4cb80e9ec35d39cea827a79d8260218c3a10ce2ebc8f5efa71fedf3",
+        "acceptance_plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+        "generation_status": "budget_exhausted",
+        "exit_code": 4,
+        "usage": {
+          "api_attempts": 4,
+          "prompt_tokens": 19258,
+          "completion_tokens": 11277,
+          "cached_input_tokens": 11648,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": false,
+        "prompts_sha256": "0defdb74304d784800c5d8e5e2225ac877546cc4ea8fc1d54b2877cd58050e9c",
+        "agent_source_sha256": "a403ce84feecdc7fcb32133e0663bb22f1dfd0c946271c210897b82e7539e2cd",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "planning_status": "recovered",
+        "independent_passed": true,
+        "independent_tests_passed": 6,
+        "independent_tests_total": 6,
+        "independent_failure_kinds": [],
+        "duration_seconds": 72.453,
+        "original_summary": {
+          "status": "budget_exhausted",
+          "automated_checks_passed": false,
+          "planning_status": "recovered",
+          "planning_error": "Invalid state path",
+          "planning_recovery_error": null,
+          "planning_recovered": true,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 1,
+              "goal_timeout": 1
+            },
+            "review_test_ids": [
+              "T2",
+              "T6"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "selected_round": 1,
+          "plan_sha256": "698032be558962d0eec654ce7c251716879d1434fde406f711f7ca4f98138cd7",
+          "initial_plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+          "repair_blocked": null,
+          "stop_reason": "budget_exhausted",
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null,
+            "plan_audit": false,
+            "structured_expectations": false
+          },
+          "manual_interventions_during_run": 0
+        },
+        "planning_errors": [
+          {
+            "event": "plan_validation_failed",
+            "error": "Invalid state path"
+          },
+          {
+            "event": "plan_validation_failed",
+            "error": "Invalid state path"
+          }
+        ],
+        "frozen_fixture_integrity": true,
+        "final_read_only_replay": {
+          "agent_version": "1.2.0",
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "automated_checks_passed": true,
+          "full_game_acceptance": null,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "game_sha256": {
+            "game.js": "ba275c590cd011d272d21b4422e4e86a166c2c290e2c2236b5c5212da8e6d24d",
+            "index.html": "017623909529c6d7d598b7534a530c4004ca39e826a2660d2d3af31022cf1627"
+          },
+          "plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e"
+        }
+      },
+      "after": {
+        "run_id": "platform_hop_01",
+        "case_id": "platform_hop",
+        "family": "platform_physics",
+        "status": "partial_game_plan_failed",
+        "attempted": true,
+        "spec_sha256": "a9be0d4da4cb80e9ec35d39cea827a79d8260218c3a10ce2ebc8f5efa71fedf3",
+        "acceptance_plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+        "generation_status": "partial_game_plan_failed",
+        "exit_code": 2,
+        "usage": {
+          "api_attempts": 4,
+          "prompt_tokens": 15921,
+          "completion_tokens": 8942,
+          "cached_input_tokens": 11776,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": false,
+        "prompts_sha256": "bc45070b3e10c88a07e112c59d573819adae60826b45657147633642e175dc2e",
+        "agent_source_sha256": "b93932b3b34b7c7cad8f824f1ee509c7458469847a3a68ae9e932f7d05b9db6a",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "planning_status": "failed_startup_only",
+        "independent_passed": true,
+        "independent_tests_passed": 6,
+        "independent_tests_total": 6,
+        "independent_failure_kinds": [],
+        "duration_seconds": 50.5,
+        "original_summary": {
+          "status": "partial_game_plan_failed",
+          "automated_checks_passed": false,
+          "planning_status": "failed_startup_only",
+          "planning_error": "tests[4] (T5).steps[0] (combined step 2): Goal timeout must be 100..8000 ms",
+          "planning_recovery_error": null,
+          "planning_recovered": false,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": false,
+              "evidence_complete": true,
+              "reasons": [
+                "Functional acceptance has not been established by this plan"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "selected_round": 1,
+          "plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+          "initial_plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0",
+          "repair_blocked": null,
+          "stop_reason": "startup_only_functional_acceptance_unverified",
+          "features": {
+            "repair_mode": "auto",
+            "syntax_check": false,
+            "diagnose_failures": false,
+            "verify_repeats": 1,
+            "lessons_enabled": false,
+            "lesson_store_sha256": null,
+            "plan_audit": false,
+            "structured_expectations": false
+          },
+          "manual_interventions_during_run": 0
+        },
+        "planning_errors": [
+          {
+            "event": "plan_validation_failed",
+            "error": "tests[3] (T4): Every test needs an assertion",
+            "details": {
+              "location": "tests[3] (T4)",
+              "detail": "Every test needs an assertion",
+              "policy": "Correct this draft's structure against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation."
+            }
+          },
+          {
+            "event": "plan_validation_failed",
+            "error": "tests[4] (T5).steps[0] (combined step 2): Goal timeout must be 100..8000 ms",
+            "details": {
+              "location": "tests[4] (T5).steps[0] (combined step 2)",
+              "detail": "Goal timeout must be 100..8000 ms",
+              "policy": "Correct this draft's structure against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation."
+            }
+          }
+        ],
+        "frozen_fixture_integrity": true,
+        "final_read_only_replay": {
+          "agent_version": "1.2.0",
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "automated_checks_passed": true,
+          "full_game_acceptance": null,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "game_sha256": {
+            "game.js": "63dc81ebf23b4a61958c83a81bdb70509c0fe99fd68b5c373e8a54a2bc17f273",
+            "index.html": "52239fd380aa8867f4d5576008bb7c1b823cf35515ba90ff26912b2820bbe98e"
+          },
+          "plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e"
+        }
+      },
+      "note": "Same spec, held-out plan, configured model and per-case call cap; one stochastic run per version, not an improvement estimate."
+    }
+  ],
+  "counterexample": {
+    "case": "word_lock",
+    "first_self_failures": [
+      {
+        "id": "T3",
+        "passed": false,
+        "failed_step": 5,
+        "failure_kind": "assertion_mismatch",
+        "needs_test_review": true,
+        "error": "Assertion did not match requirement",
+        "observations": [
+          {
+            "step": 1,
+            "actual": "sky",
+            "op": "eq",
+            "expected": "sky",
+            "passed": true
+          },
+          {
+            "step": 4,
+            "actual": "Won",
+            "op": "eq",
+            "expected": "Won",
+            "passed": true
+          },
+          {
+            "step": 5,
+            "actual": 1,
+            "op": "eq",
+            "expected": 0,
+            "passed": false
+          }
+        ],
+        "actions": [
+          {
+            "step": 1,
+            "action": "assert",
+            "arguments": {
+              "action": "assert",
+              "source": "state",
+              "path": "mode",
+              "op": "eq",
+              "value": "sky"
+            },
+            "ok": true,
+            "stage": "setup",
+            "elapsed_ms": 0
+          },
+          {
+            "step": 2,
+            "action": "fill",
+            "arguments": {
+              "action": "fill",
+              "selector": "#answer",
+              "text": "BLUE"
+            },
+            "ok": true,
+            "stage": "check",
+            "result": {
+              "selector": "#answer",
+              "action": "fill"
+            },
+            "elapsed_ms": 15
+          },
+          {
+            "step": 3,
+            "action": "click",
+            "arguments": {
+              "action": "click",
+              "selector": "#submit"
+            },
+            "ok": true,
+            "stage": "check",
+            "result": {
+              "selector": "#submit",
+              "position_css": {
+                "x": 35.546875,
+                "y": 14.296875
+              }
+            },
+            "elapsed_ms": 32
+          },
+          {
+            "step": 4,
+            "action": "assert",
+            "arguments": {
+              "action": "assert",
+              "source": "state",
+              "path": "phase",
+              "op": "eq",
+              "value": "Won"
+            },
+            "ok": true,
+            "stage": "check",
+            "elapsed_ms": 0
+          },
+          {
+            "step": 5,
+            "action": "assert",
+            "arguments": {
+              "action": "assert",
+              "source": "state",
+              "path": "attempts",
+              "op": "eq",
+              "value": 0
+            },
+            "ok": false,
+            "stage": "check",
+            "elapsed_ms": 0
+          }
+        ],
+        "screenshot": "T3.png",
+        "before_screenshot": "T3.before.png"
+      }
+    ],
+    "frozen_failed_tests": [
+      {
+        "id": "T3",
+        "requirement_ids": [
+          "R5"
+        ],
+        "description": "Sky mode default: submitting BLUE wins.",
+        "purpose": "legal_action",
+        "setup_steps": [
+          {
+            "action": "assert",
+            "source": "state",
+            "path": "mode",
+            "op": "eq",
+            "value": "sky"
+          }
+        ],
+        "steps": [
+          {
+            "action": "fill",
+            "selector": "#answer",
+            "text": "BLUE"
+          },
+          {
+            "action": "click",
+            "selector": "#submit"
+          },
+          {
+            "action": "assert",
+            "source": "state",
+            "path": "phase",
+            "op": "eq",
+            "value": "Won"
+          },
+          {
+            "action": "assert",
+            "source": "state",
+            "path": "attempts",
+            "op": "eq",
+            "value": 0
+          }
+        ]
+      }
+    ],
+    "before_repair_independent_replay": {
+      "agent_version": "1.2.0",
+      "verification_repeats": 2,
+      "read_only_integrity": true,
+      "automated_checks_passed": true,
+      "full_game_acceptance": null,
+      "failure_summary": {
+        "counts": {},
+        "review_test_ids": [],
+        "infrastructure_error": null,
+        "quality_gate": {
+          "passed": true,
+          "functional_evidence_present": true,
+          "evidence_complete": true,
+          "reasons": [],
+          "full_game_acceptance": null
+        },
+        "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+      },
+      "game_sha256": {
+        "game.js": "3e23f1c341b253a129e234c5b904bcd3007ef339418369dd59ac00f821f8c602",
+        "index.html": "6da5317cb9cdbe292a337c14dd8df4dd03c838438e492f0013e09e6cd4c04686"
+      },
+      "plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d"
+    },
+    "after_repair_independent_replay": {
+      "agent_version": "1.2.0",
+      "verification_repeats": 2,
+      "read_only_integrity": true,
+      "automated_checks_passed": false,
+      "full_game_acceptance": null,
+      "failure_summary": {
+        "counts": {
+          "assertion_mismatch": 2
+        },
+        "review_test_ids": [
+          "T4",
+          "T5"
+        ],
+        "infrastructure_error": null,
+        "quality_gate": {
+          "passed": false,
+          "functional_evidence_present": true,
+          "evidence_complete": true,
+          "reasons": [
+            "One or more recorded tests did not pass",
+            "Verifier did not report a clean run"
+          ],
+          "full_game_acceptance": null
+        },
+        "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+      },
+      "game_sha256": {
+        "game.js": "d6d25d0f70ab4bf878474bcb6b1d1da841fdafcaa516065718343608526c38e3",
+        "index.html": "6da5317cb9cdbe292a337c14dd8df4dd03c838438e492f0013e09e6cd4c04686"
+      },
+      "plan_sha256": "6966799db4649dddd7f2319b2b1f803382455a73d4ad1ab06243200b6bcd065d"
+    },
+    "after_repair_original_self_passed": true,
+    "note": "First artifact passes independent selected checks; a repair changes winning-answer attempt accounting to satisfy a wrong frozen self-test. Final self-pass does not imply original-rule compliance.",
+    "original_spec": "# Word Lock\nBuild a small offline word puzzle. A visible mode dropdown has sky (default) and grass. Display an open clue: sky needs BLUE, grass needs GREEN, uppercase exact matches. Use an ordinary text input, not a password field. Empty submissions do nothing; other submissions add one attempt. A correct answer wins and subsequent submits are ignored. Changing mode clears the input and attempts and returns to Playing. Restart restores sky, empty input and zero attempts. Show English instructions.\nUse #mode (native select values sky/grass), #answer, #submit, #restart and #attempts (bare integer), with data-game-surface. Read-only window.__gameTest.getState() returns real attempts and phase (Playing/Won). Vanilla local HTML/CSS/JS only.\n"
+  },
+  "supplemental_baseline_provenance": {
+    "tracked_sources_match_base_commit_ignoring_line_endings": true,
+    "raw_source_fingerprint_differs": true,
+    "extra_unreferenced_source_file": "agent/feedback.py",
+    "note": "Supplement used the archived 1.1.0 tracked implementation; line endings and an unused copied helper change its raw source hash. Its separate batch is not part of the matched word/platform comparison."
+  },
+  "framework_regression": {
+    "tests": 281,
+    "duration_seconds": 128.292,
+    "all_passed": true,
+    "real_browser_tests": 45,
+    "paid_api_calls": 0,
+    "skipped": 0
+  },
+  "research_sources": [
+    {
+      "project": "SWE-agent",
+      "url": "https://swe-agent.com/0.7/config/commands/",
+      "used_idea": "Explicit tool documentation and actionable formatting feedback; historical documentation, not imported code."
+    },
+    {
+      "project": "Aider",
+      "url": "https://aider.chat/docs/usage/lint-test.html",
+      "used_idea": "Test-after-edit discipline; existing PlayForge loop retained, not advertised as new."
+    },
+    {
+      "project": "OpenHands",
+      "url": "https://docs.openhands.dev/sdk/guides/context-condenser",
+      "used_idea": "Retain important goals/failures while separating raw history; no OpenHands runtime or LLM condenser added, no cost reduction claim."
+    }
+  ]
+}

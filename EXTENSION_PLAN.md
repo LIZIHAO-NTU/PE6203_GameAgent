@@ -1,8 +1,8 @@
 # PlayForge — Expansion Plan / 后续扩展方案
 
-Status: implemented in bounded scope for 1.1.0; see RELEASE_1_1.md for actual evidence, failures and limits.
+Status: bounded 1.1.0 expansion retained; 1.2.0 adds planning/repair feedback and mixed-rule evidence. See RELEASE_1_1.md and RELEASE_1_2.md for failures and limits.
 
-状态：1.1.0 已按有限范围实施，实际证据、失败与边界见 RELEASE_1_1.md。
+状态：保留 1.1.0 有限扩展；1.2.0 增加规划／修复反馈和规则组合证据。实际失败与边界见两份版本报告。
 
 | Stage / 阶段 | 1.1.0 delivery / 实施状态 |
 |---|---|
@@ -57,3 +57,13 @@ Do not select a final architecture around an unconfirmed instructor model. Once 
 Stage 0 catches structured contradictions, not a simultaneously incorrect summary and assertion. Text/selection tools and narrow B/C samples are implemented, but planning semantics remain a separate limitation. Next evaluate new rule variants and mixed mechanics with preregistered checks, preserve initial failures, and measure repeatability before extending scope. Keep the dashboard optional and E deferred.
 
 阶段 0 不能发现摘要和断言一起写错。输入工具和 B/C 小范围样本已实施，但计划语义仍是独立短板。下一步用新规则变体、混合玩法和预先固定的验收检查重复性，保留首轮失败后再决定扩大范围。状态页保持可选，E 暂缓。
+
+## 6. 1.2.0 follow-through / 1.2.0 实施与后续
+
+Completed: real 1.1.0 default-mode screening, located draft-validation feedback, evidence-linked repair packets, explicit blocked repair, joint selected-check reporting, and two independently specified text/resource and turn/resource samples. No oracle is inferred from a model explanation. See RELEASE_1_2.md for exact calls, repeatability and unresolved autonomous outcomes.
+
+已实施：真实默认模式筛查、草稿错误定位、证据化修复反馈、明确待复核响应、联合指标及文字／资源、回合／资源两种独立样本。模型解释不是规则真值；调用、重复性和自主验收短板见报告。
+
+Remaining: collect more default-mode repetitions and new variants; investigate recurring schema failures without making the accepted DSL more ambiguous; evaluate repair-protocol usage with actual model repairs before claiming behavioral reliability. Interactive generation/cancellation UI and broader external visual evidence remain future work; the current UI is read-only. Model adaptation waits for instructor requirements, as agreed.
+
+未实施：更多重复与新变体、持续格式错误的针对性优化、更充分的真实模型修复协议测试、交互式生成／取消界面以及更广泛的外部视觉证据。当前 UI 仍只读；按约定等老师公布要求后再适配模型。联网、3D 和复杂引擎继续暂缓。

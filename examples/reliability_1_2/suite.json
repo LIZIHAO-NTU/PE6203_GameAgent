@@ -1,0 +1,17 @@
+{
+  "description": "Preregistered mixed-rule samples, original requirements and independent checks; no game implementation.",
+  "cases": [
+    {
+      "id": "signal_vault",
+      "family": "text_resource",
+      "spec": "signal_vault.md",
+      "acceptance_plan": "signal_vault.acceptance.json"
+    },
+    {
+      "id": "energy_duel",
+      "family": "turn_resource",
+      "spec": "energy_duel.md",
+      "acceptance_plan": "energy_duel.acceptance.json"
+    }
+  ]
+}

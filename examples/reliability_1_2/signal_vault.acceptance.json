@@ -1,0 +1,409 @@
+{
+  "supported": true,
+  "title": "Independent signal_vault",
+  "development_plan": [
+    "Selected independent acceptance fixed before paid generation; never sent to the model"
+  ],
+  "state_contract": {
+    "energy": "Actual public game state",
+    "attempts": "Actual public game state",
+    "phase": "Actual public game state"
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "text": "Initial public counters",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R2",
+      "text": "Empty answer is a no-op",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R3",
+      "text": "Wrong answer consumes one energy and one attempt",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R4",
+      "text": "Charge is capped",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R5",
+      "text": "Winning answer also counts and locks later actions",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R6",
+      "text": "No submit when energy exhausted",
+      "verification": "automated",
+      "priority": "core"
+    },
+    {
+      "id": "R7",
+      "text": "Mode switch preserves resources; code answer wins; restart resets",
+      "verification": "automated",
+      "priority": "core"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Initial public counters",
+      "requirement_ids": [
+        "R1"
+      ],
+      "purpose": "initial",
+      "steps": [
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "Playing"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "energy",
+          "op": "eq",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "description": "Empty answer is a no-op",
+      "requirement_ids": [
+        "R2"
+      ],
+      "purpose": "invalid_action",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "description": "Wrong answer consumes one energy and one attempt",
+      "requirement_ids": [
+        "R3"
+      ],
+      "purpose": "legal_action",
+      "steps": [
+        {
+          "action": "fill",
+          "selector": "#answer",
+          "text": "RED"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert",
+          "source": "state",
+          "path": "phase",
+          "op": "eq",
+          "value": "Playing"
+        },
+        {
+          "action": "assert_consistent",
+          "source": "text",
+          "selector": "#energy",
+          "state_path": "energy",
+          "coerce": "number"
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "description": "Charge is capped",
+      "requirement_ids": [
+        "R4"
+      ],
+      "purpose": "legal_action",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#charge"
+        },
+        {
+          "action": "click",
+          "selector": "#charge"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "4"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "description": "Winning answer also counts and locks later actions",
+      "requirement_ids": [
+        "R5"
+      ],
+      "purpose": "terminal",
+      "steps": [
+        {
+          "action": "fill",
+          "selector": "#answer",
+          "text": "BLUE"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "click",
+          "selector": "#charge"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "assert_consistent",
+          "source": "text",
+          "selector": "#attempts",
+          "state_path": "attempts",
+          "coerce": "number"
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "description": "No submit when energy exhausted",
+      "requirement_ids": [
+        "R6"
+      ],
+      "purpose": "invalid_action",
+      "steps": [
+        {
+          "action": "fill",
+          "selector": "#answer",
+          "text": "RED"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "fill",
+          "selector": "#answer",
+          "text": "BLUE"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "Playing"
+        }
+      ]
+    },
+    {
+      "id": "T7",
+      "description": "Mode switch preserves resources; code answer wins; restart resets",
+      "requirement_ids": [
+        "R7"
+      ],
+      "purpose": "reset",
+      "steps": [
+        {
+          "action": "fill",
+          "selector": "#answer",
+          "text": "RED"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "select_option",
+          "selector": "#mode",
+          "value": "code"
+        },
+        {
+          "action": "fill",
+          "selector": "#answer",
+          "text": "42"
+        },
+        {
+          "action": "click",
+          "selector": "#submit"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "Won"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "2"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "1"
+        },
+        {
+          "action": "click",
+          "selector": "#restart"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#energy",
+          "op": "eq",
+          "value": "3"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#attempts",
+          "op": "eq",
+          "value": "0"
+        },
+        {
+          "action": "assert",
+          "source": "text",
+          "selector": "#phase",
+          "op": "eq",
+          "value": "Playing"
+        },
+        {
+          "action": "assert",
+          "source": "value",
+          "selector": "#mode",
+          "op": "eq",
+          "value": "color"
+        },
+        {
+          "action": "assert",
+          "source": "value",
+          "selector": "#answer",
+          "op": "eq",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "manual_checks": []
+}
