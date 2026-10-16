@@ -1,0 +1,5 @@
+{"description":"Four frozen English rule variants; independent plans are never provided to generation or repair.","cases":[
+{"id":"charge_exchange","family":"resource_transitions","spec":"charge_exchange.md","acceptance_plan":"charge_exchange.acceptance.json"},
+{"id":"portal_grid","family":"discrete_teleport","spec":"portal_grid.md","acceptance_plan":"portal_grid.acceptance.json"},
+{"id":"color_code","family":"sequence_puzzle","spec":"color_code.md","acceptance_plan":"color_code.acceptance.json"},
+{"id":"pulse_runner","family":"real_time_lanes","spec":"pulse_runner.md","acceptance_plan":"pulse_runner.acceptance.json"}]}

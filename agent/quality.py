@@ -19,7 +19,7 @@ def review_plan(plan):
         meaningful = False
         for step in steps:
             acted = acted or step["action"] in INPUT_ACTIONS
-            if acted and step["action"] == "assert" and step["source"] in {
+            if acted and step["action"] in {"assert", "assert_stable"} and step["source"] in {
                     "state", "text", "attribute", "enabled", "count"}:
                 meaningful = True
         if meaningful and core.intersection(test["requirement_ids"]):

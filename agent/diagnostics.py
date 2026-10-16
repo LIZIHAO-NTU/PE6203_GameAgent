@@ -17,8 +17,8 @@ def route_failure(result, plan_review=None, repeated_failure=False):
     elif result.get("quality_gate", {}).get("evidence_complete") is False:
         action, instruction = "stop_unverified", "The verifier did not return complete evidence; do not treat this as a gameplay diagnosis."
     elif any(w["test_id"] in {t["id"] for t in result.get("tests", []) if t.get("passed") is not True}
-             for w in (plan_review or {}).get("warnings", [])):
-        action, instruction = "stop_test_review", "A failed test has contradictory fresh-page assumptions. Preserve the game and frozen tests; review the plan rather than rewriting gameplay. This is not proof the game is correct."
+             for w in (plan_review or {}).get("warnings", []) if w.get("blocking_failure_review", True)):
+        action, instruction = "stop_test_review", "A failed test has a fresh-page or temporal-capture review warning. Preserve the game and frozen tests; review the plan rather than blindly rewriting gameplay. This is not proof the game is correct."
     elif repeated_failure:
         action, instruction = "stop_test_review", "Identical assertion evidence repeated after repair. Preserve the best artifact; root cause remains unverified, not automatically a test bug."
     elif set(kinds).intersection({"assertion_mismatch", "goal_timeout", "interaction_error"}):

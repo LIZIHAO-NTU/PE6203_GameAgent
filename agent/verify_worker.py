@@ -138,6 +138,28 @@ def observe_consistency(page, step):
             "passed": bool(compare(actual, "eq", expected)), "state_path": step["state_path"]}
 
 
+def observe_stability(page, step):
+    """Sample a live observation AFTER previous inputs; never set game state."""
+    started = time.monotonic()
+    samples = []
+    count, duration = step.get("samples", 3), step.get("duration_ms", 300)
+    first = None
+    passed = True
+    for index in range(count):
+        if index:
+            page.wait_for_timeout(duration / (count - 1))
+        observed = observe_condition(page, {**step, "op": "eq", "value": first}, {})
+        actual = observed["actual"]
+        if index == 0:
+            first = actual
+        else:
+            passed = passed and bool(compare(actual, "eq", first))
+        samples.append({"elapsed_ms": round((time.monotonic() - started) * 1000), "actual": actual})
+    return {"actual": samples[-1]["actual"], "expected": first, "op": "eq",
+            "passed": passed, "samples": samples,
+            "note": "Equality at sampled times only, not proof of continuous stability or a correct pause control."}
+
+
 def pointer_target(page, step, position=None):
     """Resolve coordinates from the actual rendered element, never mutate game state."""
     locator = page.locator(step["selector"])
@@ -278,8 +300,9 @@ def run_test(page, test):
                             "failure_kind": "goal_timeout", "needs_test_review": True,
                             "error": "Goal not reached within budget; could be game logic, unreachable target or test strategy. Not proof of a game bug.",
                             "observations": observations, "actions": actions}
-            elif action in {"assert", "assert_consistent"}:
-                observed = (observe_consistency(page, step) if action == "assert_consistent"
+            elif action in {"assert", "assert_consistent", "assert_stable"}:
+                observed = (observe_stability(page, step) if action == "assert_stable" else
+                            observe_consistency(page, step) if action == "assert_consistent"
                             else observe_condition(page, step, captures))
                 observation = {"step": index, **observed}
                 observations.append(observation)

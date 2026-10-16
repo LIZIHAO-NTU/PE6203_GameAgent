@@ -161,7 +161,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                         decision="Generate original-spec game; startup-only checks are NOT functional acceptance")
         if summary["planning_status"] == "pending":
             summary["planning_status"] = "valid" if plan["supported"] else "unsupported"
-        summary["plan_review"] = inspect_plan(plan)
+        summary["plan_review"] = inspect_plan(plan, spec)
         if plan_audit:
             if not plan["supported"] or summary["planning_status"] != "valid":
                 summary["plan_audit_status"] = "not_applicable"
@@ -183,7 +183,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     if audit["status"] == "unverified":
                         raise PlanReviewError("Draft plan review is unverified: " + audit["reason"])
                     plan = reviewed
-                    summary["plan_review"] = inspect_plan(plan)
+                    summary["plan_review"] = inspect_plan(plan, spec)
                 except Exception as error:
                     summary["plan_audit_status"] = "unverified"
                     summary["plan_audit_error"] = trace.redact(str(error))
@@ -288,7 +288,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                             summary.update(planning_status="recovered", planning_recovered=True,
                                            plan_sha256=plan_hash, active_plan=plan_path.name, gameplay=plan.get("gameplay"),
                                            plan_warnings=plan_warnings(plan), plan_quality=review_plan(plan))
-                            summary["plan_review"] = inspect_plan(plan)
+                            summary["plan_review"] = inspect_plan(plan, spec)
                             trace.save("functional_plan_review.json", summary["plan_quality"])
                             trace.event("plan_recovered", plan_sha256=plan_hash,
                                         decision="New functional checks frozen before repair; startup results are not reused")
@@ -499,7 +499,7 @@ def write_report(output, summary):
     for warning in summary.get("plan_quality", {}).get("warnings", []):
         lines.append(f"- 计划质量提醒 {warning['test_id']}: {warning['message']}")
     for warning in summary.get("plan_review", {}).get("warnings", []):
-        lines.append(f"- 独立初始化复核 {warning['test_id']}: {warning['message']}")
+        lines.append(f"- 测试计划复核 {warning['test_id']}: {warning['message']}")
     lines += ["", "## 人工试玩待办", "", "- [ ] 根据原始需求完整试玩，检查自动测试遗漏和状态钩子的真实性。"]
     for check in summary.get("manual_checks", []):
         lines.append(f"- [ ] {check['requirement_id']}: {check['instruction']}")

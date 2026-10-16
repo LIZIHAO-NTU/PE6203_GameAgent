@@ -1,10 +1,10 @@
 # PlayForge: Build a Coding Agent That Can Build a Game
 
-Current version: `1.0.0-beta.3` — a research beta, not a stable production release. This version adds explicit per-test setup, pre-freeze planning review and conservative failure routing. See [PLANNING.md](PLANNING.md) for behavior, defaults and limits; [CAPABILITY.md](CAPABILITY.md) preserves the earlier real-model screening.
+Current version: `1.0.0-beta.4` — a research beta, not a stable production release. This update adds bounded stability assertions, reviewable test-outcome bases and conservative temporal-capture review. See [TEST_RELIABILITY.md](TEST_RELIABILITY.md) for the new English-spec comparison and rehearsal; [PLANNING.md](PLANNING.md) preserves Beta 3 behavior and [CAPABILITY.md](CAPABILITY.md) the earlier screening. Future features are proposals only in [EXTENSION_PLAN.md](EXTENSION_PLAN.md).
 
 The subsequent four-case real DeepSeek audit on/off comparison is in [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md): 24 API attempts; keep audit opt-in/off by default. The agent implementation was unchanged for that evaluation.
 
-当前版本：`1.0.0-beta.3`，定位为研究测试版，不代表生产级稳定正式版。本次增加独立准备步骤、冻结前计划审查与保守失败分流，默认值和边界见 [PLANNING.md](PLANNING.md)。[CAPABILITY.md](CAPABILITY.md) 保留此前真实模型筛查；历史记录不改写。
+当前版本：`1.0.0-beta.4`，定位为研究测试版，不代表生产级稳定正式版。本轮增加有界稳定性检查、可复核的测试预期依据及旧时序快照提醒。新英文需求对照与演练见 [TEST_RELIABILITY.md](TEST_RELIABILITY.md)，旧版本行为和历史评估保留于上述文档。[EXTENSION_PLAN.md](EXTENSION_PLAN.md) 仅为后续方案，未实施其中的新功能。
 
 后续四类新需求的真实 DeepSeek 审查开关对照见 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)：共 24 次 API 尝试，结论为暂时保持审查默认关闭；评估期间未改 Agent 实现。
 
@@ -32,9 +32,9 @@ Language smoke checks (2026-10-14): a Chinese specification without a UI-languag
 
 ## 1. How it works / 系统如何工作
 
-Version 1.0 Beta 3 keeps one controller loop, with draft review before freezing and explicit setup on each fresh test page. See [INTEGRATION.md](INTEGRATION.md) for the integration baseline and [PLANNING.md](PLANNING.md) for the latest changes.
+PlayForge keeps one controller loop, with draft review before freezing and explicit setup on each fresh test page. Beta 4 adds trusted sampled stability observations after controls, without rewriting frozen acceptance. See [INTEGRATION.md](INTEGRATION.md), [PLANNING.md](PLANNING.md) and [TEST_RELIABILITY.md](TEST_RELIABILITY.md).
 
-1.0 Beta 3 保持同一条 Agent Loop，加入冻结前草稿审查及每项测试的显式初始化。整合基线与最新改进分别见上述双语文档。
+保持同一条 Agent Loop、冻结前草稿审查及每项测试的独立初始化。Beta 4 增加操作后的受控稳定性采样，不改写冻结验收；整合基线与本轮改进见上述文档。
 
 ~~~text
 Spec → Plan → Generate → Browser verification → Bounded repair
@@ -278,7 +278,13 @@ Leave `PLAYWRIGHT_CHANNEL` blank for Playwright Chromium. Temporary test artifac
 
 使用 Playwright Chromium 时将 `PLAYWRIGHT_CHANNEL` 留空。临时测试产物位于 `.codex-tmp/`；任务结束后清理本次临时文件，不误删其他人的材料。
 
-### Version 1.0 Beta 3 — 2026-10-14 / 当前版本验证
+### Version 1.0 Beta 4 — 2026-10-16 / 当前版本验证
+
+New functionality and bounded real-model results are recorded in [TEST_RELIABILITY.md](TEST_RELIABILITY.md) and [RELIABILITY_RESULTS.json](RELIABILITY_RESULTS.json). The matched four-case comparison confirmed delivery on selected independent checks for both versions, but did not improve the 3/4 self-plan result; arithmetic assertions remain a weakness. Framework regression, paid generation and read-only repeated checks are reported separately. Instructor-model compatibility is still untested.
+
+新增机制及有上限的真实模型结果见上述报告与脱敏 JSON。可比的四类需求在前后版本均通过所选独立检查，但自测仍为 3/4，数字断言仍是短板。框架回归、付费生成、只读重复检查分开统计，不声称已经验证老师最终模型。
+
+### Version 1.0 Beta 3 — 2026-10-14 / 历史版本验证
 
 **195/195 framework tests passed, including 33 real-browser tests.** All prior 160 tests remain. This initial framework validation used zero paid API calls; the later paid comparison did not change agent code or rerun this suite.
 
@@ -341,6 +347,9 @@ CAPABILITY_RESULTS.json Sanitized run-level evidence / 脱敏逐次评估证据
 PLANNING.md            Beta 3 setup, review and routing / Beta 3 初始化、审查与分流
 AUDIT_COMPARISON.md    Fixed-version real-model audit comparison / 固定版本真实审查对照
 AUDIT_COMPARISON_RESULTS.json Sanitized comparison evidence / 脱敏对照证据
+TEST_RELIABILITY.md    Beta 4 changes, comparison and rehearsal / Beta 4 改进、对照与演练
+RELIABILITY_RESULTS.json Sanitized Beta 4 evidence / Beta 4 脱敏证据
+EXTENSION_PLAN.md     Future features, proposal only / 后续扩展方案，未实施
 ~~~
 
 - Each teammate creates their own environment and `.env`; never copy another person's key. 每个成员创建自己的环境和 `.env`，不复制他人的 key。

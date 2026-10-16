@@ -13,6 +13,9 @@ EXECUTION_CONTRACT = {
     "limits": {"combined_setup_and_check_steps": 18, "plan_wait_budget_ms": 45000,
                "individual_wait_or_hold_ms": 2000, "individual_goal_timeout_ms": 8000},
     "safety": "No state setters, injected game scripts or weakening frozen acceptance.",
+    "state_hook": "window.__gameTest.getState() is the single read-only observation interface; explicit original-spec aliases may coexist.",
+    "temporal": "Apply controls before capturing a stable baseline; assert_stable observes equality over bounded samples after prior input.",
+    "test_basis": "A short original-spec quote and outcome basis are reviewable claims, never proof of correctness.",
 }
 
 
@@ -35,7 +38,7 @@ def initial_assertions(test):
     return records
 
 
-def inspect_plan(plan):
+def inspect_plan(plan, original_spec=None):
     """Find contradictions in a draft's own initial assertions, not infer game rules."""
     tests = plan.get("tests", [])
     ordered = sorted(tests, key=lambda t: t.get("purpose") != "initial")
@@ -49,6 +52,34 @@ def inspect_plan(plan):
                     "message": "Fresh-page initial assertions disagree before any setup/input. Review missing setup or non-deterministic assumptions; not proof of a game bug."})
             else:
                 anchors.setdefault(identity, (value, test["id"]))
+    gameplay = plan.get("gameplay")
+    realtime = isinstance(gameplay, dict) and gameplay.get("interaction_model") in {"real_time", "hybrid"}
+    inputs = {"click", "key", "keys", "hover", "drag", "key_until", "move_to"}
+    for test in tests:
+        basis = test.get("evidence")
+        if original_spec is not None and basis:
+            quote = " ".join(basis["spec_quote"].split())
+            if quote not in " ".join(original_spec.split()):
+                warnings.append({"test_id": test["id"], "kind": "unmatched_spec_quote",
+                    "blocking_failure_review": False,
+                    "message": "The claimed quote is not a verbatim original-spec fragment. Its explanation is not verified evidence."})
+        captures, input_index = {}, 0
+        for index, step in enumerate(test_steps(test), 1):
+            if step["action"] in inputs:
+                input_index += 1
+            elif step["action"] == "capture":
+                captures[step["name"]] = input_index
+            elif step["action"] == "sample":
+                captures[step["name"] + "_start"] = input_index
+                captures[step["name"] + "_end"] = input_index
+            ref = step.get("value_from", {})
+            if (realtime and test.get("purpose") != "invalid_action" and step["action"] == "assert"
+                    and step.get("source") == "state" and step.get("op") == "eq"
+                    and ref.get("path") == step.get("path") and ref.get("capture") in captures
+                    and captures[ref["capture"]] < input_index):
+                warnings.append({"test_id": test["id"], "kind": "stale_temporal_capture", "step": index,
+                    "blocking_failure_review": True,
+                    "message": "A real-time equality uses a snapshot taken before intervening input. Capture AFTER pause/control changes, or use assert_stable after the action. If this test fails, review rather than blindly rewrite physics; this warning is heuristic, not proof of a bad test."})
     return {"warnings": warnings, "execution_contract": EXECUTION_CONTRACT,
             "note": "Heuristic review only. It cannot solve arbitrary maps, prove rules, or guarantee semantic correctness."}
 
@@ -93,7 +124,7 @@ def validate_audit(value, draft):
             require(old["requirement_ids"] == new_tests[tid]["requirement_ids"], "Audit cannot move test coverage")
         def assertion_shapes(test):
             return Counter(json.dumps({k: v for k, v in step.items() if k not in {"value", "value_from"}}, sort_keys=True)
-                           for step in test_steps(test) if step["action"] in {"assert", "assert_consistent"})
+                           for step in test_steps(test) if step["action"] in {"assert", "assert_consistent", "assert_stable"})
         require(not (assertion_shapes(old) - assertion_shapes(new_tests[tid])),
                 "Audit cannot remove assertions or weaken/change observation operators: " + tid)
     require(any(old_tests[tid] != new_tests[tid] for tid in old_tests), "Revised audit did not change a test")

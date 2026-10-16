@@ -1,0 +1,4 @@
+# Three-Lane Runner
+Build a small offline real-time game on a 260x160 canvas. The player starts at x=20 in lane 1; lanes are 0,1,2. Start begins moving right at 80 pixels/second. ArrowUp/Down presses change one lane, clamped to 0..2. Crossing x=140 in lane 1 loses; crossing it in another lane is safe. Reaching x=220 wins. Stop all movement after winning or losing. Pause freezes position and resume continues; restart restores Ready, x=20, lane=1. Start starts Ready or resumes Paused; Pause toggles Playing/Paused. No randomness, extra obstacles or levels.
+
+Draw visible player, obstacle and finish; show English instructions. Use #start, #pause, #restart and #status (Ready/Playing/Paused/Won/Lost). Read-only window.__gameTest.getState() reports the real player.x (nested), lane (top-level number) and phase (top-level exact Ready/Playing/Paused/Won/Lost). Use vanilla local HTML/CSS/JS.

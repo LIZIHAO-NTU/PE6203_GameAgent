@@ -1,0 +1,854 @@
+{
+  "date": "2026-10-16",
+  "project": "PlayForge",
+  "version": "1.0.0-beta.4",
+  "baseline_commit": "b6fbb8288b115933c8782afb9704e19893fc2bc0",
+  "final_source_sha256": "b0b79062c52038f7607261c9ad03819a13d3e50373941f4b05c56214a58e339f",
+  "protocol": {
+    "max_total_api_attempts": 32,
+    "max_calls_per_run": 4,
+    "max_rounds": 3,
+    "max_seconds_per_run": 300,
+    "model": "deepseek-flash",
+    "audit_enabled": false,
+    "independent_checks_hidden_from_generation": true,
+    "manual_game_edits": 0,
+    "sampling": "One independent model sample per case/condition; all before then all after. No seeds or statistical inference.",
+    "source_delta_after_paid_runs": "Only a defensive isinstance guard for null gameplay metadata on unsupported plans. Final regression and dress replays use the final source; valid paid-game paths are unchanged."
+  },
+  "cases": [
+    {
+      "case_id": "charge_exchange",
+      "spec_sha256": "c5591fd2991d3624e35a2ac9efcaa2d839582bbad0a2fa8a6d300616b454a495",
+      "acceptance_sha256": "9e008869e7900313c960f51dcd5285f09f9641b644944a28966023a5b19ce4a3",
+      "before": {
+        "agent_version": "1.0.0-beta.3",
+        "status": "checks_failed",
+        "automated_checks_passed": false,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 32.578,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "c5591fd2991d3624e35a2ac9efcaa2d839582bbad0a2fa8a6d300616b454a495",
+        "prompts_sha256": "2a968747b7910dc6ad054554024e0146cdf10732a83d7787ca6cbdec7c7335b1",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 4,
+          "prompt_tokens": 28304,
+          "completion_tokens": 6517,
+          "cached_input_tokens": 13824,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "0dd64e1439bdd2ec490c5c4fa69d5a65c78b32c57815a83fc9dc1ba45ba4933f",
+        "self_test_count": 6,
+        "tests_with_basis": 0,
+        "stability_actions": 0,
+        "frozen_plan_sha256": "a20e25a284fc6c23f0e6eadffe86d649b0d2ba685abacd6cfeebb8041949ab39",
+        "self_tests_passed": 5,
+        "self_failures": [
+          {
+            "id": "T5",
+            "kind": "assertion_mismatch",
+            "failed_step": 6,
+            "last_observation": [
+              {
+                "step": 6,
+                "actual": 0,
+                "op": "eq",
+                "expected": 3,
+                "passed": false
+              }
+            ],
+            "test": {
+              "id": "T5",
+              "requirement_ids": [
+                "R7"
+              ],
+              "description": "After winning, charge and craft have no effect.",
+              "purpose": "terminal",
+              "setup_steps": [
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                },
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                },
+                {
+                  "action": "click",
+                  "selector": "#charge"
+                },
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                }
+              ],
+              "steps": [
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "phase",
+                  "op": "eq",
+                  "value": "Won"
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "energy",
+                  "op": "eq",
+                  "value": 3
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "crystals",
+                  "op": "eq",
+                  "value": 3
+                },
+                {
+                  "action": "click",
+                  "selector": "#charge"
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "energy",
+                  "op": "eq",
+                  "value": 3
+                },
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "crystals",
+                  "op": "eq",
+                  "value": 3
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "phase",
+                  "op": "eq",
+                  "value": "Won"
+                }
+              ]
+            }
+          }
+        ],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "13f1610f69b341a96f302aa3ce3a220042383529d69c2f36f7957f02fb14ee95",
+            "index.html": "0472a6f536e37bf5825f6e2f30fdf3105ecd02d139810580d6cb55f4252b3f55"
+          },
+          "plan_sha256": "9e008869e7900313c960f51dcd5285f09f9641b644944a28966023a5b19ce4a3"
+        }
+      },
+      "after": {
+        "agent_version": "1.0.0-beta.4",
+        "status": "checks_failed",
+        "automated_checks_passed": false,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 33.75,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "c5591fd2991d3624e35a2ac9efcaa2d839582bbad0a2fa8a6d300616b454a495",
+        "prompts_sha256": "b8d31c8315f91a946c18adfe55e643b092b75d03d8aa0b08e2c878581fcb5002",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 4,
+          "prompt_tokens": 26884,
+          "completion_tokens": 6914,
+          "cached_input_tokens": 10624,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "2b5dd84975238e3dbd01eefb42d49601eb0388ff8ab036b514d66335648da885",
+        "self_test_count": 6,
+        "tests_with_basis": 6,
+        "stability_actions": 0,
+        "frozen_plan_sha256": "876140f18992e793f3230efc1c750c47d5d096daacfaaa86fc7cc60f84cc5c81",
+        "self_tests_passed": 5,
+        "self_failures": [
+          {
+            "id": "T5",
+            "kind": "assertion_mismatch",
+            "failed_step": 5,
+            "last_observation": [
+              {
+                "step": 5,
+                "actual": 3,
+                "op": "eq",
+                "expected": 4,
+                "passed": false
+              }
+            ],
+            "test": {
+              "id": "T5",
+              "requirement_ids": [
+                "R5",
+                "R6",
+                "R8",
+                "R10"
+              ],
+              "description": "Reaching 3 crystals wins and locks both actions",
+              "purpose": "terminal",
+              "steps": [
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                },
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "crystals",
+                  "op": "eq",
+                  "value": 2
+                },
+                {
+                  "action": "click",
+                  "selector": "#charge"
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "energy",
+                  "op": "eq",
+                  "value": 4
+                },
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "crystals",
+                  "op": "eq",
+                  "value": 3
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "phase",
+                  "op": "eq",
+                  "value": "Won"
+                },
+                {
+                  "action": "assert",
+                  "source": "text",
+                  "selector": "#crystals",
+                  "op": "eq",
+                  "value": "3"
+                },
+                {
+                  "action": "click",
+                  "selector": "#charge"
+                },
+                {
+                  "action": "click",
+                  "selector": "#craft"
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "energy",
+                  "op": "eq",
+                  "value": 1
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "crystals",
+                  "op": "eq",
+                  "value": 3
+                },
+                {
+                  "action": "assert",
+                  "source": "state",
+                  "path": "phase",
+                  "op": "eq",
+                  "value": "Won"
+                }
+              ],
+              "evidence": {
+                "spec_quote": "Three crystals wins; after winning both actions are ignored.",
+                "expected_basis": "After two crafts (E 1 C 2) then charge (E 3) then craft (E 0 C 3), phase is Won; subsequent charge and craft are ignored, so energy 0 and crystals 3 remain."
+              }
+            }
+          }
+        ],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "c9f835d4ac36ee02b43a6689e0405f1d4897c17796447f618a5f2f8508d529be",
+            "index.html": "3a77ba7c201d9b9d07831c04a9c5cc648cd7209bc1562461e4f4d3479ab756c0"
+          },
+          "plan_sha256": "9e008869e7900313c960f51dcd5285f09f9641b644944a28966023a5b19ce4a3"
+        }
+      }
+    },
+    {
+      "case_id": "portal_grid",
+      "spec_sha256": "412bebfbed0700fd291f6249d38facf93349c3aeaf70a6773728970d3d13de8c",
+      "acceptance_sha256": "6924249279bcaf85895cbcf54b3b74bcc1eae5017634c0a27227b48b3c405a32",
+      "before": {
+        "agent_version": "1.0.0-beta.3",
+        "status": "automated_passed_manual_pending",
+        "automated_checks_passed": true,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 23.735,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "412bebfbed0700fd291f6249d38facf93349c3aeaf70a6773728970d3d13de8c",
+        "prompts_sha256": "2a968747b7910dc6ad054554024e0146cdf10732a83d7787ca6cbdec7c7335b1",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 2,
+          "prompt_tokens": 7806,
+          "completion_tokens": 5458,
+          "cached_input_tokens": 3712,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "0dd64e1439bdd2ec490c5c4fa69d5a65c78b32c57815a83fc9dc1ba45ba4933f",
+        "self_test_count": 6,
+        "tests_with_basis": 0,
+        "stability_actions": 0,
+        "frozen_plan_sha256": "aefb6590c3b935be3db3cd749c3e34d07b0983516f61a373bb0eb9ba5a14fce0",
+        "self_tests_passed": 6,
+        "self_failures": [],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "55a7dcd0fd6c86a6b648fd272588598cd06dd19d07273912c2a1f1629d9805e7",
+            "index.html": "692d5871c25217449f3aaf94d3e4163524671cf2aead339cf361855bde0879cb"
+          },
+          "plan_sha256": "6924249279bcaf85895cbcf54b3b74bcc1eae5017634c0a27227b48b3c405a32"
+        }
+      },
+      "after": {
+        "agent_version": "1.0.0-beta.4",
+        "status": "automated_passed_manual_pending",
+        "automated_checks_passed": true,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 32.671,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "412bebfbed0700fd291f6249d38facf93349c3aeaf70a6773728970d3d13de8c",
+        "prompts_sha256": "b8d31c8315f91a946c18adfe55e643b092b75d03d8aa0b08e2c878581fcb5002",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 3,
+          "prompt_tokens": 13917,
+          "completion_tokens": 8021,
+          "cached_input_tokens": 7296,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "2b5dd84975238e3dbd01eefb42d49601eb0388ff8ab036b514d66335648da885",
+        "self_test_count": 4,
+        "tests_with_basis": 4,
+        "stability_actions": 0,
+        "frozen_plan_sha256": "5cff6f21cb5496fbeb8e6bbf7a4f7f3cd53ec2c2abb466ed067d7dc46ee22793",
+        "self_tests_passed": 4,
+        "self_failures": [],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "659789df1ec94a869e44cae79b5bc201242a53e207b0259addacc42b12dfae4e",
+            "index.html": "fc6b4de3880da4eef8a8f925c2e3f7c5f23195f4e3b3c9cbdcd1c04c873269cd"
+          },
+          "plan_sha256": "6924249279bcaf85895cbcf54b3b74bcc1eae5017634c0a27227b48b3c405a32"
+        }
+      }
+    },
+    {
+      "case_id": "color_code",
+      "spec_sha256": "4ace4c301fd4657476998e35f1a3c10e0bd152429629b595d38b9087b05ac21d",
+      "acceptance_sha256": "e06b11cf3a53c1a93236d2c51ff5264aa3d234538e909269d889f5733e979c8b",
+      "before": {
+        "agent_version": "1.0.0-beta.3",
+        "status": "automated_passed_manual_pending",
+        "automated_checks_passed": true,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 22.157,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "4ace4c301fd4657476998e35f1a3c10e0bd152429629b595d38b9087b05ac21d",
+        "prompts_sha256": "2a968747b7910dc6ad054554024e0146cdf10732a83d7787ca6cbdec7c7335b1",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 2,
+          "prompt_tokens": 7104,
+          "completion_tokens": 4707,
+          "cached_input_tokens": 3712,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "0dd64e1439bdd2ec490c5c4fa69d5a65c78b32c57815a83fc9dc1ba45ba4933f",
+        "self_test_count": 5,
+        "tests_with_basis": 0,
+        "stability_actions": 0,
+        "frozen_plan_sha256": "33be8252170bd7afd9b8d9475589fc4d0d6e599aaef595258140be35d8398830",
+        "self_tests_passed": 5,
+        "self_failures": [],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "7f3e7628421859198db0868819bace3818806cb0611732a9fc667791bdc187be",
+            "index.html": "7a3dc587e3995f76cef1f8b2b62104eef4ad314bc30fe25134e683e3033652bc"
+          },
+          "plan_sha256": "e06b11cf3a53c1a93236d2c51ff5264aa3d234538e909269d889f5733e979c8b"
+        }
+      },
+      "after": {
+        "agent_version": "1.0.0-beta.4",
+        "status": "automated_passed_manual_pending",
+        "automated_checks_passed": true,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 20.282,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "4ace4c301fd4657476998e35f1a3c10e0bd152429629b595d38b9087b05ac21d",
+        "prompts_sha256": "b8d31c8315f91a946c18adfe55e643b092b75d03d8aa0b08e2c878581fcb5002",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 2,
+          "prompt_tokens": 7284,
+          "completion_tokens": 3678,
+          "cached_input_tokens": 4096,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "2b5dd84975238e3dbd01eefb42d49601eb0388ff8ab036b514d66335648da885",
+        "self_test_count": 6,
+        "tests_with_basis": 0,
+        "stability_actions": 0,
+        "frozen_plan_sha256": "fc434830b49c42a507e08d7a8da5f2bc3106628f470502a5cd26b3e8e7c63d67",
+        "self_tests_passed": 6,
+        "self_failures": [],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "c56feac57f942075d886a687b2f64941818f1ef254c8afc0f0f1a8e96fef1f00",
+            "index.html": "a5b456c6dbb191f6332fad97697523df165681747356f99eabc9deb2257348df"
+          },
+          "plan_sha256": "e06b11cf3a53c1a93236d2c51ff5264aa3d234538e909269d889f5733e979c8b"
+        }
+      }
+    },
+    {
+      "case_id": "pulse_runner",
+      "spec_sha256": "69cbb39e9299920f88401a0db4a902586eac73bd93e285d51a18c1898804ded5",
+      "acceptance_sha256": "5b64bd9f1718d5a2a906b00fb3667b4eb24b47abbb897d6babaf7ad3ce3e9497",
+      "before": {
+        "agent_version": "1.0.0-beta.3",
+        "status": "automated_passed_manual_pending",
+        "automated_checks_passed": true,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 40.547,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "69cbb39e9299920f88401a0db4a902586eac73bd93e285d51a18c1898804ded5",
+        "prompts_sha256": "2a968747b7910dc6ad054554024e0146cdf10732a83d7787ca6cbdec7c7335b1",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 2,
+          "prompt_tokens": 8316,
+          "completion_tokens": 6754,
+          "cached_input_tokens": 3840,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "4b399927966135f287cce03003631c409325d66de529addf458d7d98578c4e97",
+        "self_test_count": 7,
+        "tests_with_basis": 0,
+        "stability_actions": 0,
+        "frozen_plan_sha256": "644bd0be7ff648ccc012cdd51953958343a85a29aa2a811deeba332b52718632",
+        "self_tests_passed": 7,
+        "self_failures": [],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "d5b41eff68e039a57fd28f923ef2262bfc6e9a48be37bfa62ddde53b7fbc4f91",
+            "index.html": "fada7c9781fc595780760bd920c9e46b224679f2b60c7ad6dac4b5ee745e75c1"
+          },
+          "plan_sha256": "5b64bd9f1718d5a2a906b00fb3667b4eb24b47abbb897d6babaf7ad3ce3e9497"
+        }
+      },
+      "after": {
+        "agent_version": "1.0.0-beta.4",
+        "status": "automated_passed_manual_pending",
+        "automated_checks_passed": true,
+        "planning_status": "valid",
+        "selected_round": 1,
+        "duration_seconds": 34.203,
+        "manual_interventions_during_run": 0,
+        "original_spec_sha256": "69cbb39e9299920f88401a0db4a902586eac73bd93e285d51a18c1898804ded5",
+        "prompts_sha256": "b8d31c8315f91a946c18adfe55e643b092b75d03d8aa0b08e2c878581fcb5002",
+        "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 4,
+          "max_seconds": 300,
+          "test_timeout": 60
+        },
+        "features": {
+          "repair_mode": "auto",
+          "syntax_check": false,
+          "diagnose_failures": false,
+          "verify_repeats": 1,
+          "lessons_enabled": false,
+          "lesson_store_sha256": null,
+          "plan_audit": false
+        },
+        "usage": {
+          "api_attempts": 2,
+          "prompt_tokens": 8187,
+          "completion_tokens": 5326,
+          "cached_input_tokens": 4096,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "agent_source_sha256": "2b5dd84975238e3dbd01eefb42d49601eb0388ff8ab036b514d66335648da885",
+        "self_test_count": 6,
+        "tests_with_basis": 6,
+        "stability_actions": 3,
+        "frozen_plan_sha256": "10ef21379f2a95a2158448ea6cbe40c258da515c967c748ebcc8668dfec56116",
+        "self_tests_passed": 6,
+        "self_failures": [],
+        "independent": {
+          "selected_checks_passed": true,
+          "tests_passed": 6,
+          "tests_total": 6,
+          "repeats": 2,
+          "read_only_integrity": true,
+          "api_calls": 0,
+          "game_sha256": {
+            "game.js": "a19493c997a205875ab1451c1f106341b6b6dc2b67d6c392435c5f253d502f82",
+            "index.html": "b288a5dfda92a4fa4e84fd7e7932bfd304323bb04fc6aa64a0ac300ccd156386"
+          },
+          "plan_sha256": "5b64bd9f1718d5a2a906b00fb3667b4eb24b47abbb897d6babaf7ad3ce3e9497"
+        }
+      }
+    }
+  ],
+  "excluded_pilot": {
+    "agent_version": "1.0.0-beta.3",
+    "status": "automated_passed_manual_pending",
+    "automated_checks_passed": true,
+    "planning_status": "valid",
+    "selected_round": 1,
+    "duration_seconds": 44.906,
+    "manual_interventions_during_run": 0,
+    "original_spec_sha256": "d59baa50589f95699ac67e0eaef4e474cd03b6f6b2d512d2c78a10a7f008efc0",
+    "prompts_sha256": "2a968747b7910dc6ad054554024e0146cdf10732a83d7787ca6cbdec7c7335b1",
+    "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+    "limits": {
+      "max_rounds": 3,
+      "max_calls": 4,
+      "max_seconds": 300,
+      "test_timeout": 60
+    },
+    "features": {
+      "repair_mode": "auto",
+      "syntax_check": false,
+      "diagnose_failures": false,
+      "verify_repeats": 1,
+      "lessons_enabled": false,
+      "lesson_store_sha256": null,
+      "plan_audit": false
+    },
+    "usage": {
+      "api_attempts": 3,
+      "prompt_tokens": 14024,
+      "completion_tokens": 7851,
+      "cached_input_tokens": 6656,
+      "calls_with_unknown_usage": 0,
+      "estimated_known_usage_cost": null,
+      "currency": "USD",
+      "cost_is_complete": false,
+      "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+    },
+    "agent_source_sha256": "0dd64e1439bdd2ec490c5c4fa69d5a65c78b32c57815a83fc9dc1ba45ba4933f",
+    "self_test_count": 7,
+    "tests_with_basis": 0,
+    "stability_actions": 0,
+    "frozen_plan_sha256": "2432158e5db39add7cbc1c08a45aa313f36c48d5d1ea2a5853b9862f0d40ab01",
+    "self_tests_passed": 7,
+    "self_failures": [],
+    "excluded_from_matched_comparison": true,
+    "reason": "Initial runner wording left state-hook field placement, phase casing and resume control insufficiently explicit. Clarified before either final-condition runner evaluation; original result is not rewritten.",
+    "original_independent_passed": false
+  },
+  "standalone_rehearsal": {
+    "agent_version": "1.0.0-beta.4",
+    "status": "automated_passed_manual_pending",
+    "automated_checks_passed": true,
+    "planning_status": "valid",
+    "selected_round": 2,
+    "duration_seconds": 54.547,
+    "manual_interventions_during_run": 0,
+    "original_spec_sha256": "69cbb39e9299920f88401a0db4a902586eac73bd93e285d51a18c1898804ded5",
+    "prompts_sha256": "b8d31c8315f91a946c18adfe55e643b092b75d03d8aa0b08e2c878581fcb5002",
+    "settings_sha256": "2c6fd146662cb3757e2557909eabc6feacd847ad67d147bb0317807c0b46a6fd",
+    "limits": {
+      "max_rounds": 3,
+      "max_calls": 4,
+      "max_seconds": 300,
+      "test_timeout": 60
+    },
+    "features": {
+      "repair_mode": "auto",
+      "syntax_check": false,
+      "diagnose_failures": false,
+      "verify_repeats": 1,
+      "lessons_enabled": false,
+      "lesson_store_sha256": null,
+      "plan_audit": false
+    },
+    "usage": {
+      "api_attempts": 3,
+      "prompt_tokens": 17115,
+      "completion_tokens": 7977,
+      "cached_input_tokens": 9088,
+      "calls_with_unknown_usage": 0,
+      "estimated_known_usage_cost": null,
+      "currency": "USD",
+      "cost_is_complete": false,
+      "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+    },
+    "agent_source_sha256": "2b5dd84975238e3dbd01eefb42d49601eb0388ff8ab036b514d66335648da885",
+    "self_test_count": 6,
+    "tests_with_basis": 6,
+    "stability_actions": 3,
+    "frozen_plan_sha256": "d814cd0e18b5c6f16d964715b912ab576fe9acf4c857de620e8710a081b76cc0",
+    "self_tests_passed": 6,
+    "self_failures": [],
+    "independent": {
+      "selected_checks_passed": true,
+      "tests_passed": 6,
+      "tests_total": 6,
+      "repeats": 2,
+      "read_only_integrity": true,
+      "api_calls": 0,
+      "game_sha256": {
+        "game.js": "6da7e40ed7e21e67148508f07a7c8d88563873c8d7a7b652b0fb674e5efb3e19",
+        "index.html": "ab75035ac3b1cbca6705792c5a86381ebaa21a9d871bb4bfedd605ad3a1c4623"
+      },
+      "plan_sha256": "5b64bd9f1718d5a2a906b00fb3667b4eb24b47abbb897d6babaf7ad3ce3e9497"
+    },
+    "self_plan_replay": {
+      "selected_checks_passed": true,
+      "tests_passed": 6,
+      "tests_total": 6,
+      "repeats": 2,
+      "read_only_integrity": true,
+      "api_calls": 0,
+      "game_sha256": {
+        "game.js": "6da7e40ed7e21e67148508f07a7c8d88563873c8d7a7b652b0fb674e5efb3e19",
+        "index.html": "ab75035ac3b1cbca6705792c5a86381ebaa21a9d871bb4bfedd605ad3a1c4623"
+      },
+      "plan_sha256": "d814cd0e18b5c6f16d964715b912ab576fe9acf4c857de620e8710a081b76cc0"
+    },
+    "local_http_check": {
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 1426
+    }
+  },
+  "totals": {
+    "api_attempts": 27,
+    "prompt_tokens": 138941,
+    "completion_tokens": 63203,
+    "calls_with_unknown_usage": 0,
+    "actual_monetary_cost": null
+  },
+  "scope": "Selected rule checks, not complete gameplay acceptance. Replays are not additional generation samples. Temporary games, screenshots and raw API logs are removed; only sanitized evidence and test fixtures are retained.",
+  "before_metrics": {
+    "self_plan_passed": 3,
+    "scheduled": 4,
+    "independent_passed": 4,
+    "matched_api_attempts": 10
+  },
+  "after_metrics": {
+    "self_plan_passed": 3,
+    "scheduled": 4,
+    "independent_passed": 4,
+    "matched_api_attempts": 11
+  }
+}

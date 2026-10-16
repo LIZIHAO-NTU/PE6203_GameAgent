@@ -38,7 +38,7 @@ then put observations/checks in steps. Existing steps may also contain their own
 setup_steps + steps combined <=18; check steps must contain an explicit assertion.
 To test a post-purchase or terminal state, reproduce every prerequisite in THIS test.
 Do not start by asserting a non-initial balance/phase without first reaching it.
-Prefer 4..6 short high-value tests; merge related requirements rather than creating
+Prefer 4..6 short high-value tests, usually 3..8 steps each; merge related requirements rather than creating
 uncovered bookkeeping requirements. Preserve ALL mandatory original-spec obligations.
 Each wait.ms and key/keys hold_ms MUST be an integer 0..2000; longer bounded observation
 uses wait_until (timeout_ms 100..8000), not a wait.ms outside the DSL limits.
@@ -49,6 +49,16 @@ Also label priority: core (mandatory rules/controls/technical constraints), seco
 Do not label a mandatory gameplay rule visual/secondary to make passing easier.
 Every automated requirement must have a related test with an assertion.
 Tests must refer to the original specification's expected behavior, not implementation guesses.
+For each test include evidence: {"spec_quote":"short verbatim fragment of the original spec",
+"expected_basis":"brief observable outcome and, if needed, a short arithmetic/state ledger"}.
+This is a concise checkable justification, not a request for hidden reasoning. Never cite
+the generated implementation or another test as the basis. Trace resources AFTER each
+action, account for caps/no-ops and terminal locks, and assert only reachable outcomes.
+Use one small rule transition per test where possible; keep setup local to that fresh page.
+For pause/stability: click pause FIRST, assert the paused phase, then use assert_stable
+or capture a NEW snapshot. Never compare paused positions with a snapshot from before
+the pause click. Separately check actual motion before/after resuming. Prefer wait_until
+for milestones; reaching the FIRST score does not imply a whole level is already cleared.
 Assert only behavior required by the spec. Do not impose an unspecified internal turn
 value after a terminal state. Derive grid legality from actual coordinates and walls,
 not conventional assumptions about a game's name. Trace every proposed input sequence:
@@ -101,6 +111,12 @@ Pointer button may be left/right/middle. Drag steps 1..20. Use normal pointer ev
 {"action":"keys","keys":["ArrowRight","Space"],"hold_ms":100} (1..4 simultaneous keys)
 {"action":"wait","ms":200}
 {"action":"capture","name":"before"} (stores state snapshot)
+{"action":"assert_stable","source":"state","path":"ball.y","duration_ms":300,"samples":3}.
+This trusted assertion samples equality starting NOW, after prior controls. It has no
+op/value/value_from; sources match assert. duration_ms 100..2000, samples 2..8 (default 3).
+It observes only and counts against the wait budget. It does not prove motion resumes
+or that a pause button changed phase; check those separately. No automatic waiting for
+stability, no state setters, no acceptance weakening. Sampling is not continuous proof.
 For temporal behavior, bounded read-only sampling is available:
 {"action":"sample","name":"motion","samples":3,"duration_ms":500}.
 This stores motion_start and motion_end captures; assert actual behavior afterwards using
@@ -206,7 +222,10 @@ If planning_status is failed_startup_only, the frozen plan contains infrastructu
 ONLY. You must STILL implement all original functional requirements. Do not mistake the
 limited verification for permission to omit rules, and state uncertainty honestly.
 Use the gameplay analysis to implement the actual rules; never turn every task into a
-collector/movement game. Prefer a small complete game over effects, decorative assets or
+collector/movement game. A planner's evidence/explanations are fallible claims, not an
+authority to override original rules or fake values when a frozen test is questionable.
+Never rewrite tests or tune physics just to satisfy arbitrary timing. Prefer a small
+complete game over effects, decorative assets or
 complex abstractions. Use Canvas for continuous drawing when suitable; use DOM buttons
 and a DOM board marked data-game-surface for discrete card/board/puzzle games when suitable.
 For real-time games use one controlled update loop, coherent time units, and clean resets.

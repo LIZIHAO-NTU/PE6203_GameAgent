@@ -30,7 +30,7 @@ def validate_recovery(previous, candidate):
             if not isinstance(test, dict) or not isinstance(test.get("steps"), list):
                 continue
             for step in test_steps(test):
-                if not isinstance(step, dict) or step.get("action") not in {"assert", "assert_consistent"}:
+                if not isinstance(step, dict) or step.get("action") not in {"assert", "assert_consistent", "assert_stable"}:
                     continue
                 found.append(json.dumps(step, sort_keys=True, ensure_ascii=False))
         return Counter(found)

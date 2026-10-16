@@ -1,5 +1,16 @@
 # PlayForge Changelog / 版本记录
 
+## 1.0.0-beta.4 — 2026-10-16
+
+- Add trusted `assert_stable` with bounded live samples, wait-budget accounting and immutable assertion protection during plan audit/recovery. It checks sampled equality, not continuous stability or full gameplay correctness.
+- 新增受控 `assert_stable`：操作后有界采样、计入等待预算，审查及恢复不得放宽冻结检查；只证明采样时刻一致，不代表完整规则正确。
+- Request a short original-spec quote and expected-outcome basis per test; validate supplied metadata and warn about unmatched quotes. Legacy plans remain compatible; model explanations are not ground truth.
+- 每项测试请求简短原需求引文和预期依据；校验已提供字段，对不匹配引文提醒，兼容旧计划；模型解释不作为真值。
+- Flag potentially stale real-time equality captures across input events; only a corresponding actual failure triggers conservative review, and runtime/infrastructure errors retain priority.
+- 对跨输入的实时旧快照相等比较给出启发式提醒，相关测试实际失败才停止盲修，运行及环境错误仍优先处理。
+- Add new English requirements, independent checks, a bounded comparison and a single-command rehearsal. Preserve failures and scope limits; see [TEST_RELIABILITY.md](TEST_RELIABILITY.md). [EXTENSION_PLAN.md](EXTENSION_PLAN.md) is proposal only.
+- 新增英文需求、独立检查、有上限对照及单命令演练；保留失败与边界，后续扩展只写方案、不实施。
+
 ## 1.0.0-beta.3 — 2026-10-14
 
 - Add optional per-test `setup_steps` using the trusted input/observation DSL on each fresh page. Setup and check share one 18-step cap and existing wait budgets; checks still require assertions. Preserve legacy plans, record action stages, and protect setup assertions during late recovery.

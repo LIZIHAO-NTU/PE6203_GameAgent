@@ -170,6 +170,12 @@ def validate_plan(plan: dict) -> dict:
         require(tid not in seen, "Duplicate test id")
         seen.add(tid)
         bounded_text(test.get("description"), "test description")
+        if "evidence" in test:
+            evidence = test["evidence"]
+            require(isinstance(evidence, dict) and set(evidence) == {"spec_quote", "expected_basis"},
+                    "Test evidence needs spec_quote and expected_basis only")
+            bounded_text(evidence["spec_quote"], "test specification quote", 1000)
+            bounded_text(evidence["expected_basis"], "test expected-outcome basis", 1000)
         if "purpose" in test:
             from .quality import PURPOSES
             require(isinstance(test["purpose"], str) and test["purpose"] in PURPOSES, "Invalid test purpose")
@@ -238,6 +244,16 @@ def validate_plan(plan: dict) -> dict:
                     tolerance = step.get("tolerance", 4)
                     require(type(tolerance) in {int, float} and math.isfinite(tolerance) and 0 < tolerance <= 30,
                             "Tolerance must be finite and >0..30")
+            elif action == "assert_stable":
+                assertions += 1
+                duration = milliseconds(step.get("duration_ms", 300))
+                count = step.get("samples", 3)
+                require(type(count) is int and 2 <= count <= 8, "Need 2..8 stability samples")
+                require(duration >= 100, "Stability observation needs 100..2000 ms")
+                require(not any(k in step for k in ("value", "value_from", "op")),
+                        "Stability compares actual samples, not expected-value overrides")
+                validate_condition({**step, "op": "eq", "value": None}, captures)
+                total_wait += duration
             elif action == "assert_consistent":
                 assertions += 1
                 state_path(step.get("state_path"))
@@ -253,7 +269,7 @@ def validate_plan(plan: dict) -> dict:
             else:
                 raise ValueError(f"Unsupported test action: {action}")
         require(assertions > 0, "Every test needs an assertion")
-        require(any(s["action"] in {"assert", "assert_consistent"} for s in body),
+        require(any(s["action"] in {"assert", "assert_consistent", "assert_stable"} for s in body),
                 "Every test needs an assertion in check steps, not only setup")
     require(total_wait <= 45000, "Plan waits/holds/goal budgets exceed 45 seconds")
     require(covered == automated, "Every automated requirement must have a test; missing IDs: "
