@@ -62,7 +62,7 @@ Requires Python 3.10+, a model API account and a Playwright browser. Run these W
 需要 Python 3.10+、模型 API 账户及 Playwright 浏览器。以下为 Windows PowerShell 示例，所有命令在仓库根目录执行：
 
 ~~~powershell
-git clone https://github.com/LIZIHAO-NTU/PE6203_GameAgent.git PlayForge
+git clone https://github.com/LIZIHAO-NTU/PE6203_PlayForge.git PlayForge
 cd PlayForge
 python -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r requirements.txt
