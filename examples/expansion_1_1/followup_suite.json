@@ -1,0 +1,8 @@
+{
+  "description": "Targeted follow-up after ordered expectation metadata; not a replacement for initial results.",
+  "cases": [
+    {"id":"platform_hop","family":"platform_physics","spec":"platform_hop.md","acceptance_plan":"platform_hop.acceptance.json"},
+    {"id":"aim_range","family":"projectile_aiming","spec":"aim_range.md","acceptance_plan":"aim_range.acceptance.json"},
+    {"id":"tactical_duel","family":"local_tactics","spec":"tactical_duel.md","acceptance_plan":"tactical_duel.acceptance.json"}
+  ]
+}

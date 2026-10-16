@@ -1,8 +1,17 @@
 # PlayForge — Expansion Plan / 后续扩展方案
 
-Status: proposal only; the features below are NOT implemented by this update.
+Status: implemented in bounded scope for 1.1.0; see RELEASE_1_1.md for actual evidence, failures and limits.
 
-状态：仅方案。本轮只实施测试可靠性、英文需求评估和运行演练，不实施下列扩展。
+状态：1.1.0 已按有限范围实施，实际证据、失败与边界见 RELEASE_1_1.md。
+
+| Stage / 阶段 | 1.1.0 delivery / 实施状态 |
+|---|---|
+| 0 | Supplied structured expectations checked before freeze; requesting summaries opt-in after observed planning failures, no free-prose parser/oracle / 已提供摘要在冻结前核对；实测计划失败后改为按需请求，不是自然语言或规则真值判定 |
+| A | Native fill/select tools, bounded values, browser events, input-value observations and regression tests / 原生输入及选择工具、有界参数、事件、控件值观察与回归测试 |
+| B | One platform and one projectile-aiming sample with independent checks; existing continuous-input tools reused / 各一个平台跳跃、弹丸瞄准样本，复用连续操作工具，不声称全类型可靠 |
+| C | One local tactical duel and one capped-resource sample; oracle issues retained / 本机战术及封顶资源各一样本，保留预期推演问题 |
+| D | Optional loopback read-only dashboard over existing run evidence; no generation UI or cloud service / 可选本机只读状态页，无生成表单、云服务 |
+| E | Deferred / 引擎、联网、3D、持久化仍暂缓 |
 
 ## 1. Goal / 扩展目标
 
@@ -43,8 +52,8 @@ Do not select a final architecture around an unconfirmed instructor model. Once 
 
 老师模型确定后，再验证端点、模型 ID、专用参数、JSON 输出、超时及从新目录开始的完整运行。`doctor` 只检查本地配置和浏览器，不证明模型服务可用。
 
-## 5. Scope for the next implementation / 下一轮建议范围
+## 5. Remaining work after 1.1.0 / 1.1.0 后续重点
 
-The current comparison still found incorrect arithmetic assertions, including a correct textual ledger paired with a wrong expected number. Prioritize Stage 0, then A if reliability evidence permits, followed by a narrow part of B or C. Keep D optional and E deferred. Adding game categories must not bypass schema and oracle failures.
+Stage 0 catches structured contradictions, not a simultaneously incorrect summary and assertion. Text/selection tools and narrow B/C samples are implemented, but planning semantics remain a separate limitation. Next evaluate new rule variants and mixed mechanics with preregistered checks, preserve initial failures, and measure repeatability before extending scope. Keep the dashboard optional and E deferred.
 
-本轮仍发现数字断言错误，甚至出现文字推演正确、断言数字写错的情况。因此建议优先做 0，证据允许后再做 A，并从 B/C 中选一个小范围。D 可选、E 暂缓，不靠增加游戏类型绕过计划格式和验收预期问题。
+阶段 0 不能发现摘要和断言一起写错。输入工具和 B/C 小范围样本已实施，但计划语义仍是独立短板。下一步用新规则变体、混合玩法和预先固定的验收检查重复性，保留首轮失败后再决定扩大范围。状态页保持可选，E 暂缓。

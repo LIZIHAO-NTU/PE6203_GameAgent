@@ -3,7 +3,7 @@ from collections import Counter
 from .contracts import test_steps
 
 
-INPUT_ACTIONS = {"click", "key", "keys", "drag", "key_until", "move_to"}
+INPUT_ACTIONS = {"click", "key", "keys", "drag", "fill", "select_option", "key_until", "move_to"}
 PURPOSES = {"initial", "legal_action", "invalid_action", "reset", "terminal", "consistency"}
 
 

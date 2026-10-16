@@ -3,4 +3,4 @@
 Small, provider-configurable game coding agent. No prewritten game code.
 """
 
-__version__ = "1.0.0-beta.4"
+__version__ = "1.1.0"

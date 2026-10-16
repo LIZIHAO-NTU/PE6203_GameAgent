@@ -41,7 +41,7 @@ def milliseconds(value):
 def validate_condition(step, captures):
     require(step.get("op") in OPS, "Invalid comparison operator")
     source = step.get("source")
-    require(source in {"state", "text", "visible", "surface", "count", "attribute", "enabled"},
+    require(source in {"state", "text", "value", "visible", "surface", "count", "attribute", "enabled"},
             "Invalid observation source")
     if source == "state":
         state_path(step.get("path"))
@@ -103,6 +103,31 @@ def plan_warnings(plan):
 def test_steps(test):
     """Setup is ordinary user input on this test's own fresh page, never a state setter."""
     return test.get("setup_steps", []) + test["steps"]
+
+
+def validate_expected_observations(test):
+    """Compare model-declared outcome summaries with assertions, never infer game truth."""
+    evidence = test.get("evidence", {})
+    if "expected_observations" not in evidence:
+        return
+    records = evidence["expected_observations"]
+    require(isinstance(records, list) and len(records) <= 18, "Need 0..18 expected observations")
+    steps = test_steps(test)
+    targets = {i: step for i, step in enumerate(steps, 1) if step["action"] == "assert" and "value" in step}
+    if all(isinstance(record, dict) and set(record) == {"value"} for record in records):
+        require(len(records) == len(targets), "Expected observations must cover every literal assertion in this test")
+        records = [{"step": index, "value": record["value"]}
+                   for index, record in zip(targets, records)]
+    seen = set()
+    for record in records:
+        require(isinstance(record, dict) and set(record) == {"step", "value"}, "Expected observation needs step/value only")
+        index = record["step"]
+        require(type(index) is int and index in targets and index not in seen, "Expected observation targets an unknown/duplicate literal assertion")
+        require(len(json.dumps(record["value"], allow_nan=False)) <= 4000, "Expected observation too large")
+        require(compare(record["value"], "eq", targets[index]["value"]),
+                f"Test {test['id']} step {index}: outcome summary disagrees with assertion; reconcile from original spec BEFORE freezing")
+        seen.add(index)
+    require(seen == set(targets), "Expected observations must cover every literal assertion in this test")
 
 
 def validate_plan(plan: dict) -> dict:
@@ -172,8 +197,9 @@ def validate_plan(plan: dict) -> dict:
         bounded_text(test.get("description"), "test description")
         if "evidence" in test:
             evidence = test["evidence"]
-            require(isinstance(evidence, dict) and set(evidence) == {"spec_quote", "expected_basis"},
-                    "Test evidence needs spec_quote and expected_basis only")
+            require(isinstance(evidence, dict) and {"spec_quote", "expected_basis"} <= set(evidence)
+                    and not set(evidence) - {"spec_quote", "expected_basis", "expected_observations"},
+                    "Test evidence needs spec_quote/expected_basis and optional expected_observations")
             bounded_text(evidence["spec_quote"], "test specification quote", 1000)
             bounded_text(evidence["expected_basis"], "test expected-outcome basis", 1000)
         if "purpose" in test:
@@ -200,6 +226,13 @@ def validate_plan(plan: dict) -> dict:
                     pointer_position(step.get("to"))
                     require(type(step.get("steps", 8)) is int and 1 <= step.get("steps", 8) <= 20,
                             "Drag needs 1..20 interpolation steps")
+            elif action in {"fill", "select_option"}:
+                bounded_text(step.get("selector"), "selector", 500)
+                if action == "fill":
+                    require(isinstance(step.get("text"), str) and len(step["text"]) <= 500,
+                            "Fill needs text of 0..500 characters")
+                else:
+                    bounded_text(step.get("value"), "option value", 200)
             elif action == "key":
                 bounded_text(step.get("key"), "key", 80)
                 total_wait += milliseconds(step.get("hold_ms", 0))
@@ -257,7 +290,7 @@ def validate_plan(plan: dict) -> dict:
             elif action == "assert_consistent":
                 assertions += 1
                 state_path(step.get("state_path"))
-                require(step.get("source") in {"text", "count", "attribute", "enabled", "surface"},
+                require(step.get("source") in {"text", "value", "count", "attribute", "enabled", "surface"},
                         "Consistency check needs an independent DOM observation")
                 require(step.get("coerce", "none") in {"none", "number"}, "Invalid consistency conversion")
                 require(not any(k in step for k in ("value", "value_from", "op")),
@@ -271,6 +304,7 @@ def validate_plan(plan: dict) -> dict:
         require(assertions > 0, "Every test needs an assertion")
         require(any(s["action"] in {"assert", "assert_consistent", "assert_stable"} for s in body),
                 "Every test needs an assertion in check steps, not only setup")
+        validate_expected_observations(test)
     require(total_wait <= 45000, "Plan waits/holds/goal budgets exceed 45 seconds")
     require(covered == automated, "Every automated requirement must have a test; missing IDs: "
             + ", ".join(sorted(automated - covered)))

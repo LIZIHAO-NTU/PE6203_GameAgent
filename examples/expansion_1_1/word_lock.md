@@ -1,0 +1,3 @@
+# Word Lock
+Build a small offline word puzzle. A visible mode dropdown has sky (default) and grass. Display an open clue: sky needs BLUE, grass needs GREEN, uppercase exact matches. Use an ordinary text input, not a password field. Empty submissions do nothing; other submissions add one attempt. A correct answer wins and subsequent submits are ignored. Changing mode clears the input and attempts and returns to Playing. Restart restores sky, empty input and zero attempts. Show English instructions.
+Use #mode (native select values sky/grass), #answer, #submit, #restart and #attempts (bare integer), with data-game-surface. Read-only window.__gameTest.getState() returns real attempts and phase (Playing/Won). Vanilla local HTML/CSS/JS only.

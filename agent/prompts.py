@@ -51,6 +51,8 @@ Every automated requirement must have a related test with an assertion.
 Tests must refer to the original specification's expected behavior, not implementation guesses.
 For each test include evidence: {"spec_quote":"short verbatim fragment of the original spec",
 "expected_basis":"brief observable outcome and, if needed, a short arithmetic/state ledger"}.
+Do not add expected_observations unless the optional structured-expectations policy is
+explicitly appended below. Ordinary planning does not require duplicated value lists.
 This is a concise checkable justification, not a request for hidden reasoning. Never cite
 the generated implementation or another test as the basis. Trace resources AFTER each
 action, account for caps/no-ops and terminal locks, and assert only reachable outcomes.
@@ -110,6 +112,14 @@ Pointer button may be left/right/middle. Drag steps 1..20. Use normal pointer ev
 {"action":"key","key":"ArrowRight","hold_ms":150} (0 means press)
 {"action":"keys","keys":["ArrowRight","Space"],"hold_ms":100} (1..4 simultaneous keys)
 {"action":"wait","ms":200}
+{"action":"fill","selector":"#answer","text":"BLUE"} (0..500 characters, empty text clears).
+{"action":"select_option","selector":"#difficulty","value":"easy"} (native select option VALUE).
+Use ordinary non-secret text/number inputs or textarea, never password/file/hidden
+controls; do not inject answers that are hidden from the player or not justified by
+the original spec. Disabled/readonly controls are observed no-ops, never forced editable.
+{"action":"assert","source":"value","selector":"#answer","op":"eq","value":"BLUE"}.
+An input echo alone is not sufficient gameplay evidence: also check submission, invalid
+input, actual rules and terminal/reset behavior when applicable.
 {"action":"capture","name":"before"} (stores state snapshot)
 {"action":"assert_stable","source":"state","path":"ball.y","duration_ms":300,"samples":3}.
 This trusted assertion samples equality starting NOW, after prior controls. It has no
@@ -174,6 +184,22 @@ Example JSON structure (not a game template):
  {"action":"assert","source":"visible","selector":"[data-game-surface]","op":"eq","value":true}]}],
  "manual_checks":[{"requirement_id":"R2","instruction":"..."}]}
 """
+
+STRUCTURED_EXPECTATIONS_POLICY = """
+OPTIONAL STRUCTURED-EXPECTATIONS POLICY (explicitly enabled for this run):
+For each test include evidence.expected_observations: [{"value":10}].
+Cover EVERY literal assert, including setup, in combined setup_steps + steps order.
+Use one {"value":...} per literal assert, no step indices; [] when none exist.
+Restate exact expected values or comparison thresholds; no prose inside value fields.
+Do not list value_from, assert_stable, assert_consistent or goal-action conditions.
+Prefer 2..3 focused literal assertions per test rather than inventorying controls.
+Structural disagreement is rejected BEFORE freezing; agreement does not prove a rule.
+"""
+
+
+def planner_system(structured_expectations=False):
+    return PLANNER_SYSTEM + (STRUCTURED_EXPECTATIONS_POLICY if structured_expectations else "")
+
 
 DIAGNOSTIC_SYSTEM = """Review a failed game check without editing anything.
 Output one JSON object: {"category":"code_error|test_issue|tool_limit|uncertain",

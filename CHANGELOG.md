@@ -1,5 +1,20 @@
 # PlayForge Changelog / 版本记录
 
+## 1.1.0 — 2026-10-16
+
+- Adopt ordinary numeric releases; still an experimental course project, not a guarantee of arbitrary-game reliability. Historical Beta labels and results are preserved.
+- 改用常规版本号，仍是实验性课程项目；保留历史 Beta 编号和评估，不保证任意游戏稳定完成。
+- Compare optional ordered expected-observation summaries with every literal assertion before freezing; retain legacy indexed summaries/plans and immutable frozen checks. Matching wrong values are still possible.
+- 冻结前核对可选有序预期摘要与所有字面量断言，兼容旧编号摘要及旧计划，冻结后不可放宽；摘要和断言同时错误仍可能漏检。
+- Real trials exposed planning overhead: requesting summaries is now opt-in with `--structured-expectations`; default planning retains short textual bases without duplicate lists. Supplied contradictory metadata is always rejected. Final default-mode effectiveness is not established by the paid candidate runs.
+- 实测发现摘要填写负担，因此新增 `--structured-expectations` 实验开关，默认只请求简短预期依据、不请求重复数值列表；已提供的矛盾摘要始终拒绝。付费候选版结果不等于最终默认模式效果。
+- Add native bounded `fill` / `select_option` and form-value observations, with real input/change events. Block password/file/hidden controls and avoid forcing disabled/read-only controls.
+- 新增有界原生输入、选项选择及控件值观察，使用真实事件，不填写密码/文件/隐藏控件，不强行操作禁用或只读控件。
+- Add independent English fixtures for text/numeric puzzles, platform physics, aiming, local tactics and resource budgets; preserve first failures and separately report targeted follow-ups in RELEASE_1_1.md.
+- 增加六类英文需求及独立检查，保留首轮失败、单独报告定向复测，详见 RELEASE_1_1.md。
+- Add an optional read-only loopback run dashboard. Keep existing CLI, single-agent loop, budgets and vanilla offline-game boundaries; no engine, networking, 3D or new backend.
+- 新增可选本机只读运行状态页，保留原 CLI、单 Agent 闭环、预算及原生离线游戏边界，不引入引擎、联网、3D 或新业务后端。
+
 ## 1.0.0-beta.4 — 2026-10-16
 
 - Add trusted `assert_stable` with bounded live samples, wait-budget accounting and immutable assertion protection during plan audit/recovery. It checks sampled equality, not continuous stability or full gameplay correctness.

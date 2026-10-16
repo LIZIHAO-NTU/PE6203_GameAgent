@@ -102,6 +102,8 @@ def observe_condition(page, condition, captures, state=None):
         actual = lookup(state if state is not None else state_snapshot(page), condition["path"])
     elif source == "text":
         actual = page.locator(condition["selector"]).inner_text()[:4000]
+    elif source == "value":
+        actual = page.locator(condition["selector"]).input_value()[:4000]
     elif source == "visible":
         actual = page.locator(condition["selector"]).is_visible()
     elif source == "count":
@@ -203,6 +205,26 @@ def run_pointer(page, step):
     return {"selector": step["selector"], "position_css": local}
 
 
+def run_form_input(page, step):
+    """Native input/change events on bounded, non-secret form controls only."""
+    control = page.locator(step["selector"])
+    metadata = control.evaluate("e => ({tag:e.tagName,type:e.type,readonly:!!e.readOnly})")
+    if step["action"] == "fill":
+        if not (metadata["tag"] == "TEXTAREA" or metadata["tag"] == "INPUT" and metadata["type"] in {
+                "text", "search", "number", "email", "tel", "url"}):
+            raise ValueError("fill only supports ordinary text/number inputs and textarea, never password/file/hidden controls")
+        if not control.is_enabled() or metadata["readonly"]:
+            return {"selector": step["selector"], "ignored_noneditable": True}
+        control.fill(step["text"])
+    else:
+        if metadata["tag"] != "SELECT":
+            raise ValueError("select_option requires a native select control")
+        if not control.is_enabled():
+            return {"selector": step["selector"], "ignored_disabled": True}
+        control.select_option(value=step["value"])
+    return {"selector": step["selector"], "action": step["action"]}
+
+
 def run_goal(page, step, captures):
     """Bounded feedback control using normal keyboard events, never state setters."""
     started = time.monotonic()
@@ -256,6 +278,8 @@ def run_test(page, test):
             action = step["action"]
             if action in {"click", "hover", "drag"}:
                 event["result"] = run_pointer(page, step)
+            elif action in {"fill", "select_option"}:
+                event["result"] = run_form_input(page, step)
             elif action == "key":
                 hold = step.get("hold_ms", 0)
                 if hold:

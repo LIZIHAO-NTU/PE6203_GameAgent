@@ -8,7 +8,7 @@ import time
 
 from . import __version__
 from .contracts import plan_warnings, validate_plan, write_bundle
-from .prompts import CODER_SYSTEM, PLANNER_SYSTEM, DIAGNOSTIC_SYSTEM, PLAN_AUDIT_SYSTEM
+from .prompts import CODER_SYSTEM, planner_system, DIAGNOSTIC_SYSTEM, PLAN_AUDIT_SYSTEM
 from .provider import BudgetError, ChatClient
 from .trace import Trace
 from .state import AgentState, bundle_digest, compact_failure
@@ -67,7 +67,11 @@ def prefer_candidate(old, new):
 def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
         test_timeout=60, headful=False, client_factory=ChatClient, verifier=verify,
         preflight_fn=preflight, strict_plan=False, repair_mode="auto", syntax_check=False,
-        diagnose_failures=False, verify_repeats=1, lessons_path=None, plan_audit=False):
+        diagnose_failures=False, verify_repeats=1, lessons_path=None, plan_audit=False,
+        structured_expectations=False):
+    if type(structured_expectations) is not bool:
+        raise ValueError("structured_expectations must be boolean")
+    planning_system = planner_system(structured_expectations)
     if repair_mode not in {"auto", "full"}:
         raise ValueError("repair_mode must be auto or full")
     if type(verify_repeats) is not int or not 1 <= verify_repeats <= 3:
@@ -96,12 +100,13 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
     client = client_factory(config, trace, max_calls, deadline)
     summary = {"schema_version": 1, "agent_version": __version__, "run_id": output.name, "model": config.model,
                "original_spec_sha256": hashlib.sha256(spec.encode("utf-8")).hexdigest(),
-               "prompts_sha256": hashlib.sha256((PLANNER_SYSTEM + CODER_SYSTEM + DIAGNOSTIC_SYSTEM + PLAN_AUDIT_SYSTEM).encode("utf-8")).hexdigest(),
+               "prompts_sha256": hashlib.sha256((planning_system + CODER_SYSTEM + DIAGNOSTIC_SYSTEM + PLAN_AUDIT_SYSTEM).encode("utf-8")).hexdigest(),
                "limits": {"max_rounds": max_rounds, "max_calls": max_calls,
                           "max_seconds": max_seconds, "test_timeout": test_timeout},
                "features": {"repair_mode": repair_mode, "syntax_check": syntax_check,
                             "diagnose_failures": diagnose_failures, "verify_repeats": verify_repeats,
-                            "lessons_enabled": False, "lesson_store_sha256": None, "plan_audit": plan_audit},
+                            "lessons_enabled": False, "lesson_store_sha256": None, "plan_audit": plan_audit,
+                            "structured_expectations": structured_expectations},
                "runtime": {**runtime_metadata(), "browser": check.get("browser_version")},
                "base_url": config.base_url, "status": "started", "automated_checks_passed": False,
                "full_game_acceptance": None, "manual_interventions_during_run": 0,
@@ -144,7 +149,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
             prompt = json.dumps({"original_spec": spec, "validation_feedback": plan_error,
                                  "previous_plan": raw_plan if plan_error else None,
                                  "execution_contract": EXECUTION_CONTRACT}, ensure_ascii=False)
-            raw_plan = client.ask_json("plan", PLANNER_SYSTEM, prompt)
+            raw_plan = client.ask_json("plan", planning_system, prompt)
             try:
                 plan = validate_plan(raw_plan)
                 break
@@ -269,7 +274,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                         summary["planning_recovery_attempted"] = True
                         trace.event("plan_recovery_start", remaining_calls=max_calls - client.calls)
                         try:
-                            recovered_raw = client.ask_json("plan_recovery", PLANNER_SYSTEM, json.dumps({
+                            recovered_raw = client.ask_json("plan_recovery", planning_system, json.dumps({
                                 "original_spec": spec, "previous_plan": raw_plan,
                                 "validation_feedback": plan_error, "recovery_mode": True,
                                 "execution_contract": EXECUTION_CONTRACT,

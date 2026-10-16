@@ -1,10 +1,10 @@
 # PlayForge: Build a Coding Agent That Can Build a Game
 
-Current version: `1.0.0-beta.4` — a research beta, not a stable production release. This update adds bounded stability assertions, reviewable test-outcome bases and conservative temporal-capture review. See [TEST_RELIABILITY.md](TEST_RELIABILITY.md) for the new English-spec comparison and rehearsal; [PLANNING.md](PLANNING.md) preserves Beta 3 behavior and [CAPABILITY.md](CAPABILITY.md) the earlier screening. Future features are proposals only in [EXTENSION_PLAN.md](EXTENSION_PLAN.md).
+Current version: `1.1.0` — an experimental course-project release, not a production reliability guarantee. Adds structured expectation/assertion agreement, native form-input tools, six small cross-mechanic samples and an optional read-only run dashboard. See [RELEASE_1_1.md](RELEASE_1_1.md) for evidence and limits; [EXTENSION_PLAN.md](EXTENSION_PLAN.md) tracks implemented and deferred work. Historical evaluations remain unchanged.
 
 The subsequent four-case real DeepSeek audit on/off comparison is in [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md): 24 API attempts; keep audit opt-in/off by default. The agent implementation was unchanged for that evaluation.
 
-当前版本：`1.0.0-beta.4`，定位为研究测试版，不代表生产级稳定正式版。本轮增加有界稳定性检查、可复核的测试预期依据及旧时序快照提醒。新英文需求对照与演练见 [TEST_RELIABILITY.md](TEST_RELIABILITY.md)，旧版本行为和历史评估保留于上述文档。[EXTENSION_PLAN.md](EXTENSION_PLAN.md) 仅为后续方案，未实施其中的新功能。
+当前版本：`1.1.0`，改用常规版本编号，仍是实验性课程项目，不保证生产级稳定。本轮增加结构化预期与断言核对、原生表单输入工具、六类小规模玩法样本及可选只读运行状态页。实测证据与限制见 [RELEASE_1_1.md](RELEASE_1_1.md)，已做和暂缓项目见 [EXTENSION_PLAN.md](EXTENSION_PLAN.md)，历史评估不改写。
 
 后续四类新需求的真实 DeepSeek 审查开关对照见 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)：共 24 次 API 尝试，结论为暂时保持审查默认关闭；评估期间未改 Agent 实现。
 
@@ -12,11 +12,11 @@ PlayForge is a lightweight game-coding agent for the PE6203 group project: read 
 
 PlayForge 是用于 PE6203 小组项目的游戏开发 Agent：读取 Markdown 需求，从空目录生成原生 HTML/CSS/JavaScript 游戏，自动打开浏览器检查，再根据真实反馈有限次修复。
 
-**Core gameplay before visual polish.** No prewritten game implementations, game templates or built-in solvers. The four benchmark families are evaluation samples, not the only games the agent can generate.
+**Core gameplay before visual polish.** No prewritten game implementations, game templates or built-in solvers. Benchmark families are evaluation samples, not the only games the agent can generate.
 
-目标是**先实现可启动、规则清楚的核心游戏，再考虑美化**。没有预写游戏代码、游戏模板或内置通关器。四类测试游戏只是评估样本，不是生成器只能选择的四个类型。
+目标是**先实现可启动、规则清楚的核心游戏，再考虑美化**。没有预写游戏代码、游戏模板或内置通关器。各类测试游戏只是评估样本，不是生成器只能选择的固定类型。
 
-This is a research beta, not a guarantee of success on arbitrary unseen games. Scope: offline 2D browser games; historical tests include single-player games and local two-player tic-tac-toe, not networked multiplayer, 3D, backends or complex engines.
+This is an experimental course project, not a guarantee of success on arbitrary unseen games. Scope: offline 2D browser games; selected samples include text/numeric puzzles, platform physics, aiming, local tactics and resource budgets, not networked multiplayer, 3D, backends or complex engines.
 
 当前为研究测试版，不保证任意未知游戏稳定完成。范围是离线二维网页游戏；已测包含单人玩法和本机双人井字棋，不含联网多人、3D、后端或复杂引擎。
 
@@ -278,7 +278,29 @@ Leave `PLAYWRIGHT_CHANNEL` blank for Playwright Chromium. Temporary test artifac
 
 使用 Playwright Chromium 时将 `PLAYWRIGHT_CHANNEL` 留空。临时测试产物位于 `.codex-tmp/`；任务结束后清理本次临时文件，不误删其他人的材料。
 
-### Version 1.0 Beta 4 — 2026-10-16 / 当前版本验证
+### Version 1.1.0 — 2026-10-16 / 当前版本验证
+
+See [RELEASE_1_1.md](RELEASE_1_1.md) and [EXPANSION_RESULTS.json](EXPANSION_RESULTS.json). Supplied structured summaries detect disagreement with literal assertions before freezing; they do not prove arithmetic or interpret arbitrary prose. Requesting these duplicate lists is experimental and **off by default** because real trials showed planning failures; opt in with `--structured-expectations` for generation or benchmark. Supplied mismatches are always rejected, never silently discarded. Native `fill` / `select_option` use real browser events; `source: "value"` observes form values. Password/file/hidden inputs and arbitrary script actions are not added. Input echo alone is not a gameplay check.
+
+已提供的结构化摘要在冻结前核对字面量断言，不证明规则推演正确，也不自动理解任意文字说明。真实测试发现重复摘要会导致计划失败，因此请求这类摘要的实验功能**默认关闭**，可在生成或 benchmark 时增加 `--structured-expectations` 开启。已提供但矛盾的摘要始终拒绝，不会静默丢弃。`fill` / `select_option` 使用真实浏览器表单事件，`source: "value"` 读取控件值；不增加密码、文件、隐藏输入或任意脚本工具。只检查输入框回显不算玩法验证。
+
+Run an expansion suite (paid generation) / 扩展样本测试（生成消耗 API）：
+
+~~~powershell
+./.venv/Scripts/python.exe -m agent benchmark examples/expansion_1_1/suite.json --output runs/expansion_trial --max-total-calls 30 --max-calls-per-case 5 --max-rounds 3 --max-seconds 360
+~~~
+
+Open an existing run in the read-only dashboard (no API calls) / 查看已有运行的只读状态页（不调用 API）：
+
+~~~powershell
+./.venv/Scripts/python.exe -m agent dashboard runs/expansion_trial/cases/word_lock_01 --port 8005
+~~~
+
+Then open `http://127.0.0.1:8005/`; stop with Ctrl+C. The viewer shows recorded results, manual-review items and recent activity, and links to the game/report. It does not launch generation or expose raw API traces. Bind is loopback only; this is not a public deployment or a secure multi-user service. Existing CLI startup remains unchanged.
+
+浏览器访问上述本机地址，Ctrl+C 停止。显示已有结果、人工待验收项及近期活动，并链接游戏和报告；不启动生成、不提供原始 API 记录。仅绑定本机，不是公网部署或安全的多用户服务；原命令行启动流程保留。
+
+### Version 1.0 Beta 4 — 2026-10-16 / 历史版本验证
 
 New functionality and bounded real-model results are recorded in [TEST_RELIABILITY.md](TEST_RELIABILITY.md) and [RELIABILITY_RESULTS.json](RELIABILITY_RESULTS.json). The matched four-case comparison confirmed delivery on selected independent checks for both versions, but did not improve the 3/4 self-plan result; arithmetic assertions remain a weakness. Framework regression, paid generation and read-only repeated checks are reported separately. Instructor-model compatibility is still untested.
 
@@ -349,7 +371,10 @@ AUDIT_COMPARISON.md    Fixed-version real-model audit comparison / 固定版本�
 AUDIT_COMPARISON_RESULTS.json Sanitized comparison evidence / 脱敏对照证据
 TEST_RELIABILITY.md    Beta 4 changes, comparison and rehearsal / Beta 4 改进、对照与演练
 RELIABILITY_RESULTS.json Sanitized Beta 4 evidence / Beta 4 脱敏证据
-EXTENSION_PLAN.md     Future features, proposal only / 后续扩展方案，未实施
+RELEASE_1_1.md         1.1.0 changes, evaluation and limits / 扩展、评估与边界
+EXPANSION_RESULTS.json Sanitized initial/follow-up/replay evidence / 首批、复测及复放证据
+examples/expansion_1_1/ Six English specifications and held-out checks / 六类英文需求及独立检查
+EXTENSION_PLAN.md     Implemented scope and deferred work / 已实施范围与暂缓项目
 ~~~
 
 - Each teammate creates their own environment and `.env`; never copy another person's key. 每个成员创建自己的环境和 `.env`，不复制他人的 key。

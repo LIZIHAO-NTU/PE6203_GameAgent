@@ -59,6 +59,19 @@ def main(argv=None):
             if len(argv) != 1:
                 raise ValueError("configure takes no arguments")
             return configure()
+        if argv and argv[0] == "dashboard":
+            from .dashboard import make_dashboard_server
+            parser = argparse.ArgumentParser(prog="python -m agent dashboard", description="Read-only PlayForge run viewer; no API calls")
+            parser.add_argument("run", type=Path)
+            parser.add_argument("--port", type=int, default=8005)
+            options = parser.parse_args(argv[1:])
+            server = make_dashboard_server(options.run, options.port)
+            print(f"PlayForge dashboard: http://127.0.0.1:{server.server_port}/ (Ctrl+C to stop)", flush=True)
+            try:
+                server.serve_forever()
+            finally:
+                server.server_close()
+            return 0
         if argv and argv[0] == "serve":
             from .server import make_server
             parser = argparse.ArgumentParser(prog="python -m agent serve")
@@ -150,18 +163,20 @@ def main(argv=None):
             parser.add_argument("--diagnose", action="store_true")
             parser.add_argument("--plan-audit", action="store_true", help="One optional pre-freeze model review, within the shared API cap")
             parser.add_argument("--syntax-check", action="store_true")
+            parser.add_argument("--structured-expectations", action="store_true", help="Experimental: request duplicate outcome summaries; supplied mismatches are rejected")
             options = parser.parse_args(argv[1:])
             report = benchmark(config, options.suite, options.output, options.max_total_calls,
                                options.max_calls_per_case, options.max_rounds, options.max_seconds,
                                options.repeats, verify_repeats=options.verify_repeats, repair_mode=options.repair_mode,
-                               diagnose_failures=options.diagnose, syntax_check=options.syntax_check, plan_audit=options.plan_audit)
+                               diagnose_failures=options.diagnose, syntax_check=options.syntax_check, plan_audit=options.plan_audit,
+                               structured_expectations=options.structured_expectations)
             print(json.dumps(report["metrics"], ensure_ascii=False, indent=2))
             print(f"Benchmark: {options.output.resolve()}")
             return 0 if all(r.get("independent_passed") for r in report["cases"]) else 2
         if argv and argv[0] == "doctor":
             return doctor(config, argv[1:])
         parser = argparse.ArgumentParser(description="PlayForge: spec -> game -> browser tests -> bounded repair. "
-                                         "Other commands: configure, doctor, serve, summarize, recheck.")
+                                         "Other commands: configure, doctor, serve, dashboard, summarize, recheck.")
         parser.add_argument("spec", type=Path)
         parser.add_argument("--output", type=Path)
         parser.add_argument("--max-rounds", type=int, default=3, help="Includes first generation (default: 3)")
@@ -176,6 +191,7 @@ def main(argv=None):
         parser.add_argument("--plan-audit", action="store_true", help="One optional model review before generation/freezing; never sees game code or held-out checks")
         parser.add_argument("--syntax-check", action="store_true", help="Optional trusted node --check; skipped explicitly if Node is unavailable")
         parser.add_argument("--lessons", type=Path, help="Opt-in local JSON recovery observations; never code templates")
+        parser.add_argument("--structured-expectations", action="store_true", help="Experimental: request duplicate outcome summaries; supplied mismatches are rejected")
         options = parser.parse_args(argv)
         if not options.spec.is_file():
             raise ValueError("Specification file does not exist")
@@ -189,7 +205,7 @@ def main(argv=None):
                    options.max_seconds, options.test_timeout, options.headful, strict_plan=options.strict_plan,
                    repair_mode=options.repair_mode, verify_repeats=options.verify_repeats,
                    diagnose_failures=options.diagnose, syntax_check=options.syntax_check, lessons_path=options.lessons,
-                   plan_audit=options.plan_audit)
+                   plan_audit=options.plan_audit, structured_expectations=options.structured_expectations)
     except KeyboardInterrupt:
         print("Stopped by user; interrupted runs are not valid autonomous demonstrations.", file=sys.stderr)
         return 130

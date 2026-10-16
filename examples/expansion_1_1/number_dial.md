@@ -1,0 +1,3 @@
+# Number Dial
+Build an offline arithmetic puzzle with visible operands 3 and 4. A native operation dropdown chooses sum (default, answer 7) or product (answer 12). Provide an ordinary number input. Empty submission does nothing. Each nonempty submission adds one attempt; a correct answer wins and later submits do nothing. Changing operation clears the input and resets attempts/phase. Restart restores sum and zero attempts. All operands and the rule must be visible, with English instructions.
+Use #operation (values sum/product), #answer, #submit, #restart, #attempts (bare integer) and data-game-surface. Read-only window.__gameTest.getState() returns real attempts and phase (Playing/Won). Vanilla local HTML/CSS/JS only.

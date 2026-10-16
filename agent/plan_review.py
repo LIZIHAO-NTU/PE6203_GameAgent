@@ -16,6 +16,8 @@ EXECUTION_CONTRACT = {
     "state_hook": "window.__gameTest.getState() is the single read-only observation interface; explicit original-spec aliases may coexist.",
     "temporal": "Apply controls before capturing a stable baseline; assert_stable observes equality over bounded samples after prior input.",
     "test_basis": "A short original-spec quote and outcome basis are reviewable claims, never proof of correctness.",
+    "expected_observations": "Optional ordered [{value: literal threshold/expected value}] must agree with and cover every literal assert in combined setup/check order; [] only when none. Legacy step/value records supported. Checked before freeze, never inferred from implementation.",
+    "form_inputs": "fill uses ordinary non-secret text controls; select_option uses native select values. No password/file/hidden input or arbitrary script.",
 }
 
 
@@ -54,7 +56,7 @@ def inspect_plan(plan, original_spec=None):
                 anchors.setdefault(identity, (value, test["id"]))
     gameplay = plan.get("gameplay")
     realtime = isinstance(gameplay, dict) and gameplay.get("interaction_model") in {"real_time", "hybrid"}
-    inputs = {"click", "key", "keys", "hover", "drag", "key_until", "move_to"}
+    inputs = {"click", "key", "keys", "hover", "drag", "fill", "select_option", "key_until", "move_to"}
     for test in tests:
         basis = test.get("evidence")
         if original_spec is not None and basis:
