@@ -1,5 +1,16 @@
 # PlayForge Changelog / 版本记录
 
+## 1.2.1 — 2026-10-17
+
+- Aggregate up to eight first-known draft errors across at most ten isolated tests; preserve the primary error, distinguish incomplete scans and require full validation before acceptance. No expected values or game rules are inferred or weakened.
+- 汇总最多八条跨测试草稿错误，保留首个错误、明确扫描边界，最终仍完整校验，不推断或放宽规则预期。
+- Share blocked-response validation between the live runner and controlled repair evaluation. Accept only an optional bounded string summary alongside blocked; continue rejecting edits, extra fields and invalid evidence.
+- 主闭环与评估共用待复核校验，兼容有界的字符串摘要，继续拒绝文件修改、其他字段及虚假证据。
+- Add explicit evaluation-only counter fault injection for real code defects and frozen-test contradictions. Keep its call counts and outcomes separate from autonomous game generation; no game templates or model adapters added.
+- 增加仅评估使用的代码缺陷／冻结测试冲突计数器，独立记录调用及结果，不加入生成器模板或新模型适配。
+- Run bounded real-model protocol checks and two full trials each for platform and energy-duel games with unchanged held-out checks. Preserve failures and source-version differences; see RELEASE_1_2_1.md.
+- 真实验证修复协议，并对平台及资源战术各做两次完整尝试；保留失败、不同候选源码及未解决问题，详见双语报告。
+
 ## 1.2.0 — 2026-10-17
 
 - Add machine-readable planning-error locations (test, setup/check index, combined step), preserving validation rules and legacy plans. Provide structured details to the next planning attempt without inferring or changing expectations.

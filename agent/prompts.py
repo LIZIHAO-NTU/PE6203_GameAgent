@@ -174,6 +174,9 @@ manual_checks entries must reference existing requirement IDs. Every manual-only
 needs a manual check. Supplemental manual checks for automated requirements are allowed.
 If validation_feedback and previous_plan are supplied, repair the schema while preserving
 the original spec and valid requirements; do not discard the previous plan and start guessing.
+validation_details.issues may list the first known error from several different tests.
+Address ALL listed issues in one draft; the list is bounded and not exhaustive. Recheck
+every scenario against the same DSL, including final assertions and goal-time limits.
 If recovery_mode is true, preserve earlier requirement IDs, texts, priorities, verification
 modes and all existing assertion objects exactly. You may add checks and reorganize setup
 into shorter fresh-page tests; do not change expected values to match an implementation.
@@ -297,7 +300,8 @@ objects merely to satisfy arbitrary test timing; do not invent controls absent f
 spec just for a test. During repair, if a frozen test contradicts original_spec or the
 evidence cannot justify a safe code fix, return ONLY:
 {"blocked":{"category":"test_issue|tool_limit|uncertain","reason":"short original-rule and observation evidence","evidence_test_ids":["actual failed test ID"]}}.
-Do not include files, changes or summary in a blocked response. The controller retains
+Do not include files or changes in a blocked response. An optional summary string of
+at most 1500 characters is non-action metadata, never an edit. The controller retains
 the best artifact and marks acceptance unverified, not successful. This is available
 only after recorded failed verification, never for initial generation. If the code is
 wrong, repair it normally. Never remove a submission cost or attempt increment for the

@@ -1,10 +1,10 @@
 # PlayForge: Build a Coding Agent That Can Build a Game
 
-Current version: `1.2.0` — an experimental course-project release, not a production reliability guarantee. Adds located planning feedback, evidence-linked repair scenarios, an explicit blocked-repair response and joint self/independent check metrics. See [RELEASE_1_2.md](RELEASE_1_2.md) for real default-mode baseline, targeted follow-ups and new mixed-rule samples. [RELEASE_1_1.md](RELEASE_1_1.md) preserves the earlier expansion; [EXTENSION_PLAN.md](EXTENSION_PLAN.md) tracks deferred work.
+Current version: `1.2.1` — an experimental course-project release, not a production reliability guarantee. Adds bounded multi-issue draft feedback, safe blocked-summary compatibility and a separate controlled real-model repair evaluation. See [RELEASE_1_2_1.md](RELEASE_1_2_1.md) for exact outcomes and unresolved autonomous checks. [RELEASE_1_2.md](RELEASE_1_2.md) preserves the earlier baseline and mixed-rule screening; [EXTENSION_PLAN.md](EXTENSION_PLAN.md) tracks deferred work.
 
 The subsequent four-case real DeepSeek audit on/off comparison is in [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md): 24 API attempts; keep audit opt-in/off by default. The agent implementation was unchanged for that evaluation.
 
-当前版本：`1.2.0`，仍是实验性课程项目。本轮增加具体测试／步骤错误定位、按证据组织的修复反馈、明确的修复待复核响应及自测与独立检查联合指标。真实默认模式基线、定向复测及新规则组合见 [RELEASE_1_2.md](RELEASE_1_2.md)。保留 1.1.0 的输入工具、可选摘要核对及只读状态页，不改历史评估。
+当前版本：`1.2.1`，仍是实验性课程项目。本轮增加跨测试的有限多错误反馈、安全的待复核摘要格式兼容，以及独立统计的真实模型修复评估。结果和未解决的自主验收问题见 [RELEASE_1_2_1.md](RELEASE_1_2_1.md)。保留原输入工具、冻结验收、有限修复及只读状态页，不改历史成绩。
 
 后续四类新需求的真实 DeepSeek 审查开关对照见 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)：共 24 次 API 尝试，结论为暂时保持审查默认关闭；评估期间未改 Agent 实现。
 
@@ -278,7 +278,33 @@ Leave `PLAYWRIGHT_CHANNEL` blank for Playwright Chromium. Temporary test artifac
 
 使用 Playwright Chromium 时将 `PLAYWRIGHT_CHANNEL` 留空。临时测试产物位于 `.codex-tmp/`；任务结束后清理本次临时文件，不误删其他人的材料。
 
-### Version 1.2.0 — 2026-10-17 / 当前版本验证
+### Version 1.2.1 — 2026-10-17 / 当前版本验证
+
+Draft feedback reports up to eight first-known errors across tests, preserving the primary error and indicating unscanned tests. Isolated probes are diagnostics only: full validation still decides acceptance. No assertions, limits or original rules are changed automatically.
+
+草稿反馈最多汇总八条跨测试的已知错误，保留首个错误并指出未扫描数量；隔离扫描只用于诊断，完整校验仍决定能否通过，不自动改断言、上限或游戏规则。
+
+A blocked response can carry an optional string `summary` of at most 1,500 characters. This is non-action metadata; files, changes, extra fields, false evidence and oversized/non-string summaries are rejected. The controller returns only the validated blocked diagnosis and preserves original artifacts. See [RELEASE_1_2_1.md](RELEASE_1_2_1.md) for the initially rejected real response and the separately labelled final checks.
+
+待复核响应可附带最长 1,500 字符的字符串说明，但不能包含文件修改、其他字段、虚假证据或非法摘要；控制器只使用已校验诊断，不执行摘要。首轮拒绝及最终复测分开记录，未重写成绩。
+
+Controlled repair evaluation (paid API, not autonomous game generation) / 受控修复评估（调用 API，不是完整自主生成）：
+
+~~~powershell
+python -m evals.repair_protocol --output reports/repair_trial --max-calls 4 --repeats 1
+~~~
+
+Full game closure trials / 完整游戏收尾测试：
+
+~~~powershell
+python -m agent benchmark examples/reliability_closure_suite.json --output runs/closure_trial --max-total-calls 20 --max-calls-per-case 5 --max-rounds 3 --max-seconds 360 --repeats 2
+~~~
+
+The two command caps are separate: this example allocates at most 24 attempts in total. Counter fixtures are evaluation-only and never offered to the generator. Do not include fault-injection outcomes in normal game success rates. Model settings and public UI scope are unchanged.
+
+两条命令分别计预算，上述示例合计最多 24 次尝试。计数器仅为故障注入评估，生成器不调用它，不得混入正常游戏成功率。模型设置及 UI 范围不变。
+
+### Version 1.2.0 — 2026-10-17 / 历史版本验证
 
 Located validation errors identify the test, setup/check index and combined step. Repair feedback links the failed action to frozen requirements and actual/expected observations; full evidence remains in traces. No new provider, arbitrary script tool, game template or multi-agent framework is added.
 
@@ -393,6 +419,9 @@ TEST_RELIABILITY.md    Beta 4 changes, comparison and rehearsal / Beta 4 改进�
 RELIABILITY_RESULTS.json Sanitized Beta 4 evidence / Beta 4 脱敏证据
 RELEASE_1_1.md         1.1.0 changes, evaluation and limits / 扩展、评估与边界
 RELEASE_1_2.md         1.2.0 feedback, real baseline and mixed rules / 反馈、真实基线与规则组合
+RELEASE_1_2_1.md       Reliability closure and controlled repair results / 可靠性收尾及受控修复实测
+RELIABILITY_1_2_1_RESULTS.json Sanitized patch evidence / 补丁版脱敏证据
+evals/repair_protocol.py Explicit counter fault-injection evaluation only / 仅显式运行的计数器故障注入评估
 RELIABILITY_1_2_RESULTS.json Sanitized 1.2.0 evaluation evidence / 1.2.0 脱敏评估证据
 examples/reliability_1_2/ Mixed-rule English requirements and held-out checks / 组合规则英文需求及独立检查
 EXPANSION_RESULTS.json Sanitized initial/follow-up/replay evidence / 首批、复测及复放证据

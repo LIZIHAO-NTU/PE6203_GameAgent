@@ -1,12 +1,37 @@
 """Bounded, evidence-linked feedback; no rule inference, test edits or extra model calls."""
-from .contracts import test_steps
+from .contracts import PlanValidationError, test_steps, validate_plan
 from .state import compact_failure
 
 
-def validation_feedback(error):
-    return {"location": getattr(error, "location", "$"),
-            "detail": getattr(error, "detail", str(error))[:1500],
-            "policy": "Correct this draft's structure against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation."}
+def validation_feedback(error, draft=None):
+    """Read-only diagnostics: first error per isolated test, never an acceptance path."""
+    primary = {"location": getattr(error, "location", "$"),
+               "detail": getattr(error, "detail", str(error))[:1500]}
+    issues, seen = [primary], {(primary["location"], primary["detail"])}
+    tests = draft.get("tests", []) if isinstance(draft, dict) else []
+    scanned = 0
+    for index, test in enumerate(tests[:10] if isinstance(tests, list) else []):
+        if len(issues) >= 8:
+            break
+        scanned += 1
+        # Keep the complete requirement/contract metadata. Ignore global coverage
+        # failures caused by isolation; only a test-local error is useful here.
+        probe = {**draft, "tests": [test]}
+        try:
+            validate_plan(probe)
+        except PlanValidationError as found:
+            if not found.location.startswith("tests[0]"):
+                continue
+            issue = {"location": found.location.replace("tests[0]", f"tests[{index}]", 1),
+                     "detail": found.detail[:1500]}
+            key = (issue["location"], issue["detail"])
+            if key not in seen:
+                issues.append(issue)
+                seen.add(key)
+    return {**primary, "issues": issues, "tests_scanned": scanned,
+            "tests_not_scanned": max(0, len(tests) - scanned) if isinstance(tests, list) else 0,
+            "scope": "Bounded first-known error per test plus the original failure; not exhaustive and never proof that other fields are valid.",
+            "policy": "Correct all listed draft issues against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation. Only full validate_plan can accept a plan."}
 
 
 def repair_feedback(result, plan):

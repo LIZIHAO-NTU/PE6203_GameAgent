@@ -1,0 +1,1279 @@
+{
+  "agent_version": "1.2.1",
+  "date": "2026-10-17",
+  "base_commit": "3ca97b587697a879386f83d93182a0638d6da830",
+  "runtime": {
+    "python": "3.11.9",
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "playwright": "1.63.0",
+    "agent_source_sha256": "1d8d909ed876eb25b5cc0c89864158b2eccdd929d3ecd2d6efdf11f5845ba174"
+  },
+  "api_attempt_cap": 24,
+  "probe_batches": [
+    {
+      "kind": "controlled_repair_probe",
+      "agent_version": "1.2.1",
+      "model": "deepseek-flash",
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "de348aac0fd8f225badaa42fa3e5f5f6624144c4dc26131752971f883172e720"
+      },
+      "max_api_attempts": 8,
+      "generation_calls": 0,
+      "full_game_acceptance": null,
+      "usage": {
+        "api_attempts": 4,
+        "prompt_tokens": 11776,
+        "completion_tokens": 1190,
+        "cached_input_tokens": 7296,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "completed_expected_behavior": 3,
+      "scheduled": 4,
+      "id": "real_probes",
+      "rows": [
+        {
+          "id": "code_error_01",
+          "ground_truth": "code_error",
+          "status": "repaired_and_checked",
+          "response_kind": "files",
+          "api_attempts": 1,
+          "source_integrity": true,
+          "frozen_integrity": true,
+          "selected_directory": "candidate",
+          "selected_sha256": {
+            "game.js": "89d915cbdb0326c6b764aa5a7177600d9591a041932328885561abd68a63f388",
+            "index.html": "8fab2bf7381e5549c2ef7fc0c39bb81955e500a1961c5a610eceeddcd7ce5912"
+          },
+          "initial_failure": {
+            "ok": false,
+            "tests_passed": 0,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": [
+              {
+                "id": "T1",
+                "step": 2,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 2,
+                    "actual": 0,
+                    "op": "eq",
+                    "expected": 1,
+                    "passed": false
+                  }
+                ]
+              },
+              {
+                "id": "T2",
+                "step": 3,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 3,
+                    "actual": 0,
+                    "op": "eq",
+                    "expected": 2,
+                    "passed": false
+                  }
+                ]
+              }
+            ]
+          },
+          "independent": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": {
+              "requested": 2,
+              "completed": 2,
+              "passed": 2,
+              "unstable": false,
+              "total_budget_seconds": 60
+            },
+            "failed": []
+          },
+          "frozen_after": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": []
+          }
+        },
+        {
+          "id": "test_conflict_01",
+          "ground_truth": "test_conflict",
+          "status": "appropriate_block",
+          "blocked": {
+            "category": "test_issue",
+            "reason": "T1 requires score==2 after exactly one click on #increment, which contradicts the original spec ('Each click on #increment adds exactly 1') and requirement R1. T2 confirms the intended behavior: two clicks yield score 2. The implementation correctly shows score 1 after one click, so T1's expected value of 2 is an erroneous frozen expectation.",
+            "evidence_test_ids": [
+              "T1"
+            ]
+          },
+          "response_kind": "blocked",
+          "api_attempts": 1,
+          "source_integrity": true,
+          "frozen_integrity": true,
+          "selected_directory": "initial",
+          "selected_sha256": {
+            "index.html": "e722703280aeeafac120f8100c05585d0f2f31100a5d7e1ed7169b436a71f674"
+          },
+          "initial_failure": {
+            "ok": false,
+            "tests_passed": 1,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": [
+              {
+                "id": "T1",
+                "step": 2,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 2,
+                    "actual": 1,
+                    "op": "eq",
+                    "expected": 2,
+                    "passed": false
+                  }
+                ]
+              }
+            ]
+          },
+          "independent": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": {
+              "requested": 2,
+              "completed": 2,
+              "passed": 2,
+              "unstable": false,
+              "total_budget_seconds": 60
+            },
+            "failed": []
+          }
+        },
+        {
+          "id": "code_error_02",
+          "ground_truth": "code_error",
+          "status": "repaired_and_checked",
+          "response_kind": "files",
+          "api_attempts": 1,
+          "source_integrity": true,
+          "frozen_integrity": true,
+          "selected_directory": "candidate",
+          "selected_sha256": {
+            "game.js": "9c1b133f8177ed19e49d5d3a4c9905b4d4b24d1fcff53ef9dbf6c1c04b8ca3a4",
+            "index.html": "cfe780023fcbb03d108f0f6ca9f228740e8e7a0a4d0c42a7232add03f167d6cd"
+          },
+          "initial_failure": {
+            "ok": false,
+            "tests_passed": 0,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": [
+              {
+                "id": "T1",
+                "step": 2,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 2,
+                    "actual": 0,
+                    "op": "eq",
+                    "expected": 1,
+                    "passed": false
+                  }
+                ]
+              },
+              {
+                "id": "T2",
+                "step": 3,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 3,
+                    "actual": 0,
+                    "op": "eq",
+                    "expected": 2,
+                    "passed": false
+                  }
+                ]
+              }
+            ]
+          },
+          "independent": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": {
+              "requested": 2,
+              "completed": 2,
+              "passed": 2,
+              "unstable": false,
+              "total_budget_seconds": 60
+            },
+            "failed": []
+          },
+          "frozen_after": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": []
+          }
+        },
+        {
+          "id": "test_conflict_02",
+          "ground_truth": "test_conflict",
+          "status": "probe_error",
+          "error": "Blocked response requires prior failed verification and no proposed file edits",
+          "api_attempts": 1,
+          "initial_failure": {
+            "ok": false,
+            "tests_passed": 1,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": [
+              {
+                "id": "T1",
+                "step": 2,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 2,
+                    "actual": 1,
+                    "op": "eq",
+                    "expected": 2,
+                    "passed": false
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "kind": "controlled_repair_probe",
+      "agent_version": "1.2.1",
+      "model": "deepseek-flash",
+      "runtime": {
+        "python": "3.11.9",
+        "system": "Windows",
+        "release": "10",
+        "machine": "AMD64",
+        "playwright": "1.63.0",
+        "agent_source_sha256": "1d8d909ed876eb25b5cc0c89864158b2eccdd929d3ecd2d6efdf11f5845ba174"
+      },
+      "max_api_attempts": 2,
+      "generation_calls": 0,
+      "full_game_acceptance": null,
+      "usage": {
+        "api_attempts": 2,
+        "prompt_tokens": 5926,
+        "completion_tokens": 420,
+        "cached_input_tokens": 2432,
+        "calls_with_unknown_usage": 0,
+        "estimated_known_usage_cost": null,
+        "currency": "USD",
+        "cost_is_complete": false,
+        "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+      },
+      "completed_expected_behavior": 2,
+      "scheduled": 2,
+      "id": "final_probes",
+      "rows": [
+        {
+          "id": "code_error_01",
+          "ground_truth": "code_error",
+          "status": "repaired_and_checked",
+          "response_kind": "files",
+          "api_attempts": 1,
+          "source_integrity": true,
+          "frozen_integrity": true,
+          "selected_directory": "candidate",
+          "selected_sha256": {
+            "index.html": "e722703280aeeafac120f8100c05585d0f2f31100a5d7e1ed7169b436a71f674"
+          },
+          "initial_failure": {
+            "ok": false,
+            "tests_passed": 0,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": [
+              {
+                "id": "T1",
+                "step": 2,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 2,
+                    "actual": 0,
+                    "op": "eq",
+                    "expected": 1,
+                    "passed": false
+                  }
+                ]
+              },
+              {
+                "id": "T2",
+                "step": 3,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 3,
+                    "actual": 0,
+                    "op": "eq",
+                    "expected": 2,
+                    "passed": false
+                  }
+                ]
+              }
+            ]
+          },
+          "independent": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": {
+              "requested": 2,
+              "completed": 2,
+              "passed": 2,
+              "unstable": false,
+              "total_budget_seconds": 60
+            },
+            "failed": []
+          },
+          "frozen_after": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": []
+          }
+        },
+        {
+          "id": "test_conflict_01",
+          "ground_truth": "test_conflict",
+          "status": "appropriate_block",
+          "blocked": {
+            "category": "test_issue",
+            "reason": "Frozen test T1 clicks #increment once but expects score 2, contradicting original_spec R1 ('Each click adds exactly 1') and the plan text 'Each click adds exactly one'. Actual score after one click is 1, which is correct; expected 2 is wrong. T2 passed with two clicks yielding 2, confirming one-per-click behavior. Implementing 2-per-click would violate the original spec and flip T2 to fail.",
+            "evidence_test_ids": [
+              "T1"
+            ]
+          },
+          "response_kind": "blocked",
+          "api_attempts": 1,
+          "source_integrity": true,
+          "frozen_integrity": true,
+          "selected_directory": "initial",
+          "selected_sha256": {
+            "index.html": "e722703280aeeafac120f8100c05585d0f2f31100a5d7e1ed7169b436a71f674"
+          },
+          "initial_failure": {
+            "ok": false,
+            "tests_passed": 1,
+            "tests_total": 2,
+            "reliability": null,
+            "failed": [
+              {
+                "id": "T1",
+                "step": 2,
+                "kind": "assertion_mismatch",
+                "observations": [
+                  {
+                    "step": 2,
+                    "actual": 1,
+                    "op": "eq",
+                    "expected": 2,
+                    "passed": false
+                  }
+                ]
+              }
+            ]
+          },
+          "independent": {
+            "ok": true,
+            "tests_passed": 2,
+            "tests_total": 2,
+            "reliability": {
+              "requested": 2,
+              "completed": 2,
+              "passed": 2,
+              "unstable": false,
+              "total_budget_seconds": 60
+            },
+            "failed": []
+          }
+        }
+      ]
+    }
+  ],
+  "offline_compatibility": [
+    {
+      "id": "real_probes/test_conflict_02",
+      "original_status": "probe_error",
+      "response_metadata": {
+        "top_level_fields": [
+          "blocked",
+          "summary"
+        ],
+        "summary_type": "str",
+        "summary_length": 277,
+        "summary_sha256": "ac36eb60077482d2e1c756fe60ca83da45b6636f7921cc4c1c4431d0e27bb000",
+        "blocked": {
+          "category": "test_issue",
+          "reason": "Original spec: 'Each click on #increment adds exactly 1' and R1 'Each click adds exactly one'. After one click the correct score is 1, not 2. T1 step 2 asserts score eq 2, which contradicts the original rule. T2 (multiple clicks to 2, restart to 0) passed, confirming the increment/reset logic is correct.",
+          "evidence_test_ids": [
+            "T1"
+          ]
+        }
+      },
+      "api_attempts": 0,
+      "original_status_unchanged": true,
+      "validated_blocked": {
+        "category": "test_issue",
+        "reason": "Original spec: 'Each click on #increment adds exactly 1' and R1 'Each click adds exactly one'. After one click the correct score is 1, not 2. T1 step 2 asserts score eq 2, which contradicts the original rule. T2 (multiple clicks to 2, restart to 0) passed, confirming the increment/reset logic is correct.",
+        "evidence_test_ids": [
+          "T1"
+        ]
+      },
+      "accepted_under_final_protocol": true
+    },
+    {
+      "id": "platform_hop_01",
+      "original_status": "run_error",
+      "response_metadata": {
+        "top_level_fields": [
+          "blocked",
+          "summary"
+        ],
+        "summary_type": "str",
+        "summary_length": 1998,
+        "summary_sha256": "e37ed4095a2ebfddc948a16f695c0b5022e8560483f93470ad0ba75a8756318a",
+        "blocked": {
+          "category": "test_issue",
+          "reason": "T5/T6 hold ArrowRight only (no Space) and expect x>=320 while alive. Per original_spec, the gap spans where the player's center x is in [110,210) with no ground, and 'Space jumps only while grounded' plus gravity/Fall means walking off the edge drops the player; reaching x>=320 alive requires jumping across the gap. The recorded observations show the player at x≈161 (mid-gap) with y≈220.16, phase Lost — i.e. it fell as physically required. The test strategy of never pressing Space cannot satisfy 'x>=320 while alive' under the spec's own gap/gravity/fall rules. Fixing this would require either removing the gap/loss (violating R5) or teleporting/faking state.",
+          "evidence_test_ids": [
+            "T5",
+            "T6"
+          ]
+        }
+      },
+      "api_attempts": 0,
+      "original_status_unchanged": true,
+      "accepted_under_final_protocol": false,
+      "error": "Optional blocked summary must be a string of at most 1500 characters"
+    },
+    {
+      "id": "platform_hop_02",
+      "original_status": "run_error",
+      "response_metadata": {
+        "top_level_fields": [
+          "blocked",
+          "summary"
+        ],
+        "summary_type": "str",
+        "summary_length": 1424,
+        "summary_sha256": "ca4b535ecd343745e11ce2ffb90180bab162a51edb9808b78df427d540bd2315",
+        "blocked": {
+          "category": "test_issue",
+          "reason": "T2 step 5 expects x < 20 after measuring from start x=20, then holding ArrowRight 500ms (x -> ~102.67) then ArrowLeft 300ms (x -> ~52.67). With constant 160 px/s movement (spec-mandated), a 300ms left hold moves -48px, so x stays above the original 20; no legal rule change satisfies this while honoring 'Left/right move at 160 pixels per second'. The frozen assertion compares to the captured start instead of the post-right position. T6 step 1 holds ArrowRight continuously with no jump; the player therefore walks into the gap at center x~161 and the game correctly reports Lost per spec ('Falling with feet below 220 loses'). Reaching x>=320 requires a jump, which the test never issues; making walking right reach the goal unjumped would violate the original spec. Both failures are test/spec contradictions, not implementation defects; the code already implements all mandatory rules (verified by passing T1, T3, T5).",
+          "evidence_test_ids": [
+            "T2",
+            "T6"
+          ]
+        }
+      },
+      "api_attempts": 0,
+      "original_status_unchanged": true,
+      "validated_blocked": {
+        "category": "test_issue",
+        "reason": "T2 step 5 expects x < 20 after measuring from start x=20, then holding ArrowRight 500ms (x -> ~102.67) then ArrowLeft 300ms (x -> ~52.67). With constant 160 px/s movement (spec-mandated), a 300ms left hold moves -48px, so x stays above the original 20; no legal rule change satisfies this while honoring 'Left/right move at 160 pixels per second'. The frozen assertion compares to the captured start instead of the post-right position. T6 step 1 holds ArrowRight continuously with no jump; the player therefore walks into the gap at center x~161 and the game correctly reports Lost per spec ('Falling with feet below 220 loses'). Reaching x>=320 requires a jump, which the test never issues; making walking right reach the goal unjumped would violate the original spec. Both failures are test/spec contradictions, not implementation defects; the code already implements all mandatory rules (verified by passing T1, T3, T5).",
+        "evidence_test_ids": [
+          "T2",
+          "T6"
+        ]
+      },
+      "accepted_under_final_protocol": true
+    }
+  ],
+  "notes": [
+    "Controlled fault-injection probes are not autonomous game generation. Keep denominators separate.",
+    "Initial probes and full game trials used strict blocked-only envelopes. Final source safely accepts optional bounded summary metadata.",
+    "Original rejected responses and run outcomes are retained; offline compatibility replay never changes original results.",
+    "Four games were generated from scratch with unchanged independent checks and up to five API attempts per run; none completed autonomous acceptance.",
+    "Full game generation was not rerun after the summary-only parser patch. Final source was tested with real repair probes and read-only game replays.",
+    "Multi-issue diagnostics are first-known errors across tests, not exhaustive validation, game-rule inference or proof of improved success rate.",
+    "Raw task-temporary games, logs, API records and dependencies are removed after retaining sanitized evidence."
+  ],
+  "game_trials": {
+    "agent_version": "1.2.1",
+    "model": "deepseek-flash",
+    "metrics": {
+      "scheduled": 4,
+      "attempted": 4,
+      "not_attempted": 0,
+      "independent_evaluated": 4,
+      "attempted_without_independent_result": 0,
+      "launch_rate_over_attempted": 1,
+      "independent_pass_rate_over_evaluated": 1,
+      "self_pass_independent_fail": 0,
+      "self_fail_independent_pass": 4,
+      "status_counts": {
+        "run_error": 2,
+        "partial_game_plan_failed": 1,
+        "plan_review_required": 1
+      },
+      "api_attempts": 18,
+      "joint_selected_checks_passed": 0,
+      "joint_selected_checks_rate_over_attempted": 0,
+      "launch_rate": 1,
+      "model_plan_pass_rate": 0,
+      "independent_pass_rate": 1,
+      "macro_family_independent_pass_rate": 1,
+      "prompt_tokens": 110371,
+      "completion_tokens": 44492,
+      "calls_with_unknown_usage": 0,
+      "by_family": {
+        "platform_physics": {
+          "scheduled": 2,
+          "not_attempted": 0,
+          "independent_evaluated": 2,
+          "attempted_without_independent_result": 0,
+          "launch_rate_over_attempted": 1,
+          "independent_pass_rate_over_evaluated": 1,
+          "self_pass_independent_fail": 0,
+          "self_fail_independent_pass": 2,
+          "attempted": 2,
+          "launch_rate": 1,
+          "independent_pass_rate": 1
+        },
+        "turn_resource": {
+          "scheduled": 2,
+          "not_attempted": 0,
+          "independent_evaluated": 2,
+          "attempted_without_independent_result": 0,
+          "launch_rate_over_attempted": 1,
+          "independent_pass_rate_over_evaluated": 1,
+          "self_pass_independent_fail": 0,
+          "self_fail_independent_pass": 2,
+          "attempted": 2,
+          "launch_rate": 1,
+          "independent_pass_rate": 1
+        }
+      },
+      "full_game_acceptance_rate": null,
+      "notes": [
+        "Independent checks are held out from generation; they still cover only selected requirements.",
+        "Joint selected-check success requires both self-plan and independent checks; it is not full gameplay acceptance.",
+        "One run per family is a feasibility sample, not a reliable generalization estimate.",
+        "Legacy rates include all scheduled cases, including skipped/error cases; raw rows preserve causes.",
+        "Evaluated-only rates exclude absent independent evidence; always report evaluated/scheduled counts.",
+        "Self/independent disagreement is a review signal, not an automatic diagnosis or full-game verdict."
+      ]
+    },
+    "max_total_calls": 20,
+    "max_calls_per_case": 5,
+    "repeats": 2,
+    "max_rounds": 3,
+    "max_seconds_per_case": 360,
+    "cases": [
+      {
+        "run_id": "platform_hop_01",
+        "case_id": "platform_hop",
+        "family": "platform_physics",
+        "status": "run_error",
+        "attempted": true,
+        "spec_sha256": "a9be0d4da4cb80e9ec35d39cea827a79d8260218c3a10ce2ebc8f5efa71fedf3",
+        "acceptance_plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+        "generation_status": "run_error",
+        "exit_code": 4,
+        "usage": {
+          "api_attempts": 5,
+          "prompt_tokens": 31401,
+          "completion_tokens": 7509,
+          "cached_input_tokens": 19840,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": false,
+        "prompts_sha256": "923700d30670939d29e82f7a1eb0aef14c6a19d3cf57f460c9f711e8d571eddc",
+        "agent_source_sha256": "de348aac0fd8f225badaa42fa3e5f5f6624144c4dc26131752971f883172e720",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 5,
+          "max_seconds": 360,
+          "test_timeout": 60
+        },
+        "planning_status": "valid",
+        "independent_passed": true,
+        "independent_tests_passed": 6,
+        "independent_tests_total": 6,
+        "independent_failure_kinds": [],
+        "duration_seconds": 59.047,
+        "original_summary": {
+          "status": "run_error",
+          "error": "Blocked response requires prior failed verification and no proposed file edits",
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "planning_recovered": false,
+          "stop_reason": "run_error",
+          "selected_round": 1,
+          "automated_checks_passed": false,
+          "failure_summary": {
+            "counts": {
+              "goal_timeout": 2
+            },
+            "review_test_ids": [
+              "T5",
+              "T6"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "repair_blocked": null,
+          "active_plan": "plan.json",
+          "plan_sha256": "5815e492b989fff27084bdcceac5d73c2e2d249860cfc82594940772d2df637c"
+        },
+        "validation_events": [
+          {
+            "event": "plan_validation_failed",
+            "error": "tests: Every automated requirement must have a test; missing IDs: R4",
+            "details": {
+              "location": "tests",
+              "detail": "Every automated requirement must have a test; missing IDs: R4",
+              "issues": [
+                {
+                  "location": "tests",
+                  "detail": "Every automated requirement must have a test; missing IDs: R4"
+                }
+              ],
+              "tests_scanned": 7,
+              "tests_not_scanned": 0,
+              "scope": "Bounded first-known error per test plus the original failure; not exhaustive and never proof that other fields are valid.",
+              "policy": "Correct all listed draft issues against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation. Only full validate_plan can accept a plan."
+            }
+          }
+        ],
+        "selected_self_evidence": {
+          "ok": false,
+          "tests_passed": 5,
+          "tests_total": 7,
+          "reliability": null,
+          "failed": [
+            {
+              "id": "T5",
+              "step": 1,
+              "kind": "goal_timeout",
+              "observations": [
+                {
+                  "step": 1,
+                  "actual": 161.37599999999986,
+                  "op": "ge",
+                  "expected": 320,
+                  "passed": false,
+                  "action": "key_until",
+                  "polls": 49,
+                  "elapsed_ms": 3000,
+                  "last_state": {
+                    "phase": "Lost",
+                    "player": {
+                      "x": 161.37599999999986,
+                      "y": 220.15639700000003
+                    }
+                  },
+                  "first_position": null,
+                  "last_position": null
+                }
+              ]
+            },
+            {
+              "id": "T6",
+              "step": 1,
+              "kind": "goal_timeout",
+              "observations": [
+                {
+                  "step": 1,
+                  "actual": 161.26399999999978,
+                  "op": "ge",
+                  "expected": 320,
+                  "passed": false,
+                  "action": "key_until",
+                  "polls": 49,
+                  "elapsed_ms": 3015,
+                  "last_state": {
+                    "phase": "Lost",
+                    "player": {
+                      "x": 161.26399999999978,
+                      "y": 220.15649499999998
+                    }
+                  },
+                  "first_position": null,
+                  "last_position": null
+                }
+              ]
+            }
+          ]
+        },
+        "final_read_only_replay": {
+          "automated_checks_passed": true,
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "full_game_acceptance": null,
+          "game_sha256": {
+            "game.js": "7b5d0bfe06c242d362edb431d688fe4b624acf085f7ea587b97823eb43aefbd4",
+            "index.html": "414eb1c417bf0061f4e6fee862c3de846825d3c1ea7f962b178f88328a7911d4"
+          },
+          "plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        "frozen_fixture_integrity": true
+      },
+      {
+        "run_id": "energy_duel_01",
+        "case_id": "energy_duel",
+        "family": "turn_resource",
+        "status": "partial_game_plan_failed",
+        "attempted": true,
+        "spec_sha256": "a74071d849ab09463e6c9feff4d020fcdc3c47f1be84f00e3fee08e08488a1cf",
+        "acceptance_plan_sha256": "e7e9995fb01d579b36739174d8fd27bd306f279b5c792af6ef69ea30f366bfa9",
+        "generation_status": "partial_game_plan_failed",
+        "exit_code": 2,
+        "usage": {
+          "api_attempts": 4,
+          "prompt_tokens": 22709,
+          "completion_tokens": 14496,
+          "cached_input_tokens": 11904,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": false,
+        "prompts_sha256": "923700d30670939d29e82f7a1eb0aef14c6a19d3cf57f460c9f711e8d571eddc",
+        "agent_source_sha256": "de348aac0fd8f225badaa42fa3e5f5f6624144c4dc26131752971f883172e720",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 5,
+          "max_seconds": 360,
+          "test_timeout": 60
+        },
+        "planning_status": "failed_startup_only",
+        "independent_passed": true,
+        "independent_tests_passed": 7,
+        "independent_tests_total": 7,
+        "independent_failure_kinds": [],
+        "duration_seconds": 55.687,
+        "original_summary": {
+          "status": "partial_game_plan_failed",
+          "error": null,
+          "planning_status": "failed_startup_only",
+          "planning_error": "tests[5] (T6): Setup and check together need 1..18 steps/test",
+          "planning_recovery_error": "tests[5] (T6): Setup and check together need 1..18 steps/test",
+          "planning_recovered": false,
+          "stop_reason": "startup_only_functional_acceptance_unverified",
+          "selected_round": 1,
+          "automated_checks_passed": false,
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": false,
+              "evidence_complete": true,
+              "reasons": [
+                "Functional acceptance has not been established by this plan"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "repair_blocked": null,
+          "active_plan": "plan.json",
+          "plan_sha256": "3690a00471724c0c238d8776505112015e9a586fd85d592d58bf28649b2685e0"
+        },
+        "validation_events": [
+          {
+            "event": "plan_validation_failed",
+            "error": "tests[5] (T6): Setup and check together need 1..18 steps/test",
+            "details": {
+              "location": "tests[5] (T6)",
+              "detail": "Setup and check together need 1..18 steps/test",
+              "issues": [
+                {
+                  "location": "tests[5] (T6)",
+                  "detail": "Setup and check together need 1..18 steps/test"
+                }
+              ],
+              "tests_scanned": 7,
+              "tests_not_scanned": 0,
+              "scope": "Bounded first-known error per test plus the original failure; not exhaustive and never proof that other fields are valid.",
+              "policy": "Correct all listed draft issues against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation. Only full validate_plan can accept a plan."
+            }
+          },
+          {
+            "event": "plan_validation_failed",
+            "error": "tests[5] (T6): Setup and check together need 1..18 steps/test",
+            "details": {
+              "location": "tests[5] (T6)",
+              "detail": "Setup and check together need 1..18 steps/test",
+              "issues": [
+                {
+                  "location": "tests[5] (T6)",
+                  "detail": "Setup and check together need 1..18 steps/test"
+                }
+              ],
+              "tests_scanned": 7,
+              "tests_not_scanned": 0,
+              "scope": "Bounded first-known error per test plus the original failure; not exhaustive and never proof that other fields are valid.",
+              "policy": "Correct all listed draft issues against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation. Only full validate_plan can accept a plan."
+            }
+          },
+          {
+            "event": "plan_recovery_failed",
+            "error": "tests[5] (T6): Setup and check together need 1..18 steps/test"
+          }
+        ],
+        "selected_self_evidence": {
+          "ok": false,
+          "tests_passed": 1,
+          "tests_total": 1,
+          "reliability": null,
+          "failed": []
+        },
+        "final_read_only_replay": {
+          "automated_checks_passed": true,
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "full_game_acceptance": null,
+          "game_sha256": {
+            "game.js": "16d697b6c137e7544b9afcb9ccc5375f52f49ad38153c63204b83d1ac97a101b",
+            "index.html": "12d161bc22553f36ffd6255f545738cda0175d7b69bf65aa96538db9b494f3f8"
+          },
+          "plan_sha256": "e7e9995fb01d579b36739174d8fd27bd306f279b5c792af6ef69ea30f366bfa9",
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        "frozen_fixture_integrity": true
+      },
+      {
+        "run_id": "platform_hop_02",
+        "case_id": "platform_hop",
+        "family": "platform_physics",
+        "status": "run_error",
+        "attempted": true,
+        "spec_sha256": "a9be0d4da4cb80e9ec35d39cea827a79d8260218c3a10ce2ebc8f5efa71fedf3",
+        "acceptance_plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+        "generation_status": "run_error",
+        "exit_code": 4,
+        "usage": {
+          "api_attempts": 5,
+          "prompt_tokens": 28479,
+          "completion_tokens": 10213,
+          "cached_input_tokens": 14080,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": false,
+        "prompts_sha256": "923700d30670939d29e82f7a1eb0aef14c6a19d3cf57f460c9f711e8d571eddc",
+        "agent_source_sha256": "de348aac0fd8f225badaa42fa3e5f5f6624144c4dc26131752971f883172e720",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 5,
+          "max_seconds": 360,
+          "test_timeout": 60
+        },
+        "planning_status": "recovered",
+        "independent_passed": true,
+        "independent_tests_passed": 6,
+        "independent_tests_total": 6,
+        "independent_failure_kinds": [],
+        "duration_seconds": 70.329,
+        "original_summary": {
+          "status": "run_error",
+          "error": "Blocked response requires prior failed verification and no proposed file edits",
+          "planning_status": "recovered",
+          "planning_error": "tests: Every automated requirement must have a test; missing IDs: R7",
+          "planning_recovery_error": null,
+          "planning_recovered": true,
+          "stop_reason": "run_error",
+          "selected_round": 1,
+          "automated_checks_passed": false,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 1,
+              "goal_timeout": 1
+            },
+            "review_test_ids": [
+              "T2",
+              "T6"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "repair_blocked": null,
+          "active_plan": "functional_plan.json",
+          "plan_sha256": "c8444e1dbc809c2b3c69e970adfc9631c3c91f2d85fc5214176582e0427155d5"
+        },
+        "validation_events": [
+          {
+            "event": "plan_validation_failed",
+            "error": "tests[3] (T4): Every test needs an assertion",
+            "details": {
+              "location": "tests[3] (T4)",
+              "detail": "Every test needs an assertion",
+              "issues": [
+                {
+                  "location": "tests[3] (T4)",
+                  "detail": "Every test needs an assertion"
+                }
+              ],
+              "tests_scanned": 6,
+              "tests_not_scanned": 0,
+              "scope": "Bounded first-known error per test plus the original failure; not exhaustive and never proof that other fields are valid.",
+              "policy": "Correct all listed draft issues against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation. Only full validate_plan can accept a plan."
+            }
+          },
+          {
+            "event": "plan_validation_failed",
+            "error": "tests: Every automated requirement must have a test; missing IDs: R7",
+            "details": {
+              "location": "tests",
+              "detail": "Every automated requirement must have a test; missing IDs: R7",
+              "issues": [
+                {
+                  "location": "tests",
+                  "detail": "Every automated requirement must have a test; missing IDs: R7"
+                }
+              ],
+              "tests_scanned": 5,
+              "tests_not_scanned": 0,
+              "scope": "Bounded first-known error per test plus the original failure; not exhaustive and never proof that other fields are valid.",
+              "policy": "Correct all listed draft issues against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation. Only full validate_plan can accept a plan."
+            }
+          }
+        ],
+        "selected_self_evidence": {
+          "ok": false,
+          "tests_passed": 3,
+          "tests_total": 5,
+          "reliability": null,
+          "failed": [
+            {
+              "id": "T2",
+              "step": 5,
+              "kind": "assertion_mismatch",
+              "observations": [
+                {
+                  "step": 3,
+                  "actual": 102.67200000000005,
+                  "op": "gt",
+                  "expected": 20,
+                  "passed": true
+                },
+                {
+                  "step": 5,
+                  "actual": 52.671999999999954,
+                  "op": "lt",
+                  "expected": 20,
+                  "passed": false
+                }
+              ]
+            },
+            {
+              "id": "T6",
+              "step": 1,
+              "kind": "goal_timeout",
+              "observations": [
+                {
+                  "step": 1,
+                  "actual": "Lost",
+                  "op": "eq",
+                  "expected": "Won",
+                  "passed": false,
+                  "action": "key_until",
+                  "polls": 129,
+                  "elapsed_ms": 8015,
+                  "last_state": {
+                    "player": {
+                      "x": 161.58399999999995,
+                      "y": 220.15729299999995
+                    },
+                    "phase": "Lost"
+                  },
+                  "first_position": null,
+                  "last_position": null
+                }
+              ]
+            }
+          ]
+        },
+        "final_read_only_replay": {
+          "automated_checks_passed": true,
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "full_game_acceptance": null,
+          "game_sha256": {
+            "game.js": "41e47d964dfaf9d9f28ab1e4e73cdcaa37913fe6c531e410493252c4c279c8b0",
+            "index.html": "f72c8cec3b05cc87a00777b93f6264681948ae50b1ac87cc60ca3a50f063d36b"
+          },
+          "plan_sha256": "b79a90a06055351c030df835e95c0827c0521b2d7569a34033c0ea2d7742256e",
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        "frozen_fixture_integrity": true
+      },
+      {
+        "run_id": "energy_duel_02",
+        "case_id": "energy_duel",
+        "family": "turn_resource",
+        "status": "plan_review_required",
+        "attempted": true,
+        "spec_sha256": "a74071d849ab09463e6c9feff4d020fcdc3c47f1be84f00e3fee08e08488a1cf",
+        "acceptance_plan_sha256": "e7e9995fb01d579b36739174d8fd27bd306f279b5c792af6ef69ea30f366bfa9",
+        "generation_status": "plan_review_required",
+        "exit_code": 2,
+        "usage": {
+          "api_attempts": 4,
+          "prompt_tokens": 27782,
+          "completion_tokens": 12274,
+          "cached_input_tokens": 13824,
+          "calls_with_unknown_usage": 0,
+          "estimated_known_usage_cost": null,
+          "currency": "USD",
+          "cost_is_complete": false,
+          "note": "User-supplied rates only; not a billing statement. Unknown calls may be billed."
+        },
+        "launch_passed": true,
+        "model_plan_passed": false,
+        "prompts_sha256": "923700d30670939d29e82f7a1eb0aef14c6a19d3cf57f460c9f711e8d571eddc",
+        "agent_source_sha256": "de348aac0fd8f225badaa42fa3e5f5f6624144c4dc26131752971f883172e720",
+        "settings_sha256": "9437502626c9d8fcfd81af142fa988b49f3c3447689f85e7dcca687067beda71",
+        "limits": {
+          "max_rounds": 3,
+          "max_calls": 5,
+          "max_seconds": 360,
+          "test_timeout": 60
+        },
+        "planning_status": "valid",
+        "independent_passed": true,
+        "independent_tests_passed": 7,
+        "independent_tests_total": 7,
+        "independent_failure_kinds": [],
+        "duration_seconds": 59.953,
+        "original_summary": {
+          "status": "plan_review_required",
+          "error": null,
+          "planning_status": "valid",
+          "planning_error": null,
+          "planning_recovery_error": null,
+          "planning_recovered": false,
+          "stop_reason": "plan_review_required",
+          "selected_round": 2,
+          "automated_checks_passed": false,
+          "failure_summary": {
+            "counts": {
+              "assertion_mismatch": 2
+            },
+            "review_test_ids": [
+              "T3",
+              "T5"
+            ],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": false,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [
+                "One or more recorded tests did not pass",
+                "Verifier did not report a clean run"
+              ],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          },
+          "repair_blocked": null,
+          "active_plan": "plan.json",
+          "plan_sha256": "42c8efe73949e1338c1c3a3bdb3d4e4d1f622a534435619f459065e5f530ea4e"
+        },
+        "validation_events": [
+          {
+            "event": "plan_validation_failed",
+            "error": "tests[4] (T5): Setup and check together need 1..18 steps/test",
+            "details": {
+              "location": "tests[4] (T5)",
+              "detail": "Setup and check together need 1..18 steps/test",
+              "issues": [
+                {
+                  "location": "tests[4] (T5)",
+                  "detail": "Setup and check together need 1..18 steps/test"
+                }
+              ],
+              "tests_scanned": 6,
+              "tests_not_scanned": 0,
+              "scope": "Bounded first-known error per test plus the original failure; not exhaustive and never proof that other fields are valid.",
+              "policy": "Correct all listed draft issues against the execution contract. Preserve original requirements and asserted rules; do not infer new expected values from implementation. Only full validate_plan can accept a plan."
+            }
+          }
+        ],
+        "selected_self_evidence": {
+          "ok": false,
+          "tests_passed": 4,
+          "tests_total": 6,
+          "reliability": null,
+          "failed": [
+            {
+              "id": "T3",
+              "step": 5,
+              "kind": "assertion_mismatch",
+              "observations": [
+                {
+                  "step": 5,
+                  "actual": "A",
+                  "op": "eq",
+                  "expected": "B",
+                  "passed": false
+                }
+              ]
+            },
+            {
+              "id": "T5",
+              "step": 11,
+              "kind": "assertion_mismatch",
+              "observations": [
+                {
+                  "step": 11,
+                  "actual": 2,
+                  "op": "eq",
+                  "expected": 0,
+                  "passed": false
+                }
+              ]
+            }
+          ]
+        },
+        "final_read_only_replay": {
+          "automated_checks_passed": true,
+          "verification_repeats": 2,
+          "read_only_integrity": true,
+          "full_game_acceptance": null,
+          "game_sha256": {
+            "game.js": "dcddf14ba02d6b4b5d030929fe650cec67eafb0a000ecc9a70b5c0b1ef02b7bb",
+            "index.html": "0e6b34e15d5f2582a7646884cb2d9820f98eb04b2312642d89d841e046b89070"
+          },
+          "plan_sha256": "e7e9995fb01d579b36739174d8fd27bd306f279b5c792af6ef69ea30f366bfa9",
+          "failure_summary": {
+            "counts": {},
+            "review_test_ids": [],
+            "infrastructure_error": null,
+            "quality_gate": {
+              "passed": true,
+              "functional_evidence_present": true,
+              "evidence_complete": true,
+              "reasons": [],
+              "full_game_acceptance": null
+            },
+            "note": "A failed test remains failed. Review flags are uncertainty, not proof of a bad test or a correct game."
+          }
+        },
+        "frozen_fixture_integrity": true
+      }
+    ]
+  },
+  "api_attempts": 24,
+  "framework_regression": {
+    "tests": 302,
+    "duration_seconds": 172.752,
+    "all_passed": true,
+    "real_browser_tests": 46,
+    "skipped": 0,
+    "paid_api_calls": 0
+  },
+  "evaluation_harness_sha256": "e1d9cad13567bc1fc2b9f53697fa532e2a635d309bf805ad76e9b84adb8ff49d"
+}

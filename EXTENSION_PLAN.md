@@ -4,6 +4,10 @@ Status: bounded 1.1.0 expansion retained; 1.2.0 adds planning/repair feedback an
 
 状态：保留 1.1.0 有限扩展；1.2.0 增加规划／修复反馈和规则组合证据。实际失败与边界见两份版本报告。
 
+1.2.1 adds bounded cross-test error aggregation, safe blocked-summary metadata and separately measured real repair probes; it does not resolve arbitrary planning/oracle reliability. See RELEASE_1_2_1.md before interpreting success rates.
+
+1.2.1 增加跨测试错误汇总、安全摘要兼容和独立统计的真实修复检查，不代表通用规划／规则预期已经可靠；解释数据时以本版报告为准。
+
 | Stage / 阶段 | 1.1.0 delivery / 实施状态 |
 |---|---|
 | 0 | Supplied structured expectations checked before freeze; requesting summaries opt-in after observed planning failures, no free-prose parser/oracle / 已提供摘要在冻结前核对；实测计划失败后改为按需请求，不是自然语言或规则真值判定 |

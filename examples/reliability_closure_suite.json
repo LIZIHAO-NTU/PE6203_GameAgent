@@ -1,0 +1,7 @@
+{
+  "description":"Reliability closure: unchanged platform and energy-duel requirements and independent checks, with explicit repair budgets.",
+  "cases":[
+    {"id":"platform_hop","family":"platform_physics","spec":"expansion_1_1/platform_hop.md","acceptance_plan":"expansion_1_1/platform_hop.acceptance.json"},
+    {"id":"energy_duel","family":"turn_resource","spec":"reliability_1_2/energy_duel.md","acceptance_plan":"reliability_1_2/energy_duel.acceptance.json"}
+  ]
+}

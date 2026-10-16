@@ -18,7 +18,7 @@ from .quality import completion_gate, review_plan
 from .verification import failure_summary, preflight, verify, verify_repeated
 from .editing import resolve_edit
 from .artifacts import check_artifacts
-from .diagnostics import route_failure, validate_diagnosis
+from .diagnostics import route_failure, validate_diagnosis, validate_blocked_repair
 from .evidence import runtime_metadata
 from .lessons import load_lessons, select_hints, record_recovery
 from .plan_review import EXECUTION_CONTRACT, PlanReviewError, inspect_plan, validate_audit, failure_fingerprint
@@ -158,7 +158,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                 break
             except (ValueError, TypeError, KeyError) as error:
                 plan_error = str(error)
-                plan_details = validation_feedback(error)
+                plan_details = validation_feedback(error, raw_plan)
                 trace.event("plan_validation_failed", error=plan_error, details=plan_details)
         else:
             if strict_plan or not isinstance(raw_plan, dict) or raw_plan.get("supported") is not True:
@@ -226,11 +226,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                     "remaining_seconds": max(0, int(deadline - time.monotonic()))}, ensure_ascii=False)
                 response = client.ask_json(f"code_{round_number}", CODER_SYSTEM, prompt)
                 if isinstance(response, dict) and "blocked" in response:
-                    if set(response) != {"blocked"} or not best or not feedback or "tests" not in feedback:
-                        raise ValueError("Blocked response requires prior failed verification and no proposed file edits")
-                    blocked = validate_diagnosis(response["blocked"], feedback)
-                    if blocked["category"] == "code_error":
-                        raise ValueError("A demonstrated code error should be repaired, not labelled blocked")
+                    blocked = validate_blocked_repair(response, feedback, bool(best))
                     summary["repair_blocked"] = blocked
                     trace.event("repair_blocked", **blocked)
                     trace.save("repair_blocked.json", blocked)
@@ -295,6 +291,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
                             recovered_raw = client.ask_json("plan_recovery", planning_system, json.dumps({
                                 "original_spec": spec, "previous_plan": raw_plan,
                                 "validation_feedback": plan_error, "recovery_mode": True,
+                                "validation_details": plan_details,
                                 "execution_contract": EXECUTION_CONTRACT,
                                 "instruction": "Repair the functional plan against the original spec. Do not weaken earlier requirements or assertions. No game implementation or held-out checks are supplied."}, ensure_ascii=False))
                             trace.save("recovery_response.json", recovered_raw)

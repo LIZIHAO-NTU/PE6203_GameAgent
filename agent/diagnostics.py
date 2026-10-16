@@ -44,3 +44,17 @@ def validate_diagnosis(value, result):
     if set(value) - {"category", "reason", "evidence_test_ids"}:
         raise ValueError("Diagnosis may not contain edits or revised tests")
     return value
+
+
+def validate_blocked_repair(response, result, has_base):
+    """Shared live/probe protocol: no edits and only actual failed-test evidence."""
+    if (not isinstance(response, dict) or "blocked" not in response
+            or set(response) - {"blocked", "summary"} or not has_base
+            or not isinstance(result, dict) or "tests" not in result):
+        raise ValueError("Blocked response requires prior failed verification and no proposed file edits")
+    if "summary" in response and (not isinstance(response["summary"], str) or len(response["summary"]) > 1500):
+        raise ValueError("Optional blocked summary must be a string of at most 1500 characters")
+    blocked = validate_diagnosis(response["blocked"], result)
+    if blocked["category"] == "code_error":
+        raise ValueError("A demonstrated code error should be repaired, not labelled blocked")
+    return blocked
