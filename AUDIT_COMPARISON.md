@@ -1,4 +1,4 @@
-# Plan-Audit On/Off Comparison / 计划审查开关对照
+# PlayForge — Plan-Audit On/Off Comparison / 计划审查开关对照
 
 Date / 日期：2026-10-14. Fixed agent / 固定版本：`1.0.0-beta.3`, commit `1f8c548a279718ebea6221da4bbe30d0752463ae`.
 

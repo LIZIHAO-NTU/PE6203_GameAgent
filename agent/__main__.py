@@ -1,4 +1,4 @@
-"""Usage: python -m agent game_design_prompt.md; see README.md for setup."""
+"""PlayForge CLI. Usage: python -m agent game_design_prompt.md; see README.md for setup."""
 import argparse
 from datetime import datetime, timezone
 import getpass
@@ -160,7 +160,7 @@ def main(argv=None):
             return 0 if all(r.get("independent_passed") for r in report["cases"]) else 2
         if argv and argv[0] == "doctor":
             return doctor(config, argv[1:])
-        parser = argparse.ArgumentParser(description="Game Agent: spec -> game -> browser tests -> bounded repair. "
+        parser = argparse.ArgumentParser(description="PlayForge: spec -> game -> browser tests -> bounded repair. "
                                          "Other commands: configure, doctor, serve, summarize, recheck.")
         parser.add_argument("spec", type=Path)
         parser.add_argument("--output", type=Path)

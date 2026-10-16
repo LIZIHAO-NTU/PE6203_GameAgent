@@ -1,4 +1,4 @@
-# MVP 0.3：多玩法与稳定性 / Cross-mechanic reliability
+# PlayForge — MVP 0.3：多玩法与稳定性 / Cross-mechanic reliability
 
 目标是让 Agent 根据未知需求实现正确、可运行的核心玩法，而不是把每个需求变成同一种收集游戏。仍使用单 Agent、DeepSeek 兼容接口、原生离线 HTML/CSS/JS；没有预写游戏代码、游戏引擎、模板或内置通关器。
 

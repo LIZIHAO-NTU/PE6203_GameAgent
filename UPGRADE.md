@@ -1,4 +1,4 @@
-# MVP 0.2：观察式验收与独立复测
+# PlayForge — MVP 0.2：观察式验收与独立复测
 
 > 本文是 0.2 的历史记录，保留当时的功能与测试结果。当前版本为 1.0 Beta 3（`1.0.0-beta.3`），安装使用见 [README.md](README.md)，最新规划改进见 [PLANNING.md](PLANNING.md)，此前能力筛查见 [CAPABILITY.md](CAPABILITY.md)，整合基线见 [INTEGRATION.md](INTEGRATION.md)；0.3 历史实测见 [GENERALIZATION.md](GENERALIZATION.md)。
 

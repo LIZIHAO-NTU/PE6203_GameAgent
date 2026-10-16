@@ -1,4 +1,4 @@
-# 1.0 Beta 1 Integrated Reliability / 可靠性整合
+# PlayForge — 1.0 Beta 1 Integrated Reliability / 可靠性整合
 
 Release identifier: `1.0.0-beta.1`. The 0.5 development snapshot was renamed without functional changes; the validation below was recorded on that baseline. Beta status does not guarantee arbitrary unseen-game success.
 

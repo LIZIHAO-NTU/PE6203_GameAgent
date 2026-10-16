@@ -1,4 +1,4 @@
-# Capability Screening / 小型能力评估
+# PlayForge — Capability Screening / 小型能力评估
 
 Date / 日期：2026-10-14. Evaluated release / 当时评估版本：`1.0.0-beta.2`.
 

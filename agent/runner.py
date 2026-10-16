@@ -469,7 +469,7 @@ def run(config, spec_path, output, max_rounds=3, max_calls=8, max_seconds=600,
 
 def write_report(output, summary):
     usage = summary["usage"]
-    lines = ["# 自动开发运行报告", "", f"- 状态：`{summary['status']}`",
+    lines = ["# PlayForge — 自动开发运行报告", "", f"- 状态：`{summary['status']}`",
              f"- 模型：`{summary['model']}`", f"- 耗时：{summary['duration_seconds']} 秒",
              f"- API 尝试次数：{usage['api_attempts']}",
              f"- 已知输入 / 输出 token：{usage['prompt_tokens']} / {usage['completion_tokens']}",
@@ -506,7 +506,7 @@ def write_report(output, summary):
     if summary.get("error"):
         lines += ["", "## 未完成或错误", "", summary["error"]]
     if (output / "game" / "index.html").is_file():
-        lines += ["", "## 启动游戏", "", "在 Game Agent 项目目录运行：", "", "```powershell",
+        lines += ["", "## 启动游戏", "", "在 PlayForge 项目目录运行：", "", "```powershell",
                   f'python -m agent serve "{output.resolve() / "game"}"', "```"]
     else:
         lines += ["", "本次未生成可启动游戏；请先查看上述停止原因及 traces/ 中的计划／审查记录。"]

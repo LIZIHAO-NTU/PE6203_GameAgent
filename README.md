@@ -1,4 +1,4 @@
-# PE6203 Game Agent — 1.0 Beta 3
+# PlayForge: Build a Coding Agent That Can Build a Game
 
 Current version: `1.0.0-beta.3` — a research beta, not a stable production release. This version adds explicit per-test setup, pre-freeze planning review and conservative failure routing. See [PLANNING.md](PLANNING.md) for behavior, defaults and limits; [CAPABILITY.md](CAPABILITY.md) preserves the earlier real-model screening.
 
@@ -8,9 +8,9 @@ The subsequent four-case real DeepSeek audit on/off comparison is in [AUDIT_COMP
 
 后续四类新需求的真实 DeepSeek 审查开关对照见 [AUDIT_COMPARISON.md](AUDIT_COMPARISON.md)：共 24 次 API 尝试，结论为暂时保持审查默认关闭；评估期间未改 Agent 实现。
 
-A lightweight game-coding agent for the PE6203 group project: read a Markdown specification, generate vanilla HTML/CSS/JavaScript from scratch, run browser checks, and make bounded repairs from execution feedback.
+PlayForge is a lightweight game-coding agent for the PE6203 group project: read a Markdown specification, generate vanilla HTML/CSS/JavaScript from scratch, run browser checks, and make bounded repairs from execution feedback.
 
-用于 PE6203 小组项目的游戏开发 Agent：读取 Markdown 需求，从空目录生成原生 HTML/CSS/JavaScript 游戏，自动打开浏览器检查，再根据真实反馈有限次修复。
+PlayForge 是用于 PE6203 小组项目的游戏开发 Agent：读取 Markdown 需求，从空目录生成原生 HTML/CSS/JavaScript 游戏，自动打开浏览器检查，再根据真实反馈有限次修复。
 
 **Core gameplay before visual polish.** No prewritten game implementations, game templates or built-in solvers. The four benchmark families are evaluation samples, not the only games the agent can generate.
 
@@ -62,8 +62,8 @@ Requires Python 3.10+, a model API account and a Playwright browser. Run these W
 需要 Python 3.10+、模型 API 账户及 Playwright 浏览器。以下为 Windows PowerShell 示例，所有命令在仓库根目录执行：
 
 ~~~powershell
-git clone https://github.com/LIZIHAO-NTU/PE6203_GameAgent.git
-cd PE6203_GameAgent
+git clone https://github.com/LIZIHAO-NTU/PE6203_GameAgent.git PlayForge
+cd PlayForge
 python -m venv .venv
 ./.venv/Scripts/python.exe -m pip install -r requirements.txt
 ./.venv/Scripts/python.exe -m playwright install chromium

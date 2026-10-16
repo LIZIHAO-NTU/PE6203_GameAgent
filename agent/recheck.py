@@ -49,7 +49,7 @@ def recheck(game, plan_path, output, timeout=60, headful=False, verifier=verify,
               "plan_review": inspect_plan(plan),
               "requirements": requirement_results(plan, result), "verification": result}
     (output / "recheck.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    lines = ["# 独立复测报告", "", "本次不调用模型、不改写游戏，不替代原始自主开发成绩。", "",
+    lines = ["# PlayForge — 独立复测报告", "", "本次不调用模型、不改写游戏，不替代原始自主开发成绩。", "",
              f"- Agent：{__version__}", f"- 自动检查全部通过：{report['automated_checks_passed']}",
              f"- 用时：{report['duration_seconds']} 秒", "- API 调用：0", "",
              "## 需求结果", ""]

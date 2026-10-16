@@ -1,4 +1,4 @@
-# Changelog / 版本记录
+# PlayForge Changelog / 版本记录
 
 ## 1.0.0-beta.3 — 2026-10-14
 
