@@ -39,6 +39,39 @@ The baseline Energy duel `T3` does `A attack`, then `B attack`. B still has its 
 
 All four raw plans and redacted provider traces remain local under `runs/b_plan_{baseline,candidate}_{energy,shop}/traces/`; `runs/` is Git-ignored. Do not publish those raw model responses without privacy review. Total actual usage was **4 API attempts**, 16,818 input tokens (7,296 cached) and 8,670 output tokens; no unknown-usage calls. The repo has no configured price, so its cost estimate is null, **not free**. At the [DeepSeek published Flash peak rates](https://api-docs.deepseek.com/quick_start/pricing/), those known tokens imply approximately US$0.0134 before any provider-specific billing adjustments; this is not a verified CNY charge. Consult the provider usage page for the actual debit. The pre-agreed ceiling was ¥3; no further paid calls are planned for this B experiment.
 
+### Local provenance supplement (added after A's PR #1 review)
+
+The table below was transcribed from the four **existing** local `traces/report.json` and `traces/api/001_request.json` files, not from new API calls. SHA-256 values are for the exact local UTF-8 specification/system-prompt text (`spec`/`system`) or exact saved file bytes (`request`/`plan`). The saved request contains `system` and `user` messages, not an Authorization header; nevertheless, the full request and model response are not published here. All four requests used `deepseek-flash`, `max_tokens=6000`, JSON-object response format, thinking disabled, streaming disabled, and one allowed/actual API attempt. Within each specification, the baseline and candidate user messages were byte-for-byte equal; their system prompts differed as shown below. The current probe can replay the baseline request but does not select the historical candidate arm.
+
+| Local arm | Spec SHA-256 | System SHA-256 | Saved request SHA-256 | Saved plan SHA-256 |
+|---|---|---|---|---|
+| Energy / baseline | `a74071d849ab09463e6c9feff4d020fcdc3c47f1be84f00e3fee08e08488a1cf` | `bfc471d10eac106fe77306ee831c341846d7711043dfce7eb9f77180dfde04b5` | `f3108182549e7d219818d7701762c03471daa5db3f8dbef2f4feef54123a128e` | `dcbd79ce68ab21f61d10b312c5e3ea8fe1382d1842b85f273a3b44d3834dfa2d` |
+| Energy / candidate | `a74071d849ab09463e6c9feff4d020fcdc3c47f1be84f00e3fee08e08488a1cf` | `576b545aa0ef85044be422f21467bc6f8549bdeae169761d91954de333ea12ed` | `39489fbaf848ab60211be2dc641eaf75c0423dd8d071faf53220bca2fb5bd85a` | `95213ae94043309094efd01f3dcf3f12924c9400106903aa6ecbc1f6169b95f7` |
+| Shop / baseline | `277c61a592a1d4182fe9f950678a28ceeb48ed81486d8ba8a2b55263eac7114f` | `bfc471d10eac106fe77306ee831c341846d7711043dfce7eb9f77180dfde04b5` | `719929164c83c5632caa099289d2de524dc5befa0eb5c2c8d3b9192b324deeda` | `50d7169fd071c1ebe82f5543f9736d6cb2fb397a45ee7536115cd5268cbd3862` |
+| Shop / candidate | `277c61a592a1d4182fe9f950678a28ceeb48ed81486d8ba8a2b55263eac7114f` | `576b545aa0ef85044be422f21467bc6f8549bdeae169761d91954de333ea12ed` | `0362cc99d2048f8c5069e0f45a437aab28826556a25b50f8bc279cb0f3590ba4` | `ce555b24ef5c424b0ed9abff421f72e03e3590fb7d4799ba813d20d0e3e3678c` |
+
+The **exact candidate-only insertion** below was recovered by diffing the saved Energy baseline/candidate `messages[0].content`; the Shop pair has the same respective system-prompt hashes. This is the complete added text, inserted after the baseline line beginning `Prefer 2..3 focused rule assertions` and before `For counter/resource tests`. No existing prompt line was removed or changed in the captured requests.
+
+```text
+Allocate the 18-step budget BEFORE writing a test: choose the shortest legal action path
+from a fresh page, reserve steps for the assertions that prove its rule, and remove
+redundant intermediate observations. A terminal path must fit with its prerequisites
+and assertions in ONE test; otherwise leave that path as an honest manual check.
+For every proposed input, privately update a small ledger of the CURRENT actor,
+resources, target values and phase. Mark whether the input is accepted, ignored or
+terminal; only accepted inputs spend resources and advance turns as the spec states.
+To test an invalid input, first reach a state where that actor's input is truly invalid.
+To test a win, enumerate every prerequisite input and its resulting state until the
+winning input is legal. Check the final literals against this ledger before output.
+```
+
+Sanitized excerpts from **Energy baseline's model draft**, with the original `examples/reliability_1_2/energy_duel.md` as the rule source (these IDs are *not* held-out acceptance tests):
+
+- `T3` draft evidence says `After A's first attack, B has 0 energy`; its actions are `#act` (A attack), capture, then `#act` (B attack). It asserts `hpA` unchanged from the capture, `energyB=0`, `turn=B`. Actual rule trace from the initial state: A spends 2 energy and reduces B from 4 to 2 HP; B **still has its initial 2 energy**, so B's attack is legal and reduces A from 4 to 2 HP, spends B's 2 energy, and returns the turn to A. Expected actual state: `hpA=2, hpB=2, energyA=0, energyB=0, turn=A, phase=Playing`.
+- `T5` draft evidence claims the second A attack spends 2 from `energyA=3` and wins; its final checks require `hpB=0` and `phase=WonA`. Actual action ledger: initial `(A energy 2, B energy 2, B HP 4)` → A attack `(0,2,2; turn B)` → B charge `(0,3,2; turn A)` → A charge `(1,3,2; turn B)` → B charge at cap `(1,3,2; turn A)` → A attempts attack with only 1 energy, a complete no-op. Thus `hpB=2, phase=Playing, turn=A`; the draft's terminal assertions are wrong.
+
+These excerpts support rule-level audit of two draft tests and bind the four local artifacts by hash. They do **not** independently authenticate provider billing, prove every raw response correct, establish a statistically general prompt comparison, or constitute a new autonomous game run. The negative decision remains: keep the production planner unchanged. Keep the local raw files for a reviewer who needs to recompute hashes; do not commit or forward them without a separate privacy check.
+
 ## Reproduction and regression
 
 ```powershell
